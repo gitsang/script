@@ -1,7 +1,8 @@
 # .bashrc
 
-# User specific aliases and functions
+# =============== Common specific aliases and functions =============== #
 
+# file
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
@@ -33,12 +34,20 @@ alias ports='netstat -tlnpu'
 # cd
 alias ..='cd ../'
 alias ...='cd ../../'
+alias ..3='cd ../../../'
 alias ....='cd ../../../'
 alias ..4='cd ../../../../'
+alias .....='cd ../../../../'
 alias ..5='cd ../../../../'
+alias ......='cd ../../../../'
 
 # docker
 alias dreset='docker stop $(docker ps -aq) && docker rm $(docker ps -aq)'
+
+# PS1
+PS1="\n\[\e[32m\]\u\[\e[37m\]@\h \[\e[35m\]\d \t \[\e[36m\]\w\[\e[0m\] \n\\$ "
+
+# =============== User specific aliases and functions =============== #
 
 # git-hugo-blog
 hpull() {
@@ -63,9 +72,14 @@ hpush() {
     git push
 }
 
-PS1="\n\[\e[32m\]\u@\h \[\e[35m\]\d \t \[\e[36m\]\w\[\e[0m\] \n\\$ "
+# =============== Source global definitions =============== #
 
-# Source global definitions
 if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
+
+# envionment variables
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.252.b09-2.el7_8.x86_64
+export CLASSPATH=.:$JAVA_HOME/jre/lib/rt.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+export PATH=$PATH:$JAVA_HOME/bin
+
