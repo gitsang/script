@@ -1,5 +1,4 @@
 
-
 "--------------------
 " Default
 "--------------------
@@ -49,7 +48,6 @@ noremap <LEADER><CR> :nohlsearch<CR>
 "--------------------
 
 map R :source $MYVIMRC<CR>
-map <LEADER>S :vs ~/.vimrc<CR>
 map ; $
 map j gj
 map k gk
@@ -111,4 +109,3 @@ call plug#begin('~/.vim/plugged')
                   \ <SID>isAtStartOfLine('__') ?
                   \ '<c-o>:silent! TableModeDisable<cr>' : '__'
 call plug#end()
-
