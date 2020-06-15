@@ -7,9 +7,16 @@ kill_all() {
 }
 
 reset_data() {
-    rm data -fr
+    rm data/${BROKER_PATH} -fr
     mkdir -p data
     mkdir -p data/${BROKER_PATH}
+}
+
+config_namesrv() {
+    mkdir -p conf
+    mkdir -p conf/namesrv
+    echo "" > conf/${NAMESRV_NAME}.conf
+    echo "listenPort=${listenPort}" >> conf/${NAMESRV_NAME}.conf
 }
 
 config_broker() {
@@ -57,8 +64,7 @@ config_broker_dledger() {
 }
 
 run_namesrv() {
-    nohup sh bin/mqnamesrv -c conf/namesrv/namesrv-a.conf > data/${BROKER_PATH}/namesrv-a.log 2>&1 &
-    nohup sh bin/mqnamesrv -c conf/namesrv/namesrv-b.conf > data/${BROKER_PATH}/namesrv-b.log 2>&1 &
+    nohup sh bin/mqnamesrv -c conf/namesrv/${NAMESRV_NAME}.conf > data/${BROKER_PATH}/${NAMESRV_NAME}.log 2>&1 &
 }
 
 run_broker() {
@@ -90,12 +96,21 @@ run_console() {
 }
 
 r_2m-2s-async() {
+    BROKER_PATH=2m-2s-async
+
     # init
     kill_all
-    BROKER_PATH=2m-2s-async
     reset_data
 
     # namesrv
+    NAMESRV_CONF=namesrv-a
+    listenPort=9876
+    config_namesrv
+    run_namesrv
+    
+    NAMESRV_CONF=namesrv-b
+    listenPort=9877
+    config_namesrv
     run_namesrv
 
     # broker-a
@@ -147,12 +162,21 @@ r_2m-2s-async() {
 }
 
 r_2m-2s-sync() {
+    BROKER_PATH=2m-2s-async
+
     # init
     kill_all
-    BROKER_PATH=2m-2s-async
     reset_data
 
     # namesrv
+    NAMESRV_CONF=namesrv-a
+    listenPort=9876
+    config_namesrv
+    run_namesrv
+    
+    NAMESRV_CONF=namesrv-b
+    listenPort=9877
+    config_namesrv
     run_namesrv
 
     # broker-a
@@ -206,18 +230,26 @@ r_2m-2s-sync() {
 r_dledger() {
     BROKER_PATH=dledger
     
-    # Node 0
-    brokerName=RaftNode00
-    dLegerGroup=RaftNode00
-    dLegerPeers="n0-127.0.0.1:49000;n1-127.0.0.1:49010;n2-127.0.0.1:49020;"
-    namesrvAddr="localhost:9876;localhost:9877"
-
     # init
     kill_all
     reset_data
 
     # namesrv
+    NAMESRV_CONF=namesrv-a
+    listenPort=9876
+    config_namesrv
     run_namesrv
+    
+    NAMESRV_CONF=namesrv-b
+    listenPort=9877
+    config_namesrv
+    run_namesrv
+
+    # Node 0
+    brokerName=RaftNode00
+    dLegerGroup=RaftNode00
+    dLegerPeers="n0-127.0.0.1:39000;n1-127.0.0.1:39010;n2-127.0.0.1:39020;"
+    namesrvAddr="localhost:9876;localhost:9877"
 
     # n0
     BROKER_NAME=broker-n0
@@ -243,7 +275,8 @@ r_dledger() {
     # Node 1
     brokerName=RaftNode01
     dLegerGroup=RaftNode01
-    dLegerPeers="n3-127.0.0.1:49030;n4-127.0.0.1:49040;n5-127.0.0.1:49050;"
+    dLegerPeers="n3-127.0.0.1:39030;n4-127.0.0.1:39040;n5-127.0.0.1:39050;"
+    namesrvAddr="localhost:9876;localhost:9877"
     
     # n3
     BROKER_NAME=broker-n3
