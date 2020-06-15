@@ -248,7 +248,7 @@ r_dledger() {
     # Node 0
     brokerName=RaftNode00
     dLegerGroup=RaftNode00
-    dLegerPeers="n0-127.0.0.1:39000;n1-127.0.0.1:39010;n2-127.0.0.1:39020;"
+    dLegerPeers="n0-127.0.0.1:49000;n1-127.0.0.1:49010;n2-127.0.0.1:49020;"
     namesrvAddr="localhost:9876;localhost:9877"
 
     # n0
@@ -275,7 +275,7 @@ r_dledger() {
     # Node 1
     brokerName=RaftNode01
     dLegerGroup=RaftNode01
-    dLegerPeers="n3-127.0.0.1:39030;n4-127.0.0.1:39040;n5-127.0.0.1:39050;"
+    dLegerPeers="n3-127.0.0.1:49030;n4-127.0.0.1:49040;n5-127.0.0.1:49050;"
     namesrvAddr="localhost:9876;localhost:9877"
     
     # n3
@@ -334,3 +334,13 @@ elif [ "$1" == "reboot" ]; then
 else
     echo "usage: $0 async/sync/dledger/kill/reboot [n0-n5]"
 fi
+
+# attention
+
+# dledger 模式时：
+#   dLegerPeers 的地址和 listenPort 是不一样的
+#   设置成一样的会报 address already in use
+
+# broker 的 listenPort 尽量不设置相邻端口 如 10010，10011
+# 因为 broker 启动时候会占用其相邻端口，导致之后的 broker 无法启动
+# 原因暂不明确
