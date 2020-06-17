@@ -1,25 +1,49 @@
 
-kill_all() {
+kill_namesrv() {
     ps aux | grep namesrv | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
+}
+
+kill_broker() {
     ps aux | grep broker | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
-    ps aux | grep mq | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
+}
+
+kill_console() {
     ps aux | grep rocketmq-console | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
 }
 
+kill_all() {
+    kill_namesrv
+    kill_broker
+    kill_console
+}
+
+clean_data_console() {
+    rm -fr /tmp/tomcat*
+    rm -fr /tmp/keyutil_example*
+    rm -fr data/rocketmq-console
+}
+
 reset_data() {
-    rm data/${BROKER_PATH} -fr
+    rm data/ -fr
     mkdir -p data
-    mkdir -p data/${BROKER_PATH}
+    clean_data_console
+}
+
+drop_caches() {
+    free -h | grep Mem
+    sync; echo 1 > /proc/sys/vm/drop_caches
+    sync; echo 2 > /proc/sys/vm/drop_caches
+    sync; echo 3 > /proc/sys/vm/drop_caches
+    free -h | grep Mem
 }
 
 config_namesrv() {
     mkdir -p conf
     mkdir -p conf/namesrv
-    echo "" > conf/${NAMESRV_NAME}.conf
-    echo "listenPort=${listenPort}" >> conf/${NAMESRV_NAME}.conf
+    echo "listenPort=${listenPort}" > conf/namesrv/${NAMESRV_NAME}.conf
 }
 
-config_broker() {
+config_broker_master-slave() {
     mkdir -p conf
     mkdir -p conf/${BROKER_PATH}
     echo "" > conf/${BROKER_PATH}/${BROKER_NAME}.properties
@@ -32,6 +56,7 @@ config_broker() {
     echo "flushDiskType=ASYNC_FLUSH"        >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "namesrvAddr=${namesrvAddr}"       >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "listenPort=${listenPort}"         >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "brokerIP1=${brokerIP1}"        >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     
     echo "storePathRootDir      = data/${BROKER_PATH}/${BROKER_NAME}/store" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storePathCommitLog    = data/${BROKER_PATH}/${BROKER_NAME}/log"   >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
@@ -50,10 +75,11 @@ config_broker_dledger() {
     echo "sendMessageThreadPoolNums=16"  >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "brokerName=${brokerName}"      >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "dLegerSelfId=${dLegerSelfId}"  >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "dLegerGroup=${dlegerGroup}"    >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "dLegerGroup=${dLegerGroup}"          >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "dLegerPeers=${dLegerPeers}"    >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "namesrvAddr=${namesrvAddr}"    >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "listenPort=${listenPort}"      >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "brokerIP1=${brokerIP1}"        >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
 
     echo "storePathRootDir      = data/${BROKER_PATH}/${BROKER_NAME}/store" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storePathCommitLog    = data/${BROKER_PATH}/${BROKER_NAME}/log"   >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
@@ -64,21 +90,25 @@ config_broker_dledger() {
 }
 
 run_namesrv() {
-    nohup sh bin/mqnamesrv -c conf/namesrv/${NAMESRV_NAME}.conf > data/${BROKER_PATH}/${NAMESRV_NAME}.log 2>&1 &
+    mkdir -p data/namesrv/
+    echo "run namesrv/${NAMESRV_NAME} ${listenPort}"
+    nohup sh bin/mqnamesrv -c conf/namesrv/${NAMESRV_NAME}.conf > data/namesrv/${NAMESRV_NAME}.log 2>&1 &
 }
 
 run_broker() {
+    mkdir -p data/${BROKER_PATH}/
     echo "run ${BROKER_PATH}/${BROKER_NAME}"
     nohup sh bin/mqbroker -c conf/${BROKER_PATH}/${BROKER_NAME}.properties > data/${BROKER_PATH}/${BROKER_NAME}.log 2>&1 &
 }
 
 reboot_broker() {
     ps aux | grep ${BROKER_NAME} | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
-    sleep 10
+    sleep 1
     nohup sh bin/mqbroker -c conf/${BROKER_PATH}/${BROKER_NAME}.properties > data/${BROKER_PATH}/${BROKER_NAME}.log 2>&1 &
 }
 
 run_console() {
+    mkdir -p data/rocketmq-console/
     if [ ! -f "rocketmq-console-1.0.0.tar.gz" ]; then
         wget https://github.com/apache/rocketmq-externals/archive/rocketmq-console-1.0.0.tar.gz
     fi
@@ -91,165 +121,72 @@ run_console() {
     nohup java -jar \
         rocketmq-externals-rocketmq-console-1.0.0/rocketmq-console/target/rocketmq-console-ng-1.0.0.jar \
         --server.port=12581 \
-        --rocketmq.config.namesrvAddr='localhost:9876;localhost:9877' \
-        2>&1 &
+        --rocketmq.config.namesrvAddr='10.200.112.67:9876' \
+        --rocketmq.config.dataPath='data/rocketmq-console' \
+        > data/rocketmq-console/console.log 2>&1 &
+    echo rocketmq-console at http://10.200.112.67:12581/
 }
 
 r_2m-2s-async() {
     BROKER_PATH=2m-2s-async
+    brokerIP1=10.200.112.67
 
-    # init
-    kill_all
-    reset_data
+    if [[ "$1" == "a" ]] || [[ "$1" == "" ]]; then
+        # Cluster a
+        BROKER_PATH=2m-2s-async
+        brokerName=broker-a
+        namesrvAddr="10.200.112.67:9876"
 
-    # namesrv
-    NAMESRV_CONF=namesrv-a
-    listenPort=9876
-    config_namesrv
-    run_namesrv
-    
-    NAMESRV_CONF=namesrv-b
-    listenPort=9877
-    config_namesrv
-    run_namesrv
+        # broker-a
+        BROKER_NAME=broker-a
+        brokerId=0
+        brokerRole=ASYNC_MASTER
+        listenPort=10010
+        config_broker_master-slave
+        run_broker
+        
+        # broker-a-s
+        BROKER_NAME=broker-a-s
+        brokerId=1
+        brokerRole=SLAVE
+        listenPort=10020
+        config_broker_master-slave
+        run_broker
+    fi
 
-    # broker-a
-    BROKER_PATH=2m-2s-async
-    BROKER_NAME=broker-a
-    brokerName=broker-a
-    brokerId=0
-    brokerRole=ASYNC_MASTER
-    namesrvAddr="localhost:9876;localhost:9877"
-    listenPort=10010
-    config_broker
-    run_broker
-    
-    # broker-a-s
-    BROKER_PATH=2m-2s-async
-    BROKER_NAME=broker-a-s
-    brokerName=broker-a
-    brokerId=1
-    brokerRole=SLAVE
-    namesrvAddr="localhost:9876;localhost:9877"
-    listenPort=10020
-    config_broker
-    run_broker
+    if [[ "$1" == "b" ]] || [[ "$1" == "" ]]; then
+        # Cluster b
+        BROKER_PATH=2m-2s-async
+        brokerName=broker-b
+        namesrvAddr="10.200.112.67:9876"
 
-    # broker-b
-    BROKER_PATH=2m-2s-async
-    BROKER_NAME=broker-b
-    brokerName=broker-b
-    brokerId=0
-    brokerRole=ASYNC_MASTER
-    namesrvAddr="localhost:9876;localhost:9877"
-    listenPort=20010
-    config_broker
-    run_broker
-    
-    # broker-b-s
-    BROKER_PATH=2m-2s-async
-    BROKER_NAME=broker-b-s
-    brokerName=broker-b
-    brokerId=1
-    brokerRole=SLAVE
-    namesrvAddr="localhost:9876;localhost:9877"
-    listenPort=20020
-    config_broker
-    run_broker
-    
-    # console
-    run_console
-}
-
-r_2m-2s-sync() {
-    BROKER_PATH=2m-2s-async
-
-    # init
-    kill_all
-    reset_data
-
-    # namesrv
-    NAMESRV_CONF=namesrv-a
-    listenPort=9876
-    config_namesrv
-    run_namesrv
-    
-    NAMESRV_CONF=namesrv-b
-    listenPort=9877
-    config_namesrv
-    run_namesrv
-
-    # broker-a
-    BROKER_PATH=2m-2s-sync
-    BROKER_NAME=broker-a
-    brokerName=broker-a
-    brokerId=0
-    brokerRole=SYNC_MASTER
-    namesrvAddr="localhost:9876;localhost:9877"
-    listenPort=10010
-    config_broker
-    run_broker
-    
-    # broker-a-s
-    BROKER_PATH=2m-2s-sync
-    BROKER_NAME=broker-a-s
-    brokerName=broker-a
-    brokerId=1
-    brokerRole=SLAVE
-    namesrvAddr="localhost:9876;localhost:9877"
-    listenPort=10020
-    config_broker
-    run_broker
-
-    # broker-b
-    BROKER_PATH=2m-2s-sync
-    BROKER_NAME=broker-b
-    brokerName=broker-b
-    brokerId=0
-    brokerRole=SYNC_MASTER
-    namesrvAddr="localhost:9876;localhost:9877"
-    listenPort=20010
-    config_broker
-    run_broker
-    
-    # broker-b-s
-    BROKER_PATH=2m-2s-sync
-    BROKER_NAME=broker-b-s
-    brokerName=broker-b
-    brokerId=1
-    brokerRole=SLAVE
-    namesrvAddr="localhost:9876;localhost:9877"
-    listenPort=20020
-    config_broker
-    run_broker
-    
-    # console
-    run_console
+        # broker-b
+        BROKER_NAME=broker-b
+        brokerId=0
+        brokerRole=ASYNC_MASTER
+        listenPort=20010
+        config_broker_master-slave
+        run_broker
+        
+        # broker-b-s
+        BROKER_NAME=broker-b-s
+        brokerId=1
+        brokerRole=SLAVE
+        listenPort=20020
+        config_broker_master-slave
+        run_broker
+    fi
 }
 
 r_dledger() {
     BROKER_PATH=dledger
-    
-    # init
-    kill_all
-    reset_data
-
-    # namesrv
-    NAMESRV_CONF=namesrv-a
-    listenPort=9876
-    config_namesrv
-    run_namesrv
-    
-    NAMESRV_CONF=namesrv-b
-    listenPort=9877
-    config_namesrv
-    run_namesrv
 
     # Node 0
     brokerName=RaftNode00
     dLegerGroup=RaftNode00
-    dLegerPeers="n0-127.0.0.1:49000;n1-127.0.0.1:49010;n2-127.0.0.1:49020;"
-    namesrvAddr="localhost:9876;localhost:9877"
+    brokerIP1=10.200.112.67
+    dLegerPeers="n0-${brokerIP1}:49000;n1-${brokerIP1}:49010;n2-${brokerIP1}:49020"
+    namesrvAddr="10.200.112.67:9876"
 
     # n0
     BROKER_NAME=broker-n0
@@ -271,48 +208,40 @@ r_dledger() {
     listenPort=39020
     config_broker_dledger
     run_broker
-    
-    # Node 1
-    brokerName=RaftNode01
-    dLegerGroup=RaftNode01
-    dLegerPeers="n3-127.0.0.1:49030;n4-127.0.0.1:49040;n5-127.0.0.1:49050;"
-    namesrvAddr="localhost:9876;localhost:9877"
-    
-    # n3
-    BROKER_NAME=broker-n3
-    dLegerSelfId=n3
-    listenPort=39030
-    config_broker_dledger
-    run_broker
-
-    # n4
-    BROKER_NAME=broker-n4
-    dLegerSelfId=n4
-    listenPort=39040
-    config_broker_dledger
-    run_broker
-    
-    # n5
-    BROKER_NAME=broker-n5
-    dLegerSelfId=n5
-    listenPort=39050
-    config_broker_dledger
-    run_broker
-    
-    # console
-    run_console
 }
 
-if [ "$1" == "quick" ]; then
-    r_1m
+r_namesrv() {
+    NAMESRV_NAME=namesrv-a
+    listenPort=9876
+    config_namesrv
+    run_namesrv
+}
+
+if [ "$1" == "init" ]; then
+    kill_all
+    reset_data
+    drop_caches
+elif [ "$1" == "namesrv" ]; then
+    r_namesrv
 elif [ "$1" == "async" ]; then
-    r_2m-2s-async
-elif [ "$1" == "sync" ]; then
-    r_2m-2s-sync
+    r_2m-2s-async $2
 elif [ "$1" == "dledger" ]; then
     r_dledger
+elif [ "$1" == "console" ]; then
+    run_console
 elif [ "$1" == "kill" ]; then
-    kill_all
+    if [ "$2" == "all" ]; then
+        kill_all
+    elif [ "$2" == "namesrv" ]; then
+        kill_namesrv
+    elif [ "$2" == "broker" ]; then
+        kill_broker
+    elif [ "$2" == "console" ]; then
+        kill_console
+    else
+        echo "usage: $0 kill all/namesrv/broker/console"
+        exit
+    fi
 elif [ "$1" == "reboot" ]; then
     BROKER_PATH=dledger
     if [ "$2" == "n0" ]; then
@@ -321,26 +250,17 @@ elif [ "$1" == "reboot" ]; then
         BROKER_NAME=broker-n1
     elif [ "$2" == "n2" ]; then
         BROKER_NAME=broker-n2
-    elif [ "$2" == "n3" ]; then
-        BROKER_NAME=broker-n3
-    elif [ "$2" == "n4" ]; then
-        BROKER_NAME=broker-n4
-    elif [ "$2" == "n5" ]; then
-        BROKER_NAME=broker-n5
     else
+        echo "usage $0 reboot n0/n1/n2"
         exit
     fi
     reboot_broker
+elif [ "$1" == "auto" ]; then
+    $0 init
+    $0 namesrv
+    $0 async a
 else
-    echo "usage: $0 async/sync/dledger/kill/reboot [n0-n5]"
+    echo "usage: $0 init/namesrv/async/dledger/console/kill/reboot/auto"
+    echo "default auto"
+    bash -x $0 auto
 fi
-
-# attention
-
-# dledger 模式时：
-#   dLegerPeers 的地址和 listenPort 是不一样的
-#   设置成一样的会报 address already in use
-
-# broker 的 listenPort 尽量不设置相邻端口 如 10010，10011
-# 因为 broker 启动时候会占用其相邻端口，导致之后的 broker 无法启动
-# 原因暂不明确
