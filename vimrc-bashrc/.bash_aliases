@@ -1,5 +1,10 @@
 # ~/.bash_aliases
 
+# set alias definitions into ~/.bashrc
+#if [ -f ~/.bash_aliases ]; then
+#    . ~/.bash_aliases
+#fi
+
 # =============== Common specific aliases and functions =============== #
 
 # file
