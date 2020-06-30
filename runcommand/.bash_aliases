@@ -1,3 +1,4 @@
+#!/bin/bash
 # ~/.bash_aliases
 
 # set alias definitions into ~/.bashrc
@@ -36,6 +37,7 @@ alias lla='ls -la'
 # system
 alias vi='vim'
 alias ports='netstat -ntlp'
+alias eplib='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib && echo $LD_LIBRARY_PATH'
 
 # cd
 alias ..='cd ../'
