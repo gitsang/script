@@ -19,7 +19,7 @@ set shiftwidth=4
 set softtabstop=4
 set tabstop=4
 set expandtab
-noremap <LEADER><TAB> :%retab!<CR>
+noremap <LEADER><TAB> :%retab!<CR>gg=G<C-o><C-o>zz
 
 "--------------------
 " Individuation 
@@ -51,6 +51,8 @@ map R :source $MYVIMRC<CR>
 map ; $
 map j gj
 map k gk
+map S :w<CR>
+map Q :q<CR>
 
 "--------------------
 " Cursor
