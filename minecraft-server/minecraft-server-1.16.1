@@ -1,0 +1,236 @@
+#!/bin/bash
+
+#========== conf ==========#
+
+# get the server download url from https://www.minecraft.net/download/server/
+MCSRV_URL=https://launcher.mojang.com/v1/objects/a412fd69db1f81db3f511c1463fd304675244077/server.jar
+MCSRV_JAR=minecraft-server-1.16.1.jar
+MCSRV_PATH=/root/minecraft-server-1.16.1
+MCSRV_NAME=minecraft-server-1.16.1
+
+XMS="512m"
+XMX="1024m"
+MAX_BAK_CNT=10
+
+#========== help ==========#
+
+echo_help() {
+    echo "Usage:"
+    echo "    $0 [options...]"
+    echo " -a, --attach        attach minecraft server screen"
+    echo " -b, --backup        backup to local(default) (will call --bcakup-clean by default)"
+    echo "     --create-crontab   create crontab for auto backup"
+    echo "     --drop-caches   drop caches [use it careful]"
+    echo " -h, --help          help"
+    echo " -i, --init          init server"
+    echo " -k, --kill          kill Minecraft server"
+    echo " -l, --log <len>     tailf server log, default len is 10"
+    echo " -r, --run           run Minecraft server, will attach into screen if server is running"
+    echo "     --reboot        reboot Minecraft server"
+    echo " -s, --status        view server status"
+    echo "     --soft-link     make a soft-link for this shell"
+    echo ""
+    echo " usage: \"ctrl + a + d\" to detach screen"
+}
+
+#========== init ==========#
+
+install_dependencies() {
+    yum install -y screen java-1.8.0-openjdk-devel
+}
+
+download_server_jar() {
+    if [ ! -f "$MCSRV_JAR" ]; then
+        wget $MCSRV_URL -O $MCSRV_JAR
+    fi
+}
+
+agree_eula() {
+    if [ ! -f "eula.txt" ]; then
+        echo "eula=true" > eula.txt
+    fi
+}
+
+init_server() {
+    install_dependencies
+    download_server_jar
+    agree_eula
+}
+
+#========== server ==========#
+
+run_server() {
+    PID=`ps -ef | grep $MCSRV_JAR | grep -v -E 'grep|SCREEN' | awk '{printf $2}'`
+    if [ -n "$PID" ]; then
+        echo "server is running"
+    else
+        cd $MCSRV_PATH && screen -R $MCSRV_NAME java -Xms${XMS} -Xmx${XMX} -jar $MCSRV_JAR nogui
+    fi
+}
+
+kill_server() {
+    PID=`ps -ef | grep $MCSRV_JAR | grep -v -E 'grep|SCREEN' | awk '{printf $2}'`
+    if [ -n "$PID" ]; then
+        nohub kill -9 $PID > /dev/null 2>&1 &
+        nohup screen -X -S $MCSRV_NAME quit > /dev/null 2>&1 &
+        echo "server has been killed"
+    else
+        echo "server is not running"
+    fi
+}
+
+reboot_server() {
+    kill_server
+    run_server
+}
+
+server_status() {
+    PID=`ps -ef | grep $MCSRV_JAR | grep -v -E 'grep|SCREEN' | awk '{printf $2}'`
+    if [ -n "$PID" ]; then
+        echo "server is running"
+        ps u -p $PID
+        screen -ls | grep $MCSRV_NAME
+    else
+        echo "server is not running"
+    fi
+}
+
+attach_screen() {
+    SCREEN_CNT=`screen -ls | grep $MCSRV_NAME | wc -l`
+    if [ $SCREEN_CNT -eq 1 ]; then
+        screen -r $MCSRV_NAME
+    elif [ $SCREEN_CNT -gt 1 ]; then
+        echo "multi server screen"
+        screen -ls | grep $MCSRV_NAME
+    elif [ $SCREEN_CNT -lt 1 ]; then
+        echo "server screen not running"
+    fi
+}
+
+#========== backup ==========#
+
+backup() {
+    cd $MCSRV_PATH
+    mkdir -p backup/
+    TIME=`date "+%Y-%m-%d"`
+    BKFOLDER=${TIME}-backup/
+
+    rm -fr $BKFOLDER
+    mkdir -p $BKFOLDER
+    
+    cp -r world/ $BKFOLDER
+    cp -r config/ $BKFOLDER
+    cp *.json $BKFOLDER
+    cp *.properties $BKFOLDER
+    cp server-icon.png $BKFOLDER
+    cp $0 $BKFOLDER
+
+    tar zcvf backup/${TIME}-backup.tar.gz $BKFOLDER
+    cp backup/${TIME}-backup.tar.gz backup/latest-backup.tar.gz
+    rm -fr $BKFOLDER
+}
+
+backup_clean() {
+    cd $MCSRV_PATH/backup
+    FILE_CNT=`ls -l | grep -v total | wc -l`
+    if [ $FILE_CNT -gt $MAX_BAK_CNT ]; then
+        OVER_CNT=`expr $FILE_CNT - $MAX_BAK_CNT`
+        echo "will clean up old file ($OVER_CNT)"
+        ls -tr | grep -v total | head -$OVER_CNT | xargs -i -n1 rm -f {}
+    fi
+}
+
+#========== operation ==========#
+
+soft_link() {
+    rm -f /usr/local/bin/minecraft-server
+    ln -s $MCSRV_PATH/minecraft-server /usr/local/bin/minecraft-server
+    echo "Soft-link finished!"
+}
+
+create_crontab() {
+    echo "0 6 * * * root /usr/local/bin/minecraft-server -b" > /etc/cron.d/minecraft-server-backup
+    echo "Create crontab finished! Will auto backup at 06:00am"
+}
+
+drop_caches() {
+    free -h | grep Mem
+    sync; echo 1 > /proc/sys/vm/drop_caches
+    sync; echo 2 > /proc/sys/vm/drop_caches
+    sync; echo 3 > /proc/sys/vm/drop_caches
+    free -h | grep Mem
+}
+
+#========== log ==========#
+
+tail_log() {
+    cd $MCSRV_PATH
+    if [ $# -gt 1 ]; then
+        tailf logs/latest.log -n $2
+    else
+        tailf logs/latest.log
+    fi
+}
+
+output_log() {
+    cd $MCSRV_PATH
+    nohup tailf logs/latest.log >> /var/www/html/mclog/mclog 2>&1 &
+}
+
+#========== option ==========#
+
+OPT=$1
+if [ $# == 0 ]; then
+    $0 --help
+    exit
+fi
+
+case "$OPT" in
+    "-h");&
+    "--help")
+        echo_help
+        ;;
+    "-i");&
+    "--init")
+        init_server
+        ;;
+    "-r");&
+    "--run")
+        run_server
+        ;;
+    "-k");&
+    "--kill")
+        kill_server
+        ;;
+    "--reboot")
+        reboot_server
+        ;;
+    "-s");&
+    "--status")
+        server_status
+        ;;
+    "-a");&
+    "--attach")
+        attach_screen
+        ;;
+    "-b");&
+    "--backup")
+        backup
+        backup_clean
+        ;;
+    "-l");&
+    "--log")
+        tail_log $2
+        ;;
+    "--soft-link")
+        soft_link
+        ;;
+    "--create-crontab")
+        create_crontab
+        ;;
+    "--drop-caches")
+        drop_caches
+        ;;
+    *)
+        ;;
+esac
