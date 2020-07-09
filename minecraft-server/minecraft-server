@@ -2,35 +2,50 @@
 
 #========== conf ==========#
 
-# get the server download url from https://www.minecraft.net/download/server/
-MCSRV_URL=https://launcher.mojang.com/v1/objects/a412fd69db1f81db3f511c1463fd304675244077/server.jar
-MCSRV_JAR=minecraft-server-1.16.1.jar
-MCSRV_PATH=/root/minecraft-server-1.16.1
-MCSRV_NAME=minecraft-server-1.16.1
-
 XMS="512m"
 XMX="1024m"
 MAX_BAK_CNT=10
+MCSRV_PATH=/root/project/minecraft-server-forge-1.16.1
+MCSRV_JAR=minecraft-server-forge-1.16.1.jar
+MCSRV_NAME=minecraft-server-forge-1.16.1
+
+#========== VAR ==========#
+
+ORIGIN_URL=https://launcher.mojang.com/v1/objects/a412fd69db1f81db3f511c1463fd304675244077/server.jar
+FORGE_INSTALL_URL=https://files.minecraftforge.net/maven/net/minecraftforge/forge/1.16.1-32.0.61/forge-1.16.1-32.0.61-installer.jar
+
+ORIGIN_JAR=minecraft_server.1.16.1.jar
+FORGE_INSTALL_JAR=forge-1.16.1-32.0.61-installer.jar
+FORGE_SERVER_JAR=forge-1.16.1-32.0.61.jar
 
 #========== help ==========#
 
 echo_help() {
     echo "Usage:"
     echo "    $0 [options...]"
-    echo " -a, --attach        attach minecraft server screen"
-    echo " -b, --backup        backup to local(default) (will call --bcakup-clean by default)"
-    echo "     --create-crontab   create crontab for auto backup"
-    echo "     --drop-caches   drop caches [use it careful]"
-    echo " -h, --help          help"
-    echo " -i, --init          init server"
-    echo " -k, --kill          kill Minecraft server"
-    echo " -l, --log <len>     tailf server log, default len is 10"
-    echo " -r, --run           run Minecraft server, will attach into screen if server is running"
-    echo "     --reboot        reboot Minecraft server"
-    echo " -s, --status        view server status"
-    echo "     --soft-link     make a soft-link for this shell"
+    echo " -a, --attach         attach minecraft server screen"
+    echo " -b, --backup         backup"
+    echo "     --create-crontab create crontab for auto backup"
+    echo "     --drop-caches    drop caches [use it careful]"
+    echo "     --forge          install forge"
+    echo " -h, --help           help"
+    echo " -i, --init           init server"
+    echo " -k, --kill           kill Minecraft server"
+    echo " -l, --log <len>      tailf server log, default len is 10"
+    echo " -r, --run            run Minecraft server, will attach into screen if server is running"
+    echo "     --reboot         reboot Minecraft server"
+    echo " -s, --status         view server status"
+    echo "     --soft-link      make a soft-link for this shell"
     echo ""
     echo " usage: \"ctrl + a + d\" to detach screen"
+    echo ""
+    echo "Quick Start:"
+    echo "# minecraft-server --init"
+    echo "# minecraft-server --forge"
+    echo "# minecraft-server --soft-link"
+    echo "# minecraft-server --create-crontab"
+    echo "# minecraft-server --run"
+    echo "# <ctrl + a + d>"
 }
 
 #========== init ==========#
@@ -39,22 +54,43 @@ install_dependencies() {
     yum install -y screen java-1.8.0-openjdk-devel
 }
 
-download_server_jar() {
-    if [ ! -f "$MCSRV_JAR" ]; then
-        wget $MCSRV_URL -O $MCSRV_JAR
+download_origin() {
+    if [ ! -f "$ORIGIN_JAR" ]; then
+        if [ ! -f "jar/$ORIGIN_JAR" ]; then
+            wget $ORIGIN_URL
+        else
+            cp jar/$ORIGIN_JAR ./
+        fi
     fi
+}
+
+download_forge() {
+    if [ ! -f "$FORGE_INSTALL_JAR" ]; then
+        if [ ! -f "jar/$FORGE_INSTALL_JAR" ]; then
+            wget $FORGE_INSTALL_URL
+        else
+            cp jar/$FORGE_INSTALL_JAR ./
+        fi
+    fi
+}
+
+install_forge() {
+    if [ -f "$FORGE_INSTALL_JAR" ]; then
+        java -jar $FORGE_INSTALL_JAR --installServer
+    fi
+}
+
+backup_jar() {
+    mkdir -p jar/
+    mv *.jar jar/
+    mv *.jar.log jar/
+    cp jar/$FORGE_SERVER_JAR ./$MCSRV_JAR
 }
 
 agree_eula() {
     if [ ! -f "eula.txt" ]; then
         echo "eula=true" > eula.txt
     fi
-}
-
-init_server() {
-    install_dependencies
-    download_server_jar
-    agree_eula
 }
 
 #========== server ==========#
@@ -64,7 +100,7 @@ run_server() {
     if [ -n "$PID" ]; then
         echo "server is running"
     else
-        cd $MCSRV_PATH && screen -R $MCSRV_NAME java -Xms${XMS} -Xmx${XMX} -jar $MCSRV_JAR nogui
+        screen -R $MCSRV_NAME java -Xms${XMS} -Xmx${XMX} -jar $MCSRV_JAR nogui
     fi
 }
 
@@ -77,11 +113,6 @@ kill_server() {
     else
         echo "server is not running"
     fi
-}
-
-reboot_server() {
-    kill_server
-    run_server
 }
 
 server_status() {
@@ -110,7 +141,6 @@ attach_screen() {
 #========== backup ==========#
 
 backup() {
-    cd $MCSRV_PATH
     mkdir -p backup/
     TIME=`date "+%Y-%m-%d"`
     BKFOLDER=${TIME}-backup/
@@ -131,7 +161,7 @@ backup() {
 }
 
 backup_clean() {
-    cd $MCSRV_PATH/backup
+    cd backup
     FILE_CNT=`ls -l | grep -v total | wc -l`
     if [ $FILE_CNT -gt $MAX_BAK_CNT ]; then
         OVER_CNT=`expr $FILE_CNT - $MAX_BAK_CNT`
@@ -164,7 +194,6 @@ drop_caches() {
 #========== log ==========#
 
 tail_log() {
-    cd $MCSRV_PATH
     if [ $# -gt 1 ]; then
         tailf logs/latest.log -n $2
     else
@@ -173,7 +202,6 @@ tail_log() {
 }
 
 output_log() {
-    cd $MCSRV_PATH
     nohup tailf logs/latest.log >> /var/www/html/mclog/mclog 2>&1 &
 }
 
@@ -185,6 +213,7 @@ if [ $# == 0 ]; then
     exit
 fi
 
+cd $MCSRV_PATH
 case "$OPT" in
     "-h");&
     "--help")
@@ -192,7 +221,14 @@ case "$OPT" in
         ;;
     "-i");&
     "--init")
-        init_server
+        install_dependencies
+        agree_eula
+        ;;
+    "--forge")
+        download_origin
+        download_forge
+        install_forge
+        backup_jar
         ;;
     "-r");&
     "--run")
@@ -203,7 +239,9 @@ case "$OPT" in
         kill_server
         ;;
     "--reboot")
-        reboot_server
+        kill_server
+        sleep 1
+        run_server
         ;;
     "-s");&
     "--status")
