@@ -1,0 +1,223 @@
+#!/bin/bash
+
+#==================== config ====================#
+FORGE_INSTALLER_URL=https://files.minecraftforge.net/maven/net/minecraftforge/forge/1.14.4-28.2.0/forge-1.14.4-28.2.0-installer.jar
+FORGE_INSTALLER_JAR=forge-1.14.4-28.2.0-installer.jar
+FORGE_JAR=forge-1.14.4-28.2.0.jar
+
+MCPATH=/root/project/minecraft-server
+XMS="512m"
+XMX="1024m"
+    
+MAX_BK_FILE_CNT=10
+#================================================#
+
+OPT=$1
+if [ $# == 0 ]; then
+    $0 --help
+    exit
+fi
+
+# help    
+if [ $OPT == -h ] || [ $OPT == --help ]; then
+    echo "Usage:"
+    echo "    $0 [options...]"
+    echo " -a, --attach        attach minecraft server screen"
+    echo " -b, --backup <local>   backup to local(default) (will call --bcakup-clean by default)"
+    echo "     --backup <remote>  backup to remote server"
+    echo "     --backup-clean     clean up old backup file (will keep the last $MAX_BK_FILE_CNT days of file)"
+    echo "     --create-crontab   create crontab for auto backup"
+    echo "     --drop-caches   drop caches [use it careful]"
+    echo " -h, --help          help"
+    echo " -i, --init          init server"
+    echo " -k, --kill          kill Minecraft server"
+    echo " -l, --log <len>     tailf server log, default len is 10"
+    echo " -r, --run           run Minecraft server, will attach into screen if server is running"
+    echo "     --reboot        reboot Minecraft server"
+    echo " -s, --status        view server status"
+    echo "     --soft-link     make a soft-link for this shell"
+    echo ""
+    echo " usage: \"ctrl + a + d\" to detache screen"
+    exit
+fi
+
+# init
+if [ $OPT == -i ] || [ $OPT == --init ]; then
+    mkdir -p ${MCPATH} && cd ${MCPATH}
+    # install screen
+    yum install -y screen
+    # install java
+    yum install -y java-1.8.0-openjdk-devel
+    # install forge
+    if [ ! -f "${FORGE_INSTALLER_JAR}" ]; then
+        wget ${FORGE_INSTALLER_URL}
+    fi
+    set -e
+    java -jar ${FORGE_INSTALLER_JAR} --installServer
+    set +e
+    # move file for backup
+    mkdir -p jar/
+    mv forge-1.14.4-28.2.0-installer* ./jar/
+    mv minecraft_server.1.14.4.jar ./jar/
+    # agree eula
+    if [ ! -f "eula.txt" ]; then
+        echo "eula=true" > eula.txt
+    fi
+    exit
+fi
+
+# run
+if [ $OPT == -r ] || [ $OPT == --run ]; then
+    PID=`ps -ef | grep $FORGE_JAR | grep -v -E 'grep|SCREEN' | awk '{printf $2}'`
+    if [ -n "$PID" ]; then
+        echo "server is running"
+        $0 --attach
+    else
+        cd $MCPATH && screen -R minecraft_server java -Xms${XMS} -Xmx${XMX} -jar $FORGE_JAR nogui
+    fi
+    exit
+fi
+
+# reboot
+if [ $OPT == --reboot ]; then
+    PID=`ps -ef | grep $FORGE_JAR | grep -v -E 'grep|SCREEN' | awk '{printf $2}'`
+    if [ -n "$PID" ]; then
+        nohup kill $PID > /tmp/screen.log 2>&1 &
+        nohup screen -X -S minecraft_server quit > /tmp/screen.log 2>&1 &
+    fi
+    cd $MCPATH && screen -R minecraft_server java -Xms${XMS} -Xmx${XMX} -jar $FORGE_JAR nogui
+    exit
+fi
+
+# kill
+if [ $OPT == -k ] || [ $OPT == --kill ]; then
+    PID=`ps -ef | grep $FORGE_JAR | grep -v -E 'grep|SCREEN' | awk '{printf $2}'`
+    if [ -n "$PID" ]; then
+        nohub kill $PID > /tmp/screen.log 2>&1 &
+        nohup screen -X -S minecraft_server quit > /tmp/screen.log 2>&1 &
+        echo "kill finished"
+    else
+        echo "minecraft server is not running"
+    fi
+    exit
+fi
+
+# attach
+if [ $OPT == -a ] || [ $OPT == --attach ]; then
+    SRVCOUNT=`screen -ls | grep minecraft_server | wc -l`
+    if [ $SRVCOUNT -eq 1 ]; then
+        screen -r minecraft_server
+    elif [ $SRVCOUNT -gt 1 ]; then
+        echo "multi server screen"
+        screen -ls | grep minecraft_server
+    elif [ $SRVCOUNT -lt 1 ]; then
+        echo "server screen not running"
+    fi
+    exit
+fi
+
+# log
+if [ $OPT == -l ] || [ $OPT == --log ]; then
+    cd $MCPATH
+    if [ $# -gt 1 ]; then
+        tailf logs/latest.log -n $2
+    else
+        tailf logs/latest.log
+    fi
+    exit
+fi
+
+# status
+if [ $OPT == -s ] || [ $OPT == --status ]; then
+    PID=`ps -ef | grep $FORGE_JAR | grep -v -E 'grep|SCREEN' | awk '{printf $2}'`
+    if [ -n "$PID" ]; then
+        echo "minecraft server is running"
+        echo "process:"
+        ps -ef | grep $FORGE_JAR | grep -v -E 'grep|SCREEN'
+        echo "screen:"
+        screen -ls | grep minecraft_server
+    else
+        echo "minecraft server is not running"
+    fi
+    exit
+fi
+
+# backup
+if [ $OPT == -b ] || [ $OPT == --backup ]; then
+    cd $MCPATH
+    mkdir -p backup/
+    TIME=`date "+%Y-%m-%d"`
+    BKFOLDER=${TIME}-backup/
+
+    rm -fr $BKFOLDER
+    mkdir -p $BKFOLDER
+    
+    cp -r config/ $BKFOLDER
+    cp -r defaultconfigs/ $BKFOLDER
+    #cp -r jar/ $BKFOLDER
+    #cp -r libraries/ $BKFOLDER
+    #cp -r mods/ $BKFOLDER
+    cp -r world/ $BKFOLDER
+    cp *.json $BKFOLDER
+    cp *.properties $BKFOLDER
+    cp eula.txt $BKFOLDER
+    cp server-icon.png $BKFOLDER
+    #cp *.jar $BKFOLDER
+    #cp *.md $BKFOLDER
+    cp $0 $BKFOLDER
+
+    tar zcvf backup/${TIME}-backup.tar.gz $BKFOLDER
+    rm backup/latest-backup.tar.gz
+    cp backup/${TIME}-backup.tar.gz backup/latest-backup.tar.gz
+    rm -fr ${TIME}-backup
+    $0 --backup-clean
+
+    if [ $# -gt 1 ]; then
+        if [ $2 == "remote" ]; then
+            scp backup/${TIME}-backup.tar.gz 106.12.18.130:/mnt/
+        fi
+    fi
+    exit
+fi
+
+# clean up old backup file (will Keep the last $MAX_BK_FILE_CNT days of file)
+if [ $OPT == --backup-clean ]; then
+    cd $MCPATH/backup
+    FILE_CNT=`ls -l | grep -v total | wc -l`
+    if [ $FILE_CNT -gt $MAX_BK_FILE_CNT ]; then
+        OVER_CNT=`expr $FILE_CNT - $MAX_BK_FILE_CNT`
+        echo "will clean up old file ($OVER_CNT)"
+        ls -tr | grep -v total | head -$OVER_CNT | xargs -i -n1 rm -f {}
+    fi
+    exit
+fi
+
+# soft link
+if [ $OPT == --soft-link ]; then
+    rm -f /usr/local/bin/minecraft-server
+    ln -s ${MCPATH}/minecraft-server /usr/local/bin/minecraft-server
+    echo "Soft-link finished! Now you can use \`minecraft-server\` in anywhere."
+    exit
+fi
+
+# create crontab
+if [ $OPT == --create-crontab ]; then
+    echo "0 6 * * * root /usr/local/bin/minecraft-server -b" > /etc/cron.d/minecraft-server-backup
+    echo "Create crontab finished! Will auto backup at 06:00am"
+    exit
+fi
+
+# drop caches
+if [ $OPT == --drop-caches ]; then
+    free -h | grep Mem
+    sync; echo 1 > /proc/sys/vm/drop_caches
+    sync; echo 2 > /proc/sys/vm/drop_caches
+    sync; echo 3 > /proc/sys/vm/drop_caches
+    free -h | grep Mem
+    exit
+fi
+
+# error param
+echo "error param"
+$0 --help
+
