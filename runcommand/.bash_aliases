@@ -1,17 +1,6 @@
 #!/bin/bash
-# ~/.bash_aliases
-
-# set alias definitions into ~/.bashrc
-#if [ -f ~/.bash_aliases ]; then
-#    . ~/.bash_aliases
-#fi
 
 # =============== Common specific aliases and functions =============== #
-
-# file
-alias rm='rm -i'
-alias cp='cp -i'
-alias mv='mv -i'
 
 # trash
 trash() {
@@ -34,12 +23,12 @@ alias la='ls -a'
 alias lh='ls -lh'
 alias lla='ls -la'
 
-# system
-alias vi='vim'
-alias ports='netstat -ntlp'
-alias eplib='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib && echo $LD_LIBRARY_PATH'
+# file system
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
 
-# cd
+# change dir
 alias ..='cd ../'
 alias ...='cd ../../'
 alias ..3='cd ../../../'
@@ -49,22 +38,20 @@ alias .....='cd ../../../../'
 alias ..5='cd ../../../../'
 alias ......='cd ../../../../'
 
-# process
-alias pss='ps -ef | grep -v "\[*\]" | grep -v sshd | grep -v bash | grep -v "ps -ef"'
-
-# docker
+# other
+alias vi='vim'
+alias ports='netstat -ntlp'
+alias eplib='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib && echo $LD_LIBRARY_PATH'
+alias pss='ps -ef | grep -v "\[*\]" | grep -v sshd | grep -v bash | grep -v "ps -ef" | grep -v cloudmonitor'
 alias dreset='docker stop $(docker ps -aq) && docker rm $(docker ps -aq)'
-
-# PS1
-PS1="\n\[\e[32m\]\u\[\e[37m\]@\h \[\e[35m\]\d \t \[\e[36m\]\w\[\e[0m\] \n\\$ "
 
 # =============== User specific aliases and functions =============== #
 
 # git-hugo-blog
 hpull() {
-    git pull
+    git pull origin master
     cd gitsang.github.io
-    git pull
+    git pull origin master
     cd -
 }
 hpush() {
@@ -75,12 +62,13 @@ hpush() {
     COMMIT=$1
     git add --all
     git commit -m "$COMMIT"
-    git push
+    git push origin master
+    git push gitee master
     hugo
     cd gitsang.github.io
     git add --all
     git commit -m "$COMMIT"
-    git push
+    git push origin master
+    git push gitee master
+    cd -
 }
-
-# =============== Source global definitions =============== #
