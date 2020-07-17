@@ -72,3 +72,30 @@ hpush() {
     git push gitee master
     cd -
 }
+
+# jobs
+alias j='jobs'
+kj() {
+    kill -9 %$@
+}
+
+# socks5
+alias mproxy='export {http,https,ftp}_proxy="socks5://10.71.2.110:10808"'
+alias yproxy='export {http,https,ftp}_proxy="netproxy.yealinkops.com:8123" && export no_proxy="yealinkops.com, yealink.com, onylyum.com, 127.0.0.1, localhost, 0.0.0.0"'
+alias nproxy='export {http,https,ftp}_proxy=""'
+
+# postgres
+alias pp='/usr/local/pgsql/bin/psql -U postgres -d testdb -h localhost -p'
+alias psql='/usr/local/pgsql/bin/psql -U postgres'
+
+# gitlab
+alias upimg='git add image.yaml && git commit -m "update image.yaml" && git push'
+
+# redis
+alias rc='/root/project/nredis/src/redis-cli'
+alias rcr='/root/project/nredis/src/redis-cli -h 10.120.0.178 -p 9079'
+
+# mq
+mq() {
+    /root/jrmqtg/bin/mqadmin $@ -n localhost:9876
+}
