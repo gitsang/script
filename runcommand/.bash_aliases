@@ -13,6 +13,19 @@ trash() {
     TIME=`date "+%Y-%m-%d-%H:%M:%S"`
     mkdir -p $TRASH_DIR
     mv "$@" $TRASH_DIR/$TIME-$@
+
+    # clean up trash
+    MAX_TRASH_SIZE=20000000
+    TRASH_SIZE=`du --max-depth=0 ~/.trash | awk '{print $1}'`
+    while [ $TRASH_SIZE -gt $MAX_TRASH_SIZE ]
+    do
+        echo "trash-size: $TRASH_SIZE > $MAX_TRASH_SIZE clean up:" && ls | grep -v total | head -1
+        cd ~/.trash
+        ls | grep -v total | head -1 | xargs -i -n1 rm -fr {}
+        TRASH_SIZE=`du --max-depth=0 ~/.trash | awk '{print $1}'`
+    done
+    echo "trash-size: $TRASH_SIZE"
+    cd -
 }
 alias del='trash'
 
