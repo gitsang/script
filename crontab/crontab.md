@@ -3,14 +3,14 @@
 
 ## ssh-tunnel
 
-`/etc/cron.d/ssh-tunnel`
+1. `/etc/cron.d/ssh-tunnel`
 
 ```
 @reboot /etc/cron.hourly/ssh-tunnel
 05 08-20 * * * /etc/cron.hourly/ssh-tunnel
 ```
 
-`/etc/cron.hourly/ssh-tunnel`
+2. `/etc/cron.hourly/ssh-tunnel`
 
 ```
 #!/bin/sh
@@ -56,3 +56,6 @@ su - pi   -c "vncserver"
 su - root -c "vncserver"
 ```
 
+3. view log
+
+`vi /var/log/ssh_tunnel.log`

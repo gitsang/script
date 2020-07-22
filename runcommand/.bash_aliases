@@ -54,8 +54,9 @@ alias ......='cd ../../../../'
 # other
 alias vi='vim'
 alias ports='netstat -ntlp'
+alias pss='ps -ef --sort=cmd | grep -v "\[*\]" | grep -v -E "sshd|sftp" | grep -v -E "/usr/sbin/crond|/usr/lib/systemd" | grep -v -E "bash|ps -ef"'
+alias tunn='ps -ef --sort=cmd | grep -v "ps -ef" | grep "autossh -NR" | grep -v grep'
 alias eplib='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib && echo $LD_LIBRARY_PATH'
-alias pss='ps -ef | grep -v "\[*\]" | grep -v sshd | grep -v bash | grep -v "ps -ef" | grep -v cloudmonitor'
 alias dreset='docker stop $(docker ps -aq) && docker rm $(docker ps -aq)'
 
 # =============== User specific aliases and functions =============== #
