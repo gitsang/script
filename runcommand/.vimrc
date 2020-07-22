@@ -98,12 +98,20 @@ if empty(glob('~/.vim/autoload/plug.vim'))
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 call plug#begin('~/.vim/plugged')
+    "Plug 'fatih/vim-go'
+
+    " Syntax highlighting, matching rules and mappings for the original Markdown and extensions.
     Plug 'https://github.com/plasticboy/vim-markdown.git'
         let g:vim_markdown_folding_disabled=1
+
+    " The NERDTree is a file system explorer for the Vim editor
     Plug 'https://github.com/preservim/nerdtree.git'
         map <leader>g :NERDTreeToggle<CR>
+
+    " A plugin of NERDTree showing git status flags
     Plug 'Xuyuanp/nerdtree-git-plugin'
  
+    " An awesome automatic table creator & formatter allowing one to create neat tables as you type
     Plug 'https://github.com/dhruvasagar/vim-table-mode'
         let g:table_mode_corner = '|'
         let g:table_mode_border=0
