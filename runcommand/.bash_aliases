@@ -19,13 +19,11 @@ trash() {
     TRASH_SIZE=`du --max-depth=0 ~/.trash | awk '{print $1}'`
     while [ $TRASH_SIZE -gt $MAX_TRASH_SIZE ]
     do
-        echo "trash-size: $TRASH_SIZE > $MAX_TRASH_SIZE clean up:" && ls | grep -v total | head -1
-        cd ~/.trash
-        ls | grep -v total | head -1 | xargs -i -n1 rm -fr {}
+        echo "trash-size: $TRASH_SIZE > $MAX_TRASH_SIZE clean up:" && ls ~/.trash | grep -v total | head -1
+        ls ~/.trash | grep -v total | head -1 | xargs -i -n1 rm -fr ~/.trash/{}
         TRASH_SIZE=`du --max-depth=0 ~/.trash | awk '{print $1}'`
     done
     echo "trash-size: $TRASH_SIZE"
-    cd -
 }
 alias del='trash'
 
