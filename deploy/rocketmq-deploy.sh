@@ -203,7 +203,7 @@ run_dledger() {
 }
 
 run_console() {
-    PORT=$1
+    PORT=${1:-8080}
     mkdir -p data/rocketmq-console/
     if [ ! -f "rocketmq-console-1.0.0.tar.gz" ]; then
         wget https://github.com/apache/rocketmq-externals/archive/rocketmq-console-1.0.0.tar.gz
@@ -225,7 +225,7 @@ run_console() {
 
 case "$1" in
     "help")
-        echo "usage: $0 init/namesrv/async/dledger/console/kill/reboot/auto"
+        echo "usage: $0 init/run [namesrv/broker [async/dledger]/console [port:-8080]]/kill [all/namesrv/broker/console]/reboot [n0/n1/n2]/auto/help"
         ;;
     "init")
         config_running
@@ -253,7 +253,7 @@ case "$1" in
                 esac
                 ;;
             "console")
-                run_console 8080
+                run_console $3
                 ;;
             *)
                 $0 help
@@ -302,5 +302,5 @@ case "$1" in
         ;;
     *)
         $0 help
-        bash -x $0 auto
+        #bash -x $0 auto
 esac
