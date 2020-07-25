@@ -3,29 +3,46 @@
 # =============== Common specific aliases and functions =============== #
 
 # trash
-trash() {
-    if [[ "$@" == "/" ]]; then
-        echo "can not trash root path"
-        return
-    fi
-
+trash-clean() {
     TRASH_DIR=~/.trash
-    TIME=`date "+%Y-%m-%d-%H:%M:%S"`
-    mkdir -p $TRASH_DIR
-    mv "$@" $TRASH_DIR/$TIME-$@
-
-    # clean up trash
     MAX_TRASH_SIZE=20000000
-    TRASH_SIZE=`du --max-depth=0 ~/.trash | awk '{print $1}'`
+    TRASH_SIZE=`du --max-depth=0 $TRASH_DIR | awk '{print $1}'`
     while [ $TRASH_SIZE -gt $MAX_TRASH_SIZE ]
     do
-        echo "trash-size: $TRASH_SIZE > $MAX_TRASH_SIZE clean up:" && ls ~/.trash | grep -v total | head -1
-        ls ~/.trash | grep -v total | head -1 | xargs -i -n1 rm -fr ~/.trash/{}
-        TRASH_SIZE=`du --max-depth=0 ~/.trash | awk '{print $1}'`
+        echo "trash-size: $TRASH_SIZE > $MAX_TRASH_SIZE clean up:" && ls $TRASH_DIR | grep -v total | head -1
+        ls $TRASH_DIR | grep -v total | head -1 | xargs -i -n1 rm -fr $TRASH_DIR/{}
+        TRASH_SIZE=`du --max-depth=0 $TRASH_DIR | awk '{print $1}'`
     done
     echo "trash-size: $TRASH_SIZE"
 }
+trash-recover() {
+    TRASH_DIR=~/.trash
+    REAL_PATH=`echo $@ | awk -F'-' '{ print $5 }' | sed 's/_@_/\//g'`
+    if [ -f "$REAL_PATH" ]; then
+        echo "file exist: $REAL_PATH"
+    elif [ -d "$REAL_PATH" ]; then
+        echo "folder exist: $REAL_PATH"
+    else
+        mv $@ $REAL_PATH
+    fi
+}
+trash() {
+    TRASH_DIR=~/.trash
+    REAL_PATH=`realpath $@`
+    TRASH_NAME=`realpath $@ | sed 's/\//_@_/g'`
+    TIME=`date "+%Y-%m-%d-%H:%M:%S"`
+    TRASH_PATH=$TRASH_DIR/$TIME-$TRASH_NAME
+
+    if [ "$REAL_PATH" != "/" ]; then
+        mkdir -p $TRASH_DIR
+        mv $REAL_PATH $TRASH_PATH
+        echo "del $REAL_PATH to $TRASH_PATH"
+    fi
+    trash-clean
+}
 alias del='trash'
+alias clt='trash-clean'
+alias rct='trash-recover'
 
 # list
 alias l='ls'
