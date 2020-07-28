@@ -147,12 +147,23 @@ call vundle#begin()
                 \ "Unknown"   : "?"
                 \ }
 
+
+    "" status/tabline for vim that's light as air
+    "Plugin 'vim-airline/vim-airline'
+    "    let g:airline#extensions#tabline#enabled = 1
+    "    let g:airline#extensions#tabline#left_sep = ' '
+    "    let g:airline#extensions#tabline#left_alt_sep = '|'
+    "    let g:airline_powerline_fonts = 1
+
+    "    " This is the official theme repository for vim-airline
+    "    Plugin 'vim-airline/vim-airline-themes'
+    "        let g:airline_theme='luna'
+
+    "Plugin 'acarapetis/vim-colors-github'
     "Plugin 'jstemmer/gotags'
     "Plugin 'majutsushi/tagbar'
-    "Plugin 'vim-airline/vim-airline'
     "Plugin 'Valloric/YouCompleteMe'
     "Plugin 'vim-scripts/SuperTab'
-    "Plugin 'acarapetis/vim-colors-github'
     "Plugin 'iamcco/mathjax-support-for-mkdp'
     "Plugin 'iamcco/markdown-preview.vim'
 
