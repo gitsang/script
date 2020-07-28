@@ -91,43 +91,66 @@ let @f = "$a  g_ldwj"
 "--------------------
 " Plugin
 "--------------------
- 
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-      \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+if empty(glob('~/.vim/bundle/Vundle.vim'))
+    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+    autocmd VimEnter * PluginInstall --sync | source $MYVIMRC
 endif
-call plug#begin('~/.vim/plugged')
-    "Plug 'fatih/vim-go'
+
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+    " let Vundle manage Vundle, required
+    Plugin 'VundleVim/Vundle.vim'
+
+    " This plugin adds Go language support for Vim
+    Plugin 'https://github.com/fatih/vim-go.git'
 
     " Syntax highlighting, matching rules and mappings for the original Markdown and extensions.
-    Plug 'https://github.com/plasticboy/vim-markdown.git'
+    Plugin 'https://github.com/plasticboy/vim-markdown.git'
         let g:vim_markdown_folding_disabled=1
 
     " The NERDTree is a file system explorer for the Vim editor
-    Plug 'https://github.com/preservim/nerdtree.git'
+    Plugin 'https://github.com/preservim/nerdtree.git'
         map <leader>g :NERDTreeToggle<CR>
 
     " A plugin of NERDTree showing git status flags
-    Plug 'Xuyuanp/nerdtree-git-plugin'
- 
+    Plugin 'https://github.com/Xuyuanp/nerdtree-git-plugin'
+
     " An awesome automatic table creator & formatter allowing one to create neat tables as you type
-    Plug 'https://github.com/dhruvasagar/vim-table-mode'
+    Plugin 'https://github.com/dhruvasagar/vim-table-mode.git'
         let g:table_mode_corner = '|'
         let g:table_mode_border=0
         let g:table_mode_fillchar=' '
- 
+
         function! s:isAtStartOfLine(mapping)
           let text_before_cursor = getline('.')[0 : col('.')-1]
           let mapping_pattern = '\V' . escape(a:mapping, '\')
           let comment_pattern = '\V' . escape(substitute(&l:commentstring, '%s.*$', '', ''), '\')
           return (text_before_cursor =~? '^' . ('\v(' . comment_pattern . '\v)?') . '\s*\v' . mapping_pattern . '\v$')
         endfunction
- 
+
         inoreabbrev <expr> <bar><bar>
                   \ <SID>isAtStartOfLine('\|\|') ?
                   \ '<c-o>:TableModeEnable<cr><bar><space><bar><left><left>' : '<bar><bar>'
         inoreabbrev <expr> __
                   \ <SID>isAtStartOfLine('__') ?
                   \ '<c-o>:silent! TableModeDisable<cr>' : '__'
-call plug#end()
+
+call vundle#end()            " required
+filetype plugin indent on    " required
+
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line 
