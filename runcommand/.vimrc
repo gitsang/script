@@ -85,12 +85,15 @@ highlight CursorLine cterm=NONE ctermbg=Black
 " Plugin
 "--------------------
 
-filetype off                  " required
-filetype plugin indent on    " required
+filetype off
+filetype plugin indent on
 filetype plugin on
 
+if empty(system('command -v git'))
+    silent !yum install git
+endif
 if empty(glob('~/.vim/bundle/Vundle.vim'))
-    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+    silent !git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
     autocmd VimEnter * PluginInstall --sync | source $MYVIMRC
 endif
 
@@ -104,7 +107,46 @@ call vundle#begin()
     Plugin 'fatih/vim-go'
         " use :GoInstallBinaries or :GoUpdateBinaries to install vim-go dependence
 
-    " Syntax highlighting, matching rules and mappings for the original Markdown and extensions.
+        " Tagbar is a Vim plugin that provides an easy way to browse the tags
+        Plugin 'majutsushi/tagbar'
+            if empty(system('command -v ctags'))
+                silent !yum install ctags
+            endif
+            nmap <F8> :TagbarToggle<CR>
+
+            Plugin 'jstemmer/gotags'
+            if empty(glob('$GOPATH/src/github.com/jstemmer/gotags'))
+                silent !go get -u github.com/jstemmer/gotags
+            endif
+            let g:tagbar_type_go = {
+                \ 'ctagstype' : 'go',
+                \ 'kinds'     : [
+                    \ 'p:package',
+                    \ 'i:imports:1',
+                    \ 'c:constants',
+                    \ 'v:variables',
+                    \ 't:types',
+                    \ 'n:interfaces',
+                    \ 'w:fields',
+                    \ 'e:embedded',
+                    \ 'm:methods',
+                    \ 'r:constructor',
+                    \ 'f:functions'
+                \ ],
+                \ 'sro' : '.',
+                \ 'kind2scope' : {
+                    \ 't' : 'ctype',
+                    \ 'n' : 'ntype'
+                \ },
+                \ 'scope2kind' : {
+                    \ 'ctype' : 't',
+                    \ 'ntype' : 'n'
+                \ },
+                \ 'ctagsbin'  : 'gotags',
+                \ 'ctagsargs' : '-sort -silent'
+            \ }
+
+    " Syntax highlighting, matching rules and mappings for the original Markdown and extensions
     Plugin 'plasticboy/vim-markdown'
         let g:vim_markdown_folding_disabled=1
     
@@ -148,20 +190,16 @@ call vundle#begin()
                 \ }
 
 
-    "" status/tabline for vim that's light as air
-    "Plugin 'vim-airline/vim-airline'
-    "    let g:airline#extensions#tabline#enabled = 1
-    "    let g:airline#extensions#tabline#left_sep = ' '
-    "    let g:airline#extensions#tabline#left_alt_sep = '|'
-    "    let g:airline_powerline_fonts = 1
+    " status/tabline for vim that's light as air
+    Plugin 'vim-airline/vim-airline'
+        let g:airline#extensions#tabline#enabled = 1
+        let g:airline_powerline_fonts = 1
 
-    "    " This is the official theme repository for vim-airline
-    "    Plugin 'vim-airline/vim-airline-themes'
-    "        let g:airline_theme='luna'
+        " This is the official theme repository for vim-airline
+        Plugin 'vim-airline/vim-airline-themes'
+            let g:airline_theme='luna'
 
     "Plugin 'acarapetis/vim-colors-github'
-    "Plugin 'jstemmer/gotags'
-    "Plugin 'majutsushi/tagbar'
     "Plugin 'Valloric/YouCompleteMe'
     "Plugin 'vim-scripts/SuperTab'
     "Plugin 'iamcco/mathjax-support-for-mkdp'
