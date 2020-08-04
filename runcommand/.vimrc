@@ -1,8 +1,7 @@
  
 "--------------------
-" Default
+" Basic
 "--------------------
-
 let mapleader=" "
 "set t_Co=256
 set pastetoggle=<F12>
@@ -18,7 +17,6 @@ syntax on
 "--------------------
 " Indent
 "--------------------
- 
 filetype indent on
 set cindent
 set smartindent
@@ -33,7 +31,6 @@ map =b =iB<C-o>
 "--------------------
 " Search and Highlight
 "--------------------
-
 set hlsearch
 exec "nohlsearch"
 set incsearch
@@ -44,7 +41,6 @@ noremap <LEADER><CR> :nohlsearch<CR>
 "--------------------
 " Shortcut Key
 "--------------------
-
 map R :source $MYVIMRC<CR>
 map ; $
 map j gj
@@ -62,7 +58,6 @@ map <LEADER>0 o#endif<esc>
 "--------------------
 " Register
 "--------------------
- 
 let @w = "+"
 let @s = "-"
 let @a = "<"
@@ -72,7 +67,6 @@ let @f = "$a  g_ldwj"
 "--------------------
 " Cursor
 "--------------------
- 
 set nocursorcolumn
 set cursorline
 highlight CursorLine cterm=NONE ctermbg=Black
@@ -85,37 +79,42 @@ highlight CursorLine cterm=NONE ctermbg=Black
 "--------------------
 " Plugin
 "--------------------
-
 filetype off
 filetype plugin indent on
 filetype plugin on
 
 if empty(system('command -v git'))
-    silent !yum install git
+    silent !yum install git -y
 endif
 if empty(glob('~/.vim/bundle/Vundle.vim'))
     silent !git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-    "autocmd VimEnter * PluginInstall
+    autocmd VimEnter * source $MYVIMRC
+    autocmd VimEnter * PluginInstall
 endif
 
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
+    "--------------------
+    " Vundle.vim
+    "--------------------
     Plugin 'VundleVim/Vundle.vim'
-    
+
+    "--------------------
+    " Vim-go
+    "--------------------
     Plugin 'fatih/vim-go'
-        "autocmd GoUpdateBinaries
-
-    Plugin 'majutsushi/tagbar'
-        if empty(system('command -v ctags'))
-            silent !yum install ctags
+        if empty(glob('~/.vim/bundle/vim-go'))
+            autocmd VimEnter * GoUpdateBinaries
         endif
-        nmap <F8> :TagbarToggle<CR>
+        let g:syntastic_go_checkers = ['go', 'golint']
 
-    Plugin 'jstemmer/gotags'
-        if empty(glob('$GOPATH/src/github.com/jstemmer/gotags'))
-            if empty(glob('$GOPATH/pkg/mod/github.com/jstemmer/gotags*'))
-                silent !go get -u github.com/jstemmer/gotags
-            endif
+    "--------------------
+    " Tagbar
+    "--------------------
+    Plugin 'majutsushi/tagbar'
+        nmap <F8> :TagbarToggle<CR>
+        if empty(system('command -v ctags'))
+            silent !yum install ctags -y
         endif
         let g:tagbar_type_go = {
             \ 'ctagstype' : 'go',
@@ -145,9 +144,12 @@ call vundle#begin()
             \ 'ctagsargs' : '-sort -silent'
         \ }
 
+    "--------------------
+    " Markdown
+    "--------------------
     Plugin 'plasticboy/vim-markdown'
         let g:vim_markdown_folding_disabled=1
-    
+
     Plugin 'dhruvasagar/vim-table-mode'
         let g:table_mode_corner = '|'
         let g:table_mode_border = 0
@@ -167,6 +169,9 @@ call vundle#begin()
                     \ <SID>isAtStartOfLine('__') ?
                     \ '<c-o>:silent! TableModeDisable<cr>' : '__'
 
+    "--------------------
+    " NERDTree
+    "--------------------
     Plugin 'preservim/nerdtree'
         map <leader>g :NERDTreeToggle<CR>
 
@@ -183,15 +188,15 @@ call vundle#begin()
             \ "Ignored"   : "☒",
             \ "Unknown"   : "?"
             \ }
-    
-    "Plugin 'Valloric/YouCompleteMe'
-        " git clone https://github.com/Valloric/YouCompleteMe.git ~/.vim/bundle/YouCompleteMe
-        " cd .vim/bundle/YouCompleteMe/
-        " git submodule update --init --recursive
-        " python3 install.py --clang-completer --go-completer
-        " # python3 install.py --clang-completer  --system-libclang
-        " cp ~/.vim/bundle/YouCompleteMe/third_party/ycmd/examples/.ycm_extra_conf.py ~/
 
+    "--------------------
+    " You Complete Me
+    "--------------------
+    Plugin 'Valloric/YouCompleteMe'
+        let g:ycm_extra_conf_globlist = ['~/.ycm_extra_conf.py']
+        " git submodule update --init --recursive
+        " python3 install.py --go-completer --clang-completer --system-libclang
+        " cp ~/.vim/bundle/YouCompleteMe/third_party/ycmd/examples/.ycm_extra_conf.py ~/
 
     "Plugin 'vim-airline/vim-airline'
     "    let g:airline#extensions#tabline#enabled = 1
@@ -208,23 +213,8 @@ call vundle#end()
 "--------------------
 " Document
 "--------------------
-
-" update to vim8
 " git clone https://github.com/vim/vim.git
-" cd vim
 " ./configure  --enable-python3interp=yes
 " make -j 8
 " make install
-" cp src/vim /usr/bin
-" vim --version
-
-
-
-
-
-
-
-
-
-
 
