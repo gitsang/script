@@ -3,7 +3,7 @@
 ## 1.1 install dependences
 
 yum install wget git vim -y
-wget https://golang.org/dl/go1.14.6.linux-amd64.tar.gz -O /root/package/
+wget https://golang.org/dl/go1.14.6.linux-amd64.tar.gz -O /root/package/go1.14.6.linux-amd64.tar.gz
 tar zxvf /root/package/go1.14.6.linux-amd64.tar.gz -C /usr/local/
 
 # 1.2 make dir
@@ -23,9 +23,10 @@ echo "export PATH=$PATH:$GOROOT/bin:$GOBIN" >> ~/.bashrc
 
 # 2. Vim
 
-## 2.1 install python3
+## 2.1 install dependences
 
 yum install -y python python3 python3-pip python3-devel
+yum install ncurses-devel.x86_64 -y
 
 ## 2.2 update to vim8
 
@@ -48,7 +49,7 @@ echo vim
 echo :PluginInstall
 echo :GoUpdateBinaries
 
-## 2.4 install YCM
+## 2.5 install YCM
 
 git clone https://github.com/Valloric/YouCompleteMe.git ~/.vim/bundle/YouCompleteMe
 cd .vim/bundle/YouCompleteMe/
