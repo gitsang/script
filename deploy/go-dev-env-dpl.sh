@@ -23,7 +23,11 @@ echo "export PATH=$PATH:$GOROOT/bin:$GOBIN" >> ~/.bashrc
 
 # 2. Vim
 
-## 2.1 update to vim8
+## 2.1 install python3
+
+yum install -y python python3 python3-pip python3-devel
+
+## 2.2 update to vim8
 
 git clone https://github.com/vim/vim.git ~/package/vim
 cd ~/package/vim
@@ -32,13 +36,13 @@ make -j 8
 make install
 vim --version
 
-## 2.2 set vimrc
+## 2.3 set vimrc
 
 cd /root/project/
 git clone http://github.com/gitsang/script
 cp /root/project/script/runcommand/* /root/
 
-## 2.3 install plugin
+## 2.4 install plugin
 
 echo vim
 echo :PluginInstall
