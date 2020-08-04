@@ -3,7 +3,7 @@
 ## 1.1 install dependences
 
 yum install wget git vim -y
-wget https://golang.org/dl/go1.14.6.linux-amd64.tar.gz -O /root/package/
+wget https://golang.org/dl/go1.14.6.linux-amd64.tar.gz -O /root/package/go1.14.6.linux-amd64.tar.gz
 tar zxvf /root/package/go1.14.6.linux-amd64.tar.gz -C /usr/local/
 
 # 1.2 make dir
@@ -31,6 +31,10 @@ cd ~/package/vim
 make -j 8
 make install
 vim --version
+
+### 2.1.1 dependences
+
+yum install ncurses-devel.x86_64 -y
 
 ## 2.2 set vimrc
 
