@@ -100,51 +100,6 @@ call vundle#begin()
     Plugin 'VundleVim/Vundle.vim'
 
     "--------------------
-    " Vim-go
-    "--------------------
-    Plugin 'fatih/vim-go'
-        if empty(glob('~/.vim/bundle/vim-go'))
-            autocmd VimEnter * GoUpdateBinaries
-        endif
-        let g:syntastic_go_checkers = ['go', 'golint']
-
-    "--------------------
-    " Tagbar
-    "--------------------
-    Plugin 'majutsushi/tagbar'
-        nmap <F8> :TagbarToggle<CR>
-        if empty(system('command -v ctags'))
-            silent !yum install ctags -y
-        endif
-        let g:tagbar_type_go = {
-            \ 'ctagstype' : 'go',
-            \ 'kinds'     : [
-                \ 'p:package',
-                \ 'i:imports:1',
-                \ 'c:constants',
-                \ 'v:variables',
-                \ 't:types',
-                \ 'n:interfaces',
-                \ 'w:fields',
-                \ 'e:embedded',
-                \ 'm:methods',
-                \ 'r:constructor',
-                \ 'f:functions'
-            \ ],
-            \ 'sro' : '.',
-            \ 'kind2scope' : {
-                \ 't' : 'ctype',
-                \ 'n' : 'ntype'
-            \ },
-            \ 'scope2kind' : {
-                \ 'ctype' : 't',
-                \ 'ntype' : 'n'
-            \ },
-            \ 'ctagsbin'  : 'gotags',
-            \ 'ctagsargs' : '-sort -silent'
-        \ }
-
-    "--------------------
     " Markdown
     "--------------------
     Plugin 'plasticboy/vim-markdown'
@@ -190,19 +145,71 @@ call vundle#begin()
             \ }
 
     "--------------------
+    " Vim-go
+    "--------------------
+    "Plugin 'fatih/vim-go'
+    "    if empty(glob('~/.vim/bundle/vim-go'))
+    "        autocmd VimEnter * GoUpdateBinaries
+    "    endif
+    "    let g:syntastic_go_checkers = ['go', 'golint']
+
+    "--------------------
+    " Tagbar
+    "--------------------
+    "Plugin 'majutsushi/tagbar'
+    "    nmap <F8> :TagbarToggle<CR>
+    "    if empty(system('command -v ctags'))
+    "        silent !yum install ctags -y
+    "    endif
+    "    let g:tagbar_type_go = {
+    "        \ 'ctagstype' : 'go',
+    "        \ 'kinds'     : [
+    "            \ 'p:package',
+    "            \ 'i:imports:1',
+    "            \ 'c:constants',
+    "            \ 'v:variables',
+    "            \ 't:types',
+    "            \ 'n:interfaces',
+    "            \ 'w:fields',
+    "            \ 'e:embedded',
+    "            \ 'm:methods',
+    "            \ 'r:constructor',
+    "            \ 'f:functions'
+    "        \ ],
+    "        \ 'sro' : '.',
+    "        \ 'kind2scope' : {
+    "            \ 't' : 'ctype',
+    "            \ 'n' : 'ntype'
+    "        \ },
+    "        \ 'scope2kind' : {
+    "            \ 'ctype' : 't',
+    "            \ 'ntype' : 'n'
+    "        \ },
+    "        \ 'ctagsbin'  : 'gotags',
+    "        \ 'ctagsargs' : '-sort -silent'
+    "    \ }
+
+    "--------------------
     " You Complete Me
     "--------------------
-    Plugin 'Valloric/YouCompleteMe'
-        let g:ycm_extra_conf_globlist = ['~/.ycm_extra_conf.py']
-        " git submodule update --init --recursive
-        " python3 install.py --go-completer --clang-completer --system-libclang
-        " cp ~/.vim/bundle/YouCompleteMe/third_party/ycmd/examples/.ycm_extra_conf.py ~/
+    "Plugin 'Valloric/YouCompleteMe'
+    "    let g:ycm_extra_conf_globlist = ['~/.ycm_extra_conf.py']
+    "    " git submodule update --init --recursive
+    "    " python3 install.py --go-completer --clang-completer --system-libclang
+    "    " cp ~/.vim/bundle/YouCompleteMe/third_party/ycmd/examples/.ycm_extra_conf.py ~/
 
+    "--------------------
+    " Vim airline
+    "--------------------
     "Plugin 'vim-airline/vim-airline'
     "    let g:airline#extensions#tabline#enabled = 1
     "    let g:airline_powerline_fonts = 1
     "Plugin 'vim-airline/vim-airline-themes'
     "    let g:airline_theme='luna'
+
+    "--------------------
+    " Other
+    "--------------------
     "Plugin 'acarapetis/vim-colors-github'
     "Plugin 'vim-scripts/SuperTab'
     "Plugin 'iamcco/mathjax-support-for-mkdp'
@@ -211,10 +218,10 @@ call vundle#begin()
 call vundle#end()
 
 "--------------------
-" Document
+" Vim update doc
 "--------------------
 " git clone https://github.com/vim/vim.git
 " ./configure  --enable-python3interp=yes
-" make -j 8
+" make -j8
 " make install
 

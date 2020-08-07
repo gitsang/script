@@ -26,7 +26,8 @@ echo "export PATH=$PATH:$GOROOT/bin:$GOBIN" >> ~/.bashrc
 ## 2.1 install dependences
 
 yum install -y python python3 python3-pip python3-devel
-yum install ncurses-devel.x86_64 -y
+yum install -y ncurses-devel.x86_64
+yum install -y gcc gcc-c++ cmake cmake3
 
 ## 2.2 update to vim8
 
