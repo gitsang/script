@@ -17,7 +17,7 @@ trash-clean() {
 }
 trash-recover() {
     TRASH_DIR=~/.trash
-    REAL_PATH=`echo $@ | awk -F'-' '{ print $5 }' | sed 's/_@_/\//g'`
+    REAL_PATH=`echo $@ | awk -F'-%trash%-' '{ print $2 }' | sed 's/^^/\//g'`
     if [ -f "$REAL_PATH" ]; then
         echo "file exist: $REAL_PATH"
     elif [ -d "$REAL_PATH" ]; then
@@ -29,9 +29,9 @@ trash-recover() {
 trash() {
     TRASH_DIR=~/.trash
     REAL_PATH=`realpath $@`
-    TRASH_NAME=`realpath $@ | sed 's/\//_@_/g'`
+    TRASH_NAME=`realpath $@ | sed 's/\//^^/g'`
     TIME=`date "+%Y-%m-%d-%H:%M:%S"`
-    TRASH_PATH=$TRASH_DIR/$TIME-$TRASH_NAME
+    TRASH_PATH=$TRASH_DIR/$TIME-%trash%-$TRASH_NAME
 
     if [ "$REAL_PATH" != "/" ]; then
         mkdir -p $TRASH_DIR
