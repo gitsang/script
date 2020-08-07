@@ -41,8 +41,8 @@ trash() {
     trash-clean
 }
 alias del='trash'
-alias clt='trash-clean'
-alias rct='trash-recover'
+alias tcl='trash-clean'
+alias tre='trash-recover'
 
 # list
 alias l='ls'
@@ -109,9 +109,10 @@ kj() {
 }
 
 # socks5
-alias mproxy='export {http,https,ftp}_proxy="socks5://10.71.2.110:10808"'
-alias yproxy='export {http,https,ftp}_proxy="netproxy.yealinkops.com:8123" && export no_proxy="yealinkops.com, yealink.com, onylyum.com, 127.0.0.1, localhost, 0.0.0.0"'
+alias hproxy='export {http,https,ftp}_proxy="http://localhost:1080"'
+alias sproxy='export {http,https,ftp}_proxy="socks5://localhost:1081"'
 alias nproxy='export {http,https,ftp}_proxy=""'
+alias eproxy='echo http_proxy=$http_proxy && echo https_proxy=$https_proxy && echo ftp_proxy=$ftp_proxy'
 
 # postgres
 alias pp='/usr/local/pgsql/bin/psql -U postgres -d testdb -h localhost -p'
