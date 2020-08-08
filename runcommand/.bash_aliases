@@ -76,56 +76,21 @@ alias dreset='docker stop $(docker ps -aq) && docker rm $(docker ps -aq)'
 
 # =============== User specific aliases and functions =============== #
 
-# git-hugo-blog
-hpull() {
-    git pull origin master
-    cd gitsang.github.io
-    git pull origin master
-    cd -
-}
-hpush() {
-    if [ $# -lt 1 ]; then
-        echo "usage: hpush <commit content>"
-        return
-    fi
-    COMMIT=$1
-    git add --all
-    git commit -m "$COMMIT"
-    git push origin master
-    git push gitee master
-    hugo
-    cd gitsang.github.io
-    git add --all
-    git commit -m "$COMMIT"
-    git push origin master
-    git push gitee master
-    cd -
-}
-
 # jobs
 alias j='jobs'
 kj() {
     kill -9 %$@
 }
 
-# socks5
-alias hproxy='export {http,https,ftp}_proxy="http://localhost:1080"'
-alias sproxy='export {http,https,ftp}_proxy="socks5://localhost:1081"'
+# proxy
+alias myhpxy='export {http,https,ftp}_proxy="http://localhost:1080"'
+alias myspxy='export {http,https,ftp}_proxy="socks5://localhost:1081"'
+alias mghpxy='export {http,https,ftp}_proxy="http://localhost:1090"'
+alias mgspxy='export {http,https,ftp}_proxy="socks5://localhost:1091"'
+alias ylhpxy='export {http,https,ftp}_proxy="http://localhost:1070"'
+alias ylspxy='export {http,https,ftp}_proxy="socks5://localhost:1071"'
 alias nproxy='export {http,https,ftp}_proxy=""'
 alias eproxy='echo http_proxy=$http_proxy && echo https_proxy=$https_proxy && echo ftp_proxy=$ftp_proxy'
 
-# postgres
-alias pp='/usr/local/pgsql/bin/psql -U postgres -d testdb -h localhost -p'
-alias psql='/usr/local/pgsql/bin/psql -U postgres'
-
 # gitlab
 alias upimg='git add image.yaml && git commit -m "update image.yaml" && git push'
-
-# redis
-alias rc='/root/project/nredis/src/redis-cli'
-alias rcr='/root/project/nredis/src/redis-cli -h 10.120.0.178 -p 9079'
-
-# mq
-mq() {
-    /root/jrmqtg/bin/mqadmin $@ -n localhost:9876
-}
