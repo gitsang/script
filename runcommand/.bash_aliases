@@ -74,8 +74,6 @@ alias tunn='ps -ef --sort=cmd | grep -v "ps -ef" | grep "autossh -NR" | grep -v 
 alias eplib='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib && echo $LD_LIBRARY_PATH'
 alias dreset='docker stop $(docker ps -aq) && docker rm $(docker ps -aq)'
 
-# =============== User specific aliases and functions =============== #
-
 # jobs
 alias j='jobs'
 kj() {
@@ -92,5 +90,30 @@ alias ylspxy='export {http,https,ftp}_proxy="socks5://localhost:1071"'
 alias nproxy='export {http,https,ftp}_proxy=""'
 alias eproxy='echo http_proxy=$http_proxy && echo https_proxy=$https_proxy && echo ftp_proxy=$ftp_proxy'
 
+# ssh-tunnel
+tunn() {
+    ps -ef --sort=cmd | grep -v "ps -ef" | grep "ssh -fNR" | grep -v grep
+    if [ "$1" == "build" ]; then
+        ssh -fNR :remote_port:0.0.0.0:local_port remote_user@remote_ip
+    elif [ "$1" == "kill" ]; then
+        ps -ef --sort=cmd | grep "ssh -fNR" | grep -v "grep" | awk '{print $2}' | xargs -i -t kill -9 {}
+    fi
+}
+
+# =============== User specific aliases and functions =============== #
+
 # gitlab
 alias upimg='git add image.yaml && git commit -m "update image.yaml" && git push'
+
+# postgres
+alias pp='/usr/local/pgsql/bin/psql -U postgres -d testdb -h localhost -p'
+alias psql='/usr/local/pgsql/bin/psql -U postgres'
+
+# redis
+alias rc='/root/project/nredis/src/redis-cli'
+alias rcr='/root/project/nredis/src/redis-cli -h 10.120.0.178 -p 9079'
+
+# mq
+mq() {
+    /root/jrmqtg/bin/mqadmin $@ -n localhost:9876
+}
