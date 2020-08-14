@@ -70,7 +70,6 @@ alias ......='cd ../../../../'
 alias vi='vim'
 alias ports='netstat -ntlp'
 alias pss='ps -ef --sort=cmd | grep -v "\[*\]" | grep -v -E "sshd|sftp" | grep -v -E "/usr/sbin/crond|/usr/lib/systemd" | grep -v -E "bash|ps -ef"'
-alias tunn='ps -ef --sort=cmd | grep -v "ps -ef" | grep "autossh -NR" | grep -v grep'
 alias eplib='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib && echo $LD_LIBRARY_PATH'
 alias dreset='docker stop $(docker ps -aq) && docker rm $(docker ps -aq)'
 
@@ -91,14 +90,25 @@ alias nproxy='export {http,https,ftp}_proxy=""'
 alias eproxy='echo http_proxy=$http_proxy && echo https_proxy=$https_proxy && echo ftp_proxy=$ftp_proxy'
 
 # ssh-tunnel
-tunn() {
-    ps -ef --sort=cmd | grep -v "ps -ef" | grep "ssh -fNR" | grep -v grep
+build_ssh_tunnel() {
+    REMOTE_ADDR=$1
+    REMOTE_PORT=$2
+    LOCAL_PORT=$3
+    PID=`ps -ef | grep "autossh -NR" | grep ":${REMOTE_PORT}:0.0.0.0:${LOCAL_PORT}" | awk '{printf $2}'`
+    if [ ! -n "$PID" ]; then
+        su - pi -c "autossh -fNR :${REMOTE_PORT}:0.0.0.0:${LOCAL_PORT} ${REMOTE_ADDR}"
+    fi
+}
+ssh_tunnel() {
+    ps -ef --sort=cmd | grep -v "ps -ef" | grep "autossh" | grep -v grep
     if [ "$1" == "build" ]; then
-        ssh -fNR :remote_port:0.0.0.0:local_port remote_user@remote_ip
+        build_ssh_tunnel root@47.103.32.175 20022 22
+        build_ssh_tunnel root@47.103.32.175 20443 443
     elif [ "$1" == "kill" ]; then
         ps -ef --sort=cmd | grep "ssh -fNR" | grep -v "grep" | awk '{print $2}' | xargs -i -t kill -9 {}
     fi
 }
+alias tunn='ssh_tunnel'
 
 # =============== User specific aliases and functions =============== #
 
