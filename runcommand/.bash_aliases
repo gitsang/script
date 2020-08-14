@@ -89,23 +89,46 @@ alias ylspxy='export {http,https,ftp}_proxy="socks5://localhost:1071"'
 alias nproxy='export {http,https,ftp}_proxy=""'
 alias eproxy='echo http_proxy=$http_proxy && echo https_proxy=$https_proxy && echo ftp_proxy=$ftp_proxy'
 
-# ssh-tunnel
-build_ssh_tunnel() {
-    REMOTE_ADDR=$1
-    REMOTE_PORT=$2
-    LOCAL_PORT=$3
+# autossh-tunnel
+build_autossh_tunnel() {
+    USER=$1
+    REMOTE_ADDR=$2
+    REMOTE_PORT=$3
+    LOCAL_PORT=$4
     PID=`ps -ef | grep "autossh -NR" | grep ":${REMOTE_PORT}:0.0.0.0:${LOCAL_PORT}" | awk '{printf $2}'`
     if [ ! -n "$PID" ]; then
-        su - pi -c "autossh -fNR :${REMOTE_PORT}:0.0.0.0:${LOCAL_PORT} ${REMOTE_ADDR}"
+        su - $USER -c "autossh -fNR :${REMOTE_PORT}:0.0.0.0:${LOCAL_PORT} ${REMOTE_ADDR}"
+    fi
+}
+autossh_tunnel() {
+    ps -ef --sort=cmd | grep autossh | grep -v grep
+    if [ "$1" == "build" ]; then
+        build_autossh_tunnel root root@47.103.32.175 20022 22
+        build_autossh_tunnel root root@47.103.32.175 20443 443
+    elif [ "$1" == "kill" ]; then
+        ps -ef --sort=cmd | grep autossh | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
+    fi
+}
+alias autunn='autossh_tunnel'
+
+# ssh-tunnel
+build_ssh_tunnel() {
+    USER=$1
+    REMOTE_ADDR=$2
+    REMOTE_PORT=$3
+    LOCAL_PORT=$4
+    PID=`ps -ef | grep ssh | grep fNR | grep ":${REMOTE_PORT}:0.0.0.0:${LOCAL_PORT}" | awk '{printf $2}'`
+    if [ ! -n "$PID" ]; then
+        su - $USER -c "ssh -fNR :${REMOTE_PORT}:0.0.0.0:${LOCAL_PORT} ${REMOTE_ADDR}"
     fi
 }
 ssh_tunnel() {
-    ps -ef --sort=cmd | grep autossh | grep -v grep
+    ps -ef --sort=cmd | grep ssh | grep fNR | grep -v grep
     if [ "$1" == "build" ]; then
-        build_ssh_tunnel root@47.103.32.175 20022 22
-        build_ssh_tunnel root@47.103.32.175 20443 443
+        build_ssh_tunnel root root@47.103.32.175 20022 22
+        build_ssh_tunnel root root@47.103.32.175 20443 443
     elif [ "$1" == "kill" ]; then
-        ps -ef --sort=cmd | grep autossh | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
+        ps -ef --sort=cmd | grep ssh | grep fNR | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
     fi
 }
 alias tunn='ssh_tunnel'
