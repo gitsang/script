@@ -100,12 +100,12 @@ build_ssh_tunnel() {
     fi
 }
 ssh_tunnel() {
-    ps -ef --sort=cmd | grep -v "ps -ef" | grep "autossh" | grep -v grep
+    ps -ef --sort=cmd | grep autossh | grep -v grep
     if [ "$1" == "build" ]; then
         build_ssh_tunnel root@47.103.32.175 20022 22
         build_ssh_tunnel root@47.103.32.175 20443 443
     elif [ "$1" == "kill" ]; then
-        ps -ef --sort=cmd | grep "ssh -fNR" | grep -v "grep" | awk '{print $2}' | xargs -i -t kill -9 {}
+        ps -ef --sort=cmd | grep autossh | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
     fi
 }
 alias tunn='ssh_tunnel'
