@@ -80,12 +80,13 @@ kj() {
 }
 
 # proxy
-alias myhpxy='export {http,https,ftp}_proxy="http://localhost:1080"'
-alias myspxy='export {http,https,ftp}_proxy="socks5://localhost:1081"'
-alias mghpxy='export {http,https,ftp}_proxy="http://localhost:1090"'
-alias mgspxy='export {http,https,ftp}_proxy="socks5://localhost:1091"'
-alias ylhpxy='export {http,https,ftp}_proxy="http://localhost:1070"'
-alias ylspxy='export {http,https,ftp}_proxy="socks5://localhost:1071"'
+alias myproxyhttp='export {http,https,ftp}_proxy="http://localhost:1080"'
+alias myproxysocks='export {http,https,ftp}_proxy="socks5://localhost:1081"'
+alias netproxyhttp='export {http,https,ftp}_proxy="http://localhost:1090"'
+alias netproxysocks='export {http,https,ftp}_proxy="socks5://localhost:1091"'
+alias ylproxyhttp='export {http,https,ftp}_proxy="http://localhost:1070"'
+alias ylproxysocks='export {http,https,ftp}_proxy="socks5://localhost:1071"'
+alias ylproxy='export {http,https,ftp}_proxy="netproxy.yealinkops.com:8123"'
 alias nproxy='export {http,https,ftp}_proxy=""'
 alias eproxy='echo http_proxy=$http_proxy && echo https_proxy=$https_proxy && echo ftp_proxy=$ftp_proxy'
 
@@ -103,8 +104,11 @@ build_autossh_tunnel() {
 autossh_tunnel() {
     ps -ef --sort=cmd | grep autossh | grep -v grep
     if [ "$1" == "build" ]; then
-        build_autossh_tunnel root root@47.103.32.175 20022 22
-        build_autossh_tunnel root root@47.103.32.175 20443 443
+        if [ $# -lt 3 ]; then
+            echo "usage: autunn remote_port local_port"
+        else
+            build_autossh_tunnel root root@47.103.32.175 $2 $3
+        fi
     elif [ "$1" == "kill" ]; then
         ps -ef --sort=cmd | grep autossh | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
     fi
@@ -125,8 +129,11 @@ build_ssh_tunnel() {
 ssh_tunnel() {
     ps -ef --sort=cmd | grep ssh | grep fNR | grep -v grep
     if [ "$1" == "build" ]; then
-        build_ssh_tunnel root root@47.103.32.175 20022 22
-        build_ssh_tunnel root root@47.103.32.175 20443 443
+        if [ $# -lt 3 ]; then
+            echo "usage: tunn remote_port local_port"
+        else
+            build_ssh_tunnel root root@47.103.32.175 $2 $3
+        fi
     elif [ "$1" == "kill" ]; then
         ps -ef --sort=cmd | grep ssh | grep fNR | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
     fi
