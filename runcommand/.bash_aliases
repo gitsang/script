@@ -102,7 +102,6 @@ build_autossh_tunnel() {
     fi
 }
 autossh_tunnel() {
-    ps -ef --sort=cmd | grep autossh | grep -v grep
     if [ "$1" == "build" ]; then
         if [ $# -lt 3 ]; then
             echo "usage: autunn remote_port local_port"
@@ -111,6 +110,8 @@ autossh_tunnel() {
         fi
     elif [ "$1" == "kill" ]; then
         ps -ef --sort=cmd | grep autossh | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
+    else
+        ps -ef --sort=cmd | grep autossh | grep -v grep
     fi
 }
 alias autunn='autossh_tunnel'
@@ -127,7 +128,6 @@ build_ssh_tunnel() {
     fi
 }
 ssh_tunnel() {
-    ps -ef --sort=cmd | grep ssh | grep fNR | grep -v grep
     if [ "$1" == "build" ]; then
         if [ $# -lt 3 ]; then
             echo "usage: tunn remote_port local_port"
@@ -136,6 +136,8 @@ ssh_tunnel() {
         fi
     elif [ "$1" == "kill" ]; then
         ps -ef --sort=cmd | grep ssh | grep fNR | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
+    else
+        ps -ef --sort=cmd | grep ssh | grep fNR | grep -v grep
     fi
 }
 alias tunn='ssh_tunnel'
