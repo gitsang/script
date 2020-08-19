@@ -1,5 +1,15 @@
 # CentOS7 kernel update
 
+## 0. install deployment environment
+
+```sh
+yum install -y \
+    git wget zip \
+    gcc gcc-c++ \
+    python python-pip python3 python3-pip \
+    ncurses-devel.x86_64 \
+```
+
 ## 1. kernel update
 
 ### 1.1 checking command
