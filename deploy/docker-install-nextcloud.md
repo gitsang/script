@@ -44,15 +44,14 @@ sudo systemctl restart docker
 ## Docker Pull and Run
 
 ```sh
+docker pull postgres
 docker pull nextcloud
 ```
 
 ```sh
-docker run -d \
-    --name nextcloud \
-    -p 8080:80 \
-    -v /mnt/nas:/var/www/html \
-    nextcloud
+docker stop $(docker ps -aq) && docker rm $(docker ps -aq)
+docker run -d --restart=always --name postgres -p 5432:5432 -v /data/postgresql:/var/lib/postgresql/data -e POSTGRES_PASSWORD=postgres postgres
+docker run -d --restart=always --name nextcloud -p 8080:80 -v /data/nextcloud:/var/www/html --link postgres:postgres nextcloud
 ```
 
 ## ssh tunnel
