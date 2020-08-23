@@ -68,7 +68,8 @@ install_vim() {
 }
 
 install_OMV() {
-    wget -o - https://raw.githubusercontent.com/OpenMediaVault-Plugin-Developers/installScript/master/install | sudo bash
+    wget https://raw.githubusercontent.com/OpenMediaVault-Plugin-Developers/installScript/master/install -o install_OpenMediaVault
+    bash -x install_OpenMediaVault
 }
 
 install_v2ray() {
@@ -87,6 +88,7 @@ init_firewalld() {
 }
 
 install_h5ai() {
+    echo "install_h5ai"
 }
 
 install_docker() {
