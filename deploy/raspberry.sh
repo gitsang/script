@@ -68,8 +68,7 @@ install_vim() {
 }
 
 install_OMV() {
-    wget https://raw.githubusercontent.com/OpenMediaVault-Plugin-Developers/installScript/master/install -o install_OpenMediaVault
-    bash -x install_OpenMediaVault
+    wget -O - https://github.com/OpenMediaVault-Plugin-Developers/installScript/raw/master/install | sudo bash
 }
 
 install_v2ray() {
