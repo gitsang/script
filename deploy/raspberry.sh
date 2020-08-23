@@ -92,8 +92,19 @@ install_h5ai() {
 }
 
 install_docker() {
+    # get-docker
     curl -fsSL http://get.docker.com -o get-docker.sh
-    sudo sh get-docker.sh
+    sudo sh get-docker.sh --mirror Aliyun
+
+    # set aliyun mirrors
+    echo "{ \"registry-mirrors\": [\"https://???.mirror.aliyuncs.com\"] }" > /etc/docker/daemon.json
+    sudo systemctl daemon-reload
+    sudo systemctl restart docker
 }
 
-install_OMV
+mount_disk() {
+    sudo echo "/dev/sda1 /mnt/nas    ntfs-3g defaults,noexec,umask=0000 0 0" >> /etc/fstab
+    sudo echo "/dev/sda2 /mnt/secret ntfs-3g defaults,noexec,umask=0000 0 0" >> /etc/fstab
+}
+
+mount_disk
