@@ -1,6 +1,6 @@
+#!/bin/bash
 
 # var_conf
-
 GIT_EMAIL="sang.chen@outlook.com"
 GIT_NAME="raspsang"
 SCPP=~/project/script
@@ -67,8 +67,9 @@ install_vim() {
     cp $SCPP_VIM ~/
 }
 
-install_OMV() {
-    wget -O - https://github.com/OpenMediaVault-Plugin-Developers/installScript/raw/master/install | sudo bash
+function install_OMV() {
+    #wget -O - https://github.com/OpenMediaVault-Plugin-Developers/installScript/raw/master/install | sudo bash
+    bash install-OpenMediaVault.sh
 }
 
 install_v2ray() {
