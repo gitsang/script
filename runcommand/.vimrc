@@ -131,7 +131,7 @@ call vundle#begin()
         map <leader>g :NERDTreeToggle<CR>
 
     Plugin 'Xuyuanp/nerdtree-git-plugin'
-        let g:NERDTreeIndicatorMapCustom = {
+        let g:NERDTreeGitStatusIndicatorMapCustom = {
             \ "Modified"  : "✹",
             \ "Staged"    : "✚",
             \ "Untracked" : "✭",
