@@ -37,7 +37,10 @@ init_apt() {
 
 install_base() {
     sudo apt-get install -y \
-        zip unzip
+        zip unzip \
+        wget net-tools \
+        gcc gcc-c++ \
+        python python3 python-pip python3-pip \
 }
 
 install_git() {
@@ -90,3 +93,5 @@ install_docker() {
     curl -fsSL http://get.docker.com -o get-docker.sh
     sudo sh get-docker.sh
 }
+
+install_OMV
