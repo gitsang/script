@@ -40,7 +40,7 @@ install_base() {
         zip unzip \
         wget net-tools \
         gcc gcc-c++ \
-        python python3 python-pip python3-pip \
+        python python3 python-pip python3-pip
 }
 
 install_git() {
@@ -67,7 +67,7 @@ install_vim() {
     cp $SCPP_VIM ~/
 }
 
-function install_OMV() {
+install_OMV() {
     #wget -O - https://github.com/OpenMediaVault-Plugin-Developers/installScript/raw/master/install | sudo bash
     bash install-OpenMediaVault.sh
 }
@@ -106,5 +106,3 @@ mount_disk() {
     sudo echo "/dev/sda1 /mnt/nas    ntfs-3g defaults,noexec,umask=0000 0 0" >> /etc/fstab
     sudo echo "/dev/sda2 /mnt/secret ntfs-3g defaults,noexec,umask=0000 0 0" >> /etc/fstab
 }
-
-mount_disk
