@@ -17,7 +17,7 @@ reboot_ask() {
 
 # --------------------------------------------- init ---------------------------------------------
 
-init() {
+init_repo() {
     echo "deb http://mirrors.tuna.tsinghua.edu.cn/raspberry-pi-os/raspbian/ buster main non-free contrib rpi" \
         > /etc/apt/sources.list
     echo "deb-src http://mirrors.tuna.tsinghua.edu.cn/raspberry-pi-os/raspbian/ buster main non-free contrib rpi" \
@@ -165,20 +165,22 @@ case "$1" in
     "--auto")
         set -e
         # init
-        init
+        init_repo
         install_bases
         install_docker
         install_v2ray
-
         # config
         config_all
-
         # docker
         install_samba
         install_nextcloud
+	install_h5ai
         exit;;
+    "--config")
+	config_all
+	exit;;
     *)
-        $0 --help
+        echo "unknown option, uasge: --help option for help"
         exit;;
 esac
 
