@@ -6,12 +6,12 @@ reboot_ask() {
     echo "System should be reboot, are you sure you want to reboot? (yes/no)"
     read Arg
     case $Arg in
-    yes)
-        echo "system will be reboot soon"
-        reboot;;
-    "")
-        echo "system will not be reboot, you can reboot it manually"
-        break;;
+        yes)
+            echo "system will be reboot soon"
+            reboot;;
+        "")
+            echo "system will not be reboot, you can reboot it manually"
+            break;;
     esac
 }
 
@@ -33,7 +33,7 @@ install_bases() {
     apt-get install -y \
         zip unzip \
         wget net-tools curl \
-        gcc gcc-c++ \
+        gcc \
         python python3 python-pip python3-pip \
         git vim
 }
@@ -112,7 +112,7 @@ SCPP_V2=$SCPP/v2ray
 SCPP_SMB=$SCPP/samba/smb.conf
 
 config_clone() {
-    if [ -d "$SCPP" ]; then
+    if [ ! -d "$SCPP" ]; then
         git clone http://github.com/gitsang/script.git $SCPP
     fi
 }
@@ -152,7 +152,6 @@ config_vim() {
 }
 
 config_all() {
-    config_clone
     config_v2ray
     config_mount
     config_samba
@@ -162,6 +161,8 @@ config_all() {
 }
 
 # --------------------------------------------- option ---------------------------------------------
+
+BASE_NAME=`basename $0`
 
 case "$1" in
     "-h"|"--help")
@@ -180,13 +181,38 @@ case "$1" in
         # docker
         install_samba
         install_nextcloud
-	install_h5ai
+        install_h5ai
         exit;;
     "--config")
-	config_all
-	exit;;
+        config_clone
+        case "$2" in
+            "all")
+                config_all
+                exit;;
+            "v2ray")
+                config_v2ray
+                exit;;
+            "mount")
+                config_mount
+                exit;;
+            "samba")
+                config_samba
+                exit;;
+            "git")
+                config_git
+                exit;;
+            "bash")
+                config_bash
+                exit;;
+            "vim")
+                config_vim
+                exit;;
+            *)
+                echo "usage: $BASE_NAME --config (all|v2ray|mount|samba|git|bash|vim)"
+        esac
+        exit;;
     *)
-        echo "unknown option, uasge: --help option for help"
+        echo "unknown option, uasge: $BASE_NAME --help for help"
         exit;;
 esac
 
