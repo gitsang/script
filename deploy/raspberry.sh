@@ -40,16 +40,13 @@ install_bases() {
 
 install_docker() {
     # remove old
-    sudo apt-get -y remove docker docker-engine docker.io containerd runc
+    sudo apt-get remove -y docker* containerd runc
     sudo rm -fr /var/lib/docker/
     sudo rm -fr /var/lib/containerd/
-    sudo apt -y autoremove
+    sudo apt autoremove -y
 
     # option
-    apt-get --yes --no-install-recommends --reinstall install lsb-release
-    apt-get --yes --no-install-recommends install dirmngr gnupg
-    apt-get --yes --no-install-recommends install monit postfix
-    apt-get --yes --fix-broken install
+    sudo bash OpenMediaVault.sh
 
     # get-docker
     curl -fsSL http://get.docker.com -o get-docker.sh
