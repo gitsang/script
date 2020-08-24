@@ -143,7 +143,7 @@ config_git() {
 
 config_bash() {
     cp $SCPP_BASH ~/
-    source ~/.bashrc
+    echo "configure bash alias runcommand finished. Use \`source ~/.bashrc\` to load"
 }
 
 config_vim() {

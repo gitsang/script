@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PS1="\n\[\e[32m\]\u\[\e[37m\]@\h \[\e[35m\]\d \t \[\e[36m\]\w\[\e[0m\] \n\\$ "
+
 # =============== Common specific aliases and functions =============== #
 
 # trash
