@@ -167,9 +167,13 @@ BASE_NAME=`basename $0`
 case "$1" in
     "-h"|"--help")
         echo "uasge:"
-        echo "    $0 [option] [param]"
+        echo "    $BASE_NAME [option] [param]"
+        echo ""
+        echo "<-a|--auto> (repo|bases|docker|v2ray)"
+        echo "<-i|--install|--init> (repo|bases|docker|v2ray)"
+        echo "<-c|--config> (all|v2ray|mount|samba|git|bash|vim)"
         exit;;
-    "--auto")
+    "-a"|"--auto")
         set -e
         # init
         init_repo
@@ -183,7 +187,27 @@ case "$1" in
         install_nextcloud
         install_h5ai
         exit;;
-    "--config")
+    "-i"|"--install"|"--init")
+        case "$2" in
+            "repo")
+                init_repo
+                exit;;
+            "bases")
+                install_bases
+                exit;;
+            "docker")
+                install_docker
+                exit;;
+            "v2ray")
+                install_v2ray
+                exit;;
+            *)
+                echo "usage:"
+                echo "    $BASE_NAME <-i|--install|--init> (repo|bases|docker|v2ray)"
+                exit;;
+        esac
+        exit;;
+    "-c"|"--config")
         config_clone
         case "$2" in
             "all")
@@ -208,11 +232,14 @@ case "$1" in
                 config_vim
                 exit;;
             *)
-                echo "usage: $BASE_NAME --config (all|v2ray|mount|samba|git|bash|vim)"
+                echo "usage:"
+                echo "    $BASE_NAME <-c|--config> (all|v2ray|mount|samba|git|bash|vim)"
+                exit;;
         esac
         exit;;
     *)
-        echo "unknown option, uasge: $BASE_NAME --help for help"
+        echo "unknown option, uasge:"
+        echo "    $BASE_NAME --help for help"
         exit;;
 esac
 
