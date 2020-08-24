@@ -39,15 +39,6 @@ install_bases() {
 }
 
 install_docker() {
-    # remove old
-    sudo apt-get remove -y docker* containerd runc
-    sudo rm -fr /var/lib/docker/
-    sudo rm -fr /var/lib/containerd/
-    sudo apt autoremove -y
-
-    # option
-    sudo bash OpenMediaVault.sh
-
     # get-docker
     curl -fsSL http://get.docker.com -o get-docker.sh
     sh get-docker.sh --mirror Aliyun
