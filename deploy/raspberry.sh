@@ -39,6 +39,12 @@ install_bases() {
 }
 
 install_docker() {
+    # option
+    apt-get --yes --no-install-recommends --reinstall install lsb-release
+    #apt-get --yes --no-install-recommends install dirmngr gnupg
+    #apt-get --yes --no-install-recommends install monit postfix
+    #apt-get --yes --fix-broken install
+
     # get-docker
     curl -fsSL http://get.docker.com -o get-docker.sh
     sh get-docker.sh --mirror Aliyun
