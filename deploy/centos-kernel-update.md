@@ -110,7 +110,34 @@ firewall-cmd --reload
 firewall-cmd --zone=public --list-ports
 ```
 
-## 5. vim update
+## 5. fail2ban
+
+```sh
+yum install epel-release
+yum install fail2ban
+systemctl enable fail2ban
+vim /etc/fail2ban/jail.local
+systemctl restart fail2ban
+```
+
+```jail.local
+[DEFAULT]
+# Ban hosts for one hour:
+bantime = 3600
+
+# Override /etc/fail2ban/jail.d/00-firewalld.conf:
+banaction = iptables-multiport
+
+[sshd]
+enabled = true
+```
+
+```sh
+fail2ban-client status
+fail2ban-client status sshd
+```
+
+## 6. vim update
 
 ```sh
 git clone https://github.com/vim/vim.git && cd vim
@@ -134,3 +161,5 @@ make install
 [^6]: [v2ray完全配置指南](https://ailitonia.com/archives/v2ray%E5%AE%8C%E5%85%A8%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97/#routing)
 
 [^7]: [CentOS7内核升级、降级、指定内核版本，查看内核信息教程](https://sleele.com/2019/04/29/kernel/)
+
+[^8]: [How To Protect SSH With Fail2Ban on CentOS 7 | DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-centos-7)
