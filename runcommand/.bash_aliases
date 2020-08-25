@@ -82,67 +82,97 @@ kj() {
 }
 
 # proxy
-alias myproxyhttp='export {http,https,ftp}_proxy="http://localhost:1080"'
-alias myproxysocks='export {http,https,ftp}_proxy="socks5://localhost:1081"'
-alias netproxyhttp='export {http,https,ftp}_proxy="http://localhost:1090"'
-alias netproxysocks='export {http,https,ftp}_proxy="socks5://localhost:1091"'
-alias ylproxyhttp='export {http,https,ftp}_proxy="http://localhost:1070"'
-alias ylproxysocks='export {http,https,ftp}_proxy="socks5://localhost:1071"'
-alias ylproxy='export {http,https,ftp}_proxy="netproxy.yealinkops.com:8123"'
-alias nproxy='export {http,https,ftp}_proxy=""'
-alias eproxy='echo http_proxy=$http_proxy && echo https_proxy=$https_proxy && echo ftp_proxy=$ftp_proxy'
+proxy() {
+    case "$1" in 
+        "-l"|"--list")
+            echo http_proxy=$http_proxy
+            echo https_proxy=$https_proxy
+            echo ftp_proxy=$ftp_proxy
+            ;;
+        "-c"|"--clean")
+            export {http,https,ftp}_proxy=""
+            ;;
+        "-s"|"--set")
+            case "$2" in
+                "la")
+                    case "$3" in
+                        "h"|"http") export {http,https,ftp}_proxy="http://localhost:1080";;
+                        "s"|"socks") export {http,https,ftp}_proxy="http://localhost:1081";;
+                        *) echo "type error";;
+                    esac;;
+                "hk")
+                    case "$3" in
+                        "h"|"http") export {http,https,ftp}_proxy="http://localhost:1090";;
+                        "s"|"socks") export {http,https,ftp}_proxy="http://localhost:1091";;
+                        *) echo "type error";;
+                    esac;;
+                "yl")
+                    case "$3" in
+                        "h"|"http") export {http,https,ftp}_proxy="http://localhost:1070";;
+                        "s"|"socks") export {http,https,ftp}_proxy="http://localhost:1071";;
+                        "l"|"lan") export {http,https,ftp}_proxy="netproxy.yealinkops.com:8123";;
+                        *) echo "type error";;
+                    esac;;
+                *)
+                    echo "set uasge:"
+                    echo "    proxy --set [location] [type]"
+                    echo "location:"
+                    echo "    la          Los Angeles"
+                    echo "    hk          HongKong"
+                    echo "    yl          yealink"
+                    echo "type:"
+                    echo "    h, http     http_proxy"
+                    echo "    s, socks    socks_proxy"
+                    echo "    l, lan     only yealink lan proxy use it"
+                    ;;
+            esac;;
+        *)
+            echo "help:"
+            echo "    -h, --help                  help"
+            echo "    -l, --list                  list current proxy and optional proxy"
+            echo "    -c, --clean                 clean proxy"
+            echo "    -s, --set [location] [type] set proxy, type \`proxy -s\` for more help"
+            echo "example:"
+            echo "    proxy --set la http"
+            ;;
+    esac
+}
 
-# autossh-tunnel
-build_autossh_tunnel() {
-    USER=$1
-    REMOTE_ADDR=$2
-    REMOTE_PORT=$3
-    LOCAL_PORT=$4
-    PID=`ps -ef | grep "autossh -NR" | grep ":${REMOTE_PORT}:0.0.0.0:${LOCAL_PORT}" | awk '{printf $2}'`
-    if [ ! -n "$PID" ]; then
-        su - $USER -c "autossh -fNR :${REMOTE_PORT}:0.0.0.0:${LOCAL_PORT} ${REMOTE_ADDR}"
-    fi
+tunnel() {
+    case "$1" in
+        "auto")
+            case "$2" in
+                "build")
+                    autossh -fNR :10022:0.0.0.0:22  root@aliyun.sang.pp.ua
+                    autossh -fNR :10080:0.0.0.0:80  root@aliyun.sang.pp.ua
+                    autossh -fNR :10445:0.0.0.0:445 root@aliyun.sang.pp.ua
+                    autossh -fNR :10139:0.0.0.0:139 root@aliyun.sang.pp.ua
+                    ;;
+                "close")
+                    ps -ef | grep autossh | grep NR | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
+                    ;;
+                *)
+                    ps -ef | grep autossh | grep NR | grep -v grep
+            esac;;
+        "temp")
+            case "$2" in
+                "build")
+                    ssh -fNR :50022:0.0.0.0:22  root@aliyun.sang.pp.ua
+                    ssh -fNR :50443:0.0.0.0:443 root@aliyun.sang.pp.ua
+                    ;;
+                "close")
+                    ps -ef | grep ssh | grep NR | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
+                    ;;
+                *)
+                    ps -ef | grep ssh | grep NR | grep -v grep
+            esac;;
+        *)
+            echo "help:"
+            echo "    tunnel [auto|temp] [build|close]"
+            ps -ef | grep ssh | grep NR | grep -v grep
+            ;;
+    esac
 }
-autossh_tunnel() {
-    if [ "$1" == "build" ]; then
-        if [ $# -lt 3 ]; then
-            echo "usage: autunn remote_port local_port"
-        else
-            build_autossh_tunnel root root@47.103.32.175 $2 $3
-        fi
-    elif [ "$1" == "kill" ]; then
-        ps -ef --sort=cmd | grep autossh | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
-    else
-        ps -ef --sort=cmd | grep autossh | grep -v grep
-    fi
-}
-alias autunn='autossh_tunnel'
-
-# ssh-tunnel
-build_ssh_tunnel() {
-    USER=$1
-    REMOTE_ADDR=$2
-    REMOTE_PORT=$3
-    LOCAL_PORT=$4
-    PID=`ps -ef | grep ssh | grep fNR | grep ":${REMOTE_PORT}:0.0.0.0:${LOCAL_PORT}" | awk '{printf $2}'`
-    if [ ! -n "$PID" ]; then
-        su - $USER -c "ssh -fNR :${REMOTE_PORT}:0.0.0.0:${LOCAL_PORT} ${REMOTE_ADDR}"
-    fi
-}
-ssh_tunnel() {
-    if [ "$1" == "build" ]; then
-        if [ $# -lt 3 ]; then
-            echo "usage: tunn remote_port local_port"
-        else
-            build_ssh_tunnel root root@47.103.32.175 $2 $3
-        fi
-    elif [ "$1" == "kill" ]; then
-        ps -ef --sort=cmd | grep ssh | grep fNR | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
-    else
-        ps -ef --sort=cmd | grep ssh | grep fNR | grep -v grep
-    fi
-}
-alias tunn='ssh_tunnel'
 
 # =============== User specific aliases and functions =============== #
 
