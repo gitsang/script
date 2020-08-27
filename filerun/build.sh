@@ -4,3 +4,5 @@ docker-compose up -d
 
 # Username: superuser
 # Password: superuser
+
+cp chinese.php /data/filerun/html/system/data/translations
