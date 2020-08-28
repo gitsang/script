@@ -12,6 +12,7 @@ set showcmd
 set wildmenu
 set wrap
 set backspace=indent,eol,start
+set encoding=utf-8 fileencodings=utf-8
 syntax on
  
 "--------------------
