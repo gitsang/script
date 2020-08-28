@@ -4,6 +4,41 @@ PS1="\n\[\e[32m\]\u\[\e[37m\]@\h \[\e[35m\]\d \t \[\e[36m\]\w\[\e[0m\] \n\\$ "
 
 # =============== Common specific aliases and functions =============== #
 
+# list
+alias l='ls'
+alias ll='ls -l'
+alias la='ls -a'
+alias lh='ls -lh'
+alias lla='ls -la'
+
+# file system
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# change dir
+alias ..='cd ../'
+alias ...='cd ../../'
+alias ..3='cd ../../../'
+alias ....='cd ../../../'
+alias ..4='cd ../../../../'
+alias .....='cd ../../../../'
+alias ..5='cd ../../../../'
+alias ......='cd ../../../../'
+
+# other
+alias vi='vim'
+alias ports='netstat -ntlp'
+alias pss='ps auxf --sort=cmd | grep -v "\[*\]$" | grep -v -E "bash|ps -ef|grep"'
+alias eplib='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib && echo $LD_LIBRARY_PATH'
+alias drst='docker stop $(docker ps -aq) && docker rm $(docker ps -aq)'
+
+# jobs
+alias j='jobs'
+kj() {
+    kill -9 %$@
+}
+
 # trash
 trash-clean() {
     TRASH_DIR=~/.trash
@@ -45,41 +80,6 @@ trash() {
 alias del='trash'
 alias tcl='trash-clean'
 alias tre='trash-recover'
-
-# list
-alias l='ls'
-alias ll='ls -l'
-alias la='ls -a'
-alias lh='ls -lh'
-alias lla='ls -la'
-
-# file system
-alias rm='rm -i'
-alias cp='cp -i'
-alias mv='mv -i'
-
-# change dir
-alias ..='cd ../'
-alias ...='cd ../../'
-alias ..3='cd ../../../'
-alias ....='cd ../../../'
-alias ..4='cd ../../../../'
-alias .....='cd ../../../../'
-alias ..5='cd ../../../../'
-alias ......='cd ../../../../'
-
-# other
-alias vi='vim'
-alias ports='netstat -ntlp'
-alias pss='ps -ef --sort=cmd | grep -v "\[*\]" | grep -v -E "sshd|sftp" | grep -v -E "/usr/sbin/crond|/usr/lib/systemd" | grep -v -E "bash|ps -ef"'
-alias eplib='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib && echo $LD_LIBRARY_PATH'
-alias dreset='docker stop $(docker ps -aq) && docker rm $(docker ps -aq)'
-
-# jobs
-alias j='jobs'
-kj() {
-    kill -9 %$@
-}
 
 # proxy
 proxy() {
@@ -139,37 +139,24 @@ proxy() {
 }
 
 tunnel() {
+    SECTOR=x
     case "$1" in
-        "auto")
-            case "$2" in
-                "build")
-                    autossh -fNR :10022:0.0.0.0:22  root@aliyun.sang.pp.ua
-                    autossh -fNR :10080:0.0.0.0:80  root@aliyun.sang.pp.ua
-                    autossh -fNR :10445:0.0.0.0:445 root@aliyun.sang.pp.ua
-                    autossh -fNR :10139:0.0.0.0:139 root@aliyun.sang.pp.ua
-                    ;;
-                "close")
-                    ps -ef | grep autossh | grep NR | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
-                    ;;
-                *)
-                    ps -ef | grep autossh | grep NR | grep -v grep
-            esac;;
-        "temp")
-            case "$2" in
-                "build")
-                    ssh -fNR :50022:0.0.0.0:22  root@aliyun.sang.pp.ua
-                    ssh -fNR :50443:0.0.0.0:443 root@aliyun.sang.pp.ua
-                    ;;
-                "close")
-                    ps -ef | grep ssh | grep NR | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
-                    ;;
-                *)
-                    ps -ef | grep ssh | grep NR | grep -v grep
-            esac;;
+        "init")
+            yum install -y autossh
+            ssh-keygen
+            ssh-copy-id -i ~/.ssh/id_rsa.pub -p 22 root@aliyun.sang.pp.ua
+            ;;
+        "build")
+            autossh -NR :${SECTOR}0022:0.0.0.0:22  -M ${SECTOR}0022:22  -f root@aliyun.sang.pp.ua
+            autossh -NR :${SECTOR}0443:0.0.0.0:443 -M ${SECTOR}0443:443 -f root@aliyun.sang.pp.ua
+            ;;
+        "close")
+            ps auxf | grep ssh | grep NR | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
+            ;;
         *)
             echo "help:"
-            echo "    tunnel [auto|temp] [build|close]"
-            ps -ef | grep ssh | grep NR | grep -v grep
+            echo "    tunnel [init|build|close]"
+            ps auxf | grep ssh | grep NR | grep -v grep
             ;;
     esac
 }
