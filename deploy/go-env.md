@@ -58,7 +58,7 @@ git submodule update --init --recursive
 python3 install.py --go-completer
 cp ~/.vim/bundle/YouCompleteMe/third_party/ycmd/examples/.ycm_extra_conf.py ~/
 
-# 3. Golang project
+# 3. Golang project (Optional)
 
 ## 3.1 gRPC install
 
