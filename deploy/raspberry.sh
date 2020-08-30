@@ -3,14 +3,19 @@
 # sudo passwd pi
 # sudo passwd root
 # su - root
+
 # export {http,https}_proxy=http://192.168.5.10:1080
 # wget https://raw.githubusercontent.com/gitsang/script/master/deploy/raspberry.sh
+
 # bash -x raspberry.sh --init
+# cp /home/pi/.bashrc ~/
+# source ~/.bashrc
+
 # bash -x raspberry.sh --install v2ray
 # bash -x raspberry.sh --install samba
-# bash -x raspberry.sh --install h5ai
-# bash -x raspberry.sh --install filerun
-# tunnel 
+
+# tunnel init
+# tunnel build
 
 # --------------------------------------------- config ---------------------------------------------
 
@@ -53,6 +58,11 @@ init_repo() {
     apt-get upgrade -y
 }
 
+init_sshd() {
+    echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+    systemctl restart sshd
+}
+
 #---------------# install bases #---------------#
 
 config_clone() {
@@ -76,7 +86,7 @@ config_vim() {
     echo "configure vim runcommand finished. Use \`vim\` to install vim plugin"
 }
 
-install_bases() {
+init_bases() {
     apt-get install -y \
         zip unzip \
         git vim \
@@ -127,7 +137,8 @@ config_samba() {
     # config file
     cp $SCPP_SMB /etc/samba/smb.conf
     echo "[nas]" >> /etc/samba/guest.smb.conf
-    echo "path = /mnt/nas" >> /etc/samba/guest.smb.conf
+    echo "    path = /mnt/nas" >> /etc/samba/guest.smb.conf
+    echo "    writeable = no" >> /etc/samba/guest.smb.conf
     # restart
     systemctl enable smbd
     systemctl restart smbd
@@ -243,7 +254,8 @@ case "$1" in
         exit;;
     "-i"|"--init")
         init_repo
-        install_bases
+        init_sshd
+        init_bases
         exit;;
     "--install")
         case "$2" in
