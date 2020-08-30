@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# sudo passwd pi
+# sudo passwd root
+# su - root
+# export {http,https}_proxy=http://192.168.5.10:1080
+# wget https://raw.githubusercontent.com/gitsang/script/master/deploy/raspberry.sh
+# bash -x raspberry.sh --init
+# bash -x raspberry.sh --install v2ray
+# bash -x raspberry.sh --install samba
+# bash -x raspberry.sh --install h5ai
+# bash -x raspberry.sh --install filerun
+# tunnel 
+
 # --------------------------------------------- config ---------------------------------------------
 
 GIT_EMAIL="sang.chen@outlook.com"
@@ -27,7 +39,7 @@ reboot_ask() {
 
 # --------------------------------------------- init ---------------------------------------------
 
-##### init repo #####
+#---------------# init repo #---------------#
 
 init_repo() {
     echo "deb http://mirrors.tuna.tsinghua.edu.cn/raspberry-pi-os/raspbian/ buster main non-free contrib rpi" \
@@ -41,7 +53,7 @@ init_repo() {
     apt-get upgrade -y
 }
 
-##### install bases #####
+#---------------# install bases #---------------#
 
 config_clone() {
     if [ ! -d "$SCPP" ]; then
@@ -55,22 +67,22 @@ config_git() {
 }
 
 config_bash() {
-    cp $SCPP_BASH ~/
+    cp $SCPP_BASH ~
     echo "configure bash alias runcommand finished. Use \`source ~/.bashrc\` to load"
 }
 
 config_vim() {
-    cp $SCPP_VIM ~/
-    vim
+    cp $SCPP_VIM ~
+    echo "configure vim runcommand finished. Use \`vim\` to install vim plugin"
 }
 
 install_bases() {
     apt-get install -y \
         zip unzip \
+        git vim \
         wget net-tools curl \
-        gcc \
         python python3 python-pip python3-pip \
-        git vim
+        gcc
     # config
     config_clone
     config_git
@@ -78,16 +90,15 @@ install_bases() {
     config_vim
 }
 
-# --------------------------------------------- install/config ---------------------------------------------
+# --------------------------------------------- install ---------------------------------------------
 
-##### v2ray #####
+#---------------# v2ray #---------------#
 
 config_v2ray() {
     unzip $SCPP_V2/config.zip
-    cp $SCPP_V2/config.json /etc/v2ray/config.json
+    cp $SCPP_V2/config.json /usr/local/etc/v2ray/config.json
     systemctl restart v2ray
     systemctl status v2ray
-    #export {http,https}_proxy=http://127.0.0.1:1080
 }
 
 install_v2ray() {
@@ -99,7 +110,7 @@ install_v2ray() {
     config_v2ray
 }
 
-##### samba #####
+#---------------# samba #---------------#
 
 config_mount() {
     echo "/dev/sda1 /mnt/nas    ntfs-3g defaults,noexec,umask=0000 0 0" >> /etc/fstab
@@ -113,13 +124,13 @@ config_samba() {
 }
 
 install_samba() {
-    yum install -y samba samba-client samba-swat
+    apt-get install -y samba*
     # config
     config_mount
     config_samba
 }
 
-##### h5ai #####
+#---------------# h5ai #---------------#
 
 install_php() {
     sudo apt-get install -y php*
@@ -144,7 +155,7 @@ install_h5ai() {
     config_h5ai
 }
 
-##### filerun #####
+#---------------# filerun #---------------#
 
 config_filerun() {
     echo "config_filerun unimplement"
@@ -214,45 +225,62 @@ case "$1" in
         echo "uasge:"
         echo "    $BASE_NAME [option] [param]"
         echo ""
-        echo "<-a|--auto>"
-        echo "<-i|--init> (repo)"
-        echo "<-i|--install> (bases|docker|v2ray)"
-        echo "<-d|--docker> ()"
-        exit;;
-    "-a"|"--auto")
-        set -e
-        # init
-        init_repo
-        install_bases
-        # proxy
-        install_v2ray
-        # nas
-        install_samba
-        install_h5ai
-        install_filerun
+        echo "-a, --auto           auto deploy (may have problem)"
+        echo "-i, --init           init system"
+        echo "    --install [name] install program and config, include [v2ray|samba|h5ai|filerun]"
+        echo "-d, --docker [name]  install program by docker, include [install|samba|h5ai|filerun]"
         exit;;
     "-i"|"--init")
         init_repo
         install_bases
         exit;;
-    "-i"|"--install")
+    "--install")
         case "$2" in
-            "docker")
-                install_docker
-                exit;;
             "v2ray")
                 install_v2ray
                 exit;;
+            "samba")
+                install_samba
+                exit;;
+            "h5ai")
+                install_h5ai
+                exit;;
+            "filerun")
+                install_filerun
+                exit;;
             *)
                 echo "usage:"
-                echo "    $BASE_NAME <-i|--install> (docker|v2ray)"
+                echo "    $BASE_NAME <-i|--install> (v2ray|samba|h5ai|filerun)"
                 exit;;
         esac
         exit;;
     "-d"|"--docker")
-        docker_install_samba
-        docker_install_h5ai
-        docker_install_filerun
+        case "$2" in
+            "install")
+                install_docker
+                exit;;
+            "samba")
+                docker_install_samba
+                exit;;
+            "h5ai")
+                docker_install_h5ai
+                exit;;
+            "filerun")
+                docker_install_filerun
+                exit;;
+            *)
+                echo "usage:"
+                echo "    $BASE_NAME <-d|--docker> (install|samba|h5ai|filerun)"
+                exit;;
+        esac
+        exit;;
+    "-a"|"--auto")
+        $BASE_NAME --init
+        $BASE_NAME --install v2ray
+        $BASE_NAME --install samba
+        $BASE_NAME --install h5ai
+        $BASE_NAME --install filerun
+        reboot_ask
         exit;;
     *)
         echo "unknown option, uasge:"
