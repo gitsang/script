@@ -97,6 +97,7 @@ install_bases() {
 config_v2ray() {
     unzip $SCPP_V2/config.zip
     cp $SCPP_V2/config.json /usr/local/etc/v2ray/config.json
+    systemctl enable v2ray
     systemctl restart v2ray
     systemctl status v2ray
 }
@@ -118,7 +119,17 @@ config_mount() {
 }
 
 config_samba() {
+    # add user
+    smbpasswd -a root
+    useradd guest
+    passwd guest
+    smbpasswd -a guest
+    # config file
     cp $SCPP_SMB /etc/samba/smb.conf
+    echo "[nas]" >> /etc/samba/guest.smb.conf
+    echo "path = /mnt/nas" >> /etc/samba/guest.smb.conf
+    # restart
+    systemctl enable smbd
     systemctl restart smbd
     systemctl status smbd
 }
