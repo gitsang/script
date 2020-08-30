@@ -272,8 +272,7 @@ case "$1" in
                 install_filerun
                 exit;;
             *)
-                echo "usage:"
-                echo "    $BASE_NAME <-i|--install> (v2ray|samba|h5ai|filerun)"
+                $BASE_NAME --help
                 exit;;
         esac
         exit;;
@@ -292,8 +291,7 @@ case "$1" in
                 docker_install_filerun
                 exit;;
             *)
-                echo "usage:"
-                echo "    $BASE_NAME <-d|--docker> (install|samba|h5ai|filerun)"
+                $BASE_NAME --help
                 exit;;
         esac
         exit;;
