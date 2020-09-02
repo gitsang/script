@@ -21,7 +21,7 @@
 
 GIT_EMAIL="sang.chen@outlook.com"
 GIT_NAME="raspsang"
-SCPP=~/project/script
+SCPP=~/project/script/deploy
 SCPP_BASH=$SCPP/runcommand/.bash_aliases
 SCPP_VIM=$SCPP/runcommand/.vimrc
 SCPP_V2=$SCPP/v2ray
