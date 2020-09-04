@@ -143,41 +143,37 @@ proxy() {
 
 tunnel() {
     SECTOR=x
-    case "$1" in
-        "init")
-            yum install -y autossh
-            ssh-keygen
-            ssh-copy-id -i ~/.ssh/id_rsa.pub -p 22 root@aliyun.sang.pp.ua
-            ;;
-        "build")
-            autossh -NR :${SECTOR}0022:0.0.0.0:22  -M ${SECTOR}0022:22  -f root@aliyun.sang.pp.ua
-            autossh -NR :${SECTOR}0443:0.0.0.0:443 -M ${SECTOR}0443:443 -f root@aliyun.sang.pp.ua
-            ;;
-        "close")
-            ps auxf | grep ssh | grep NR | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
-            ;;
-        *)
-            echo "help:"
-            echo "    tunnel [init|build|close]"
-            ps auxf | grep ssh | grep NR | grep -v grep
-            ;;
-    esac
+    if [ $SECTOR == "x" ]; then
+        echo "SECTOR not define, please edit in ~/.bash_alias"
+    else
+        case "$1" in
+            "init")
+                yum install -y autossh
+                apt-get install -y autossh
+                ssh-keygen
+                ssh-copy-id -i ~/.ssh/id_rsa.pub -p 22 root@aliyun.sang.pp.ua
+                ;;
+            "build")
+                autossh -NR :${SECTOR}0022:0.0.0.0:22   -M ${SECTOR}0022:22   -f root@aliyun.sang.pp.ua
+                autossh -NR :${SECTOR}0080:0.0.0.0:80   -M ${SECTOR}0080:80   -f root@aliyun.sang.pp.ua
+                autossh -NR :${SECTOR}0443:0.0.0.0:443  -M ${SECTOR}0443:443  -f root@aliyun.sang.pp.ua
+                autossh -NR :${SECTOR}0445:0.0.0.0:445  -M ${SECTOR}0445:445  -f root@aliyun.sang.pp.ua
+                autossh -NR :${SECTOR}8123:0.0.0.0:8123 -M ${SECTOR}8213:8123 -f root@aliyun.sang.pp.ua
+                ;;
+            "close")
+                ps auxf | grep ssh | grep NR | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
+                ;;
+            *)
+                echo "help:"
+                echo "    tunnel [init|build|close]"
+                ps auxf | grep ssh | grep NR | grep -v grep
+                ;;
+        esac
+    fi
 }
 
 # =============== User specific aliases and functions =============== #
 
-# gitlab
+# git
 alias upimg='git add image.yaml && git commit -m "update image.yaml" && git push'
-
-# postgres
-alias pp='/usr/local/pgsql/bin/psql -U postgres -d testdb -h localhost -p'
-alias psql='/usr/local/pgsql/bin/psql -U postgres'
-
-# redis
-alias rc='/root/project/nredis/src/redis-cli'
-alias rcr='/root/project/nredis/src/redis-cli -h 10.120.0.178 -p 9079'
-
-# mq
-mq() {
-    /root/jrmqtg/bin/mqadmin $@ -n localhost:9876
-}
+alias autopush='git add --all . && git commit -m "auto commit" && git push && git status'
