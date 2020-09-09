@@ -35,6 +35,7 @@ alias ports='netstat -ntlp'
 alias pss='ps auxf --sort=cmd | grep -v "\[*\]$" | grep -v -E "bash|ps -ef|grep"'
 alias eplib='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib && echo $LD_LIBRARY_PATH'
 alias drst='docker stop $(docker ps -aq) && docker rm $(docker ps -aq)'
+alias ip='curl ifconfig.me'
 
 # jobs
 alias j='jobs'
@@ -89,12 +90,10 @@ trash() {
 proxy() {
     case "$1" in 
         "-l"|"--list")
-            echo http_proxy=$http_proxy
-            echo https_proxy=$https_proxy
-            echo ftp_proxy=$ftp_proxy
+            echo ALL_PROXY=$ALL_PROXY
             ;;
         "-c"|"--clean")
-            export {http,https,ftp}_proxy=""
+            export ALL_PROXY=""
             ;;
         "-s"|"--set")
             case "$2" in
@@ -114,7 +113,7 @@ proxy() {
                     case "$3" in
                         "h"|"http") export ALL_PROXY=http://127.0.0.1:1070;;
                         "s"|"socks") export ALL_PROXY=socks5://127.0.0.1:1071;;
-                        "l"|"lan") export {http,https,ftp}_proxy="netproxy.yealinkops.com:8123";;
+                        "l"|"lan") export ALL_PROXY="netproxy.yealinkops.com:8123";;
                         *) echo "type error";;
                     esac;;
                 *)
@@ -127,7 +126,7 @@ proxy() {
                     echo "type:"
                     echo "    h, http     http_proxy"
                     echo "    s, socks    socks_proxy"
-                    echo "    l, lan     only yealink lan proxy use it"
+                    echo "    l, lan      only yealink lan proxy use it"
                     ;;
             esac;;
         *)
