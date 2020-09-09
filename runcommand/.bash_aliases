@@ -43,46 +43,47 @@ kj() {
 }
 
 # trash
-trash-clean() {
-    TRASH_DIR=~/.trash
-    MAX_TRASH_SIZE=20000000
-    TRASH_SIZE=`du --max-depth=0 $TRASH_DIR | awk '{print $1}'`
-    while [ $TRASH_SIZE -gt $MAX_TRASH_SIZE ]
-    do
-        echo "trash-size: $TRASH_SIZE > $MAX_TRASH_SIZE clean up:" && ls $TRASH_DIR | grep -v total | head -1
-        ls $TRASH_DIR | grep -v total | head -1 | xargs -i -n1 rm -fr $TRASH_DIR/{}
-        TRASH_SIZE=`du --max-depth=0 $TRASH_DIR | awk '{print $1}'`
-    done
-    echo "trash-size: $TRASH_SIZE"
-}
-trash-recover() {
-    TRASH_DIR=~/.trash
-    REAL_PATH=`echo $@ | awk -F'-%trash%-' '{ print $2 }' | sed 's/^^/\//g'`
-    if [ -f "$REAL_PATH" ]; then
-        echo "file exist: $REAL_PATH"
-    elif [ -d "$REAL_PATH" ]; then
-        echo "folder exist: $REAL_PATH"
-    else
-        mv $@ $REAL_PATH
-    fi
-}
-trash() {
-    TRASH_DIR=~/.trash
-    REAL_PATH=`realpath $@`
-    TRASH_NAME=`realpath $@ | sed 's/\//^^/g'`
-    TIME=`date "+%Y-%m-%d-%H:%M:%S"`
-    TRASH_PATH=$TRASH_DIR/$TIME-%trash%-$TRASH_NAME
-
-    if [ "$REAL_PATH" != "/" ]; then
-        mkdir -p $TRASH_DIR
-        mv $REAL_PATH $TRASH_PATH
-        echo "del $REAL_PATH to $TRASH_PATH"
-    fi
-    trash-clean
-}
 alias del='trash'
-alias tcl='trash-clean'
-alias tre='trash-recover'
+trash() {
+    case "$1" in 
+        "recover"|"rec")
+            TRASH_DIR=~/.trash
+            REAL_PATH=`echo $@ | awk -F'-%trash%-' '{ print $2 }' | sed 's/^^/\//g'`
+            if [ -f "$REAL_PATH" ]; then
+                echo "file exist: $REAL_PATH"
+            elif [ -d "$REAL_PATH" ]; then
+                echo "folder exist: $REAL_PATH"
+            else
+                mv $@ $REAL_PATH
+            fi
+            ;;
+        "clean"|"cl")
+            TRASH_DIR=~/.trash
+            MAX_TRASH_SIZE=20000000
+            TRASH_SIZE=`du --max-depth=0 $TRASH_DIR | awk '{print $1}'`
+            while [ $TRASH_SIZE -gt $MAX_TRASH_SIZE ]
+            do
+                echo "trash-size: $TRASH_SIZE > $MAX_TRASH_SIZE clean up:" && ls $TRASH_DIR | grep -v total | head -1
+                ls $TRASH_DIR | grep -v total | head -1 | xargs -i -n1 rm -fr $TRASH_DIR/{}
+                TRASH_SIZE=`du --max-depth=0 $TRASH_DIR | awk '{print $1}'`
+            done
+            echo "trash-size: $TRASH_SIZE"
+            ;;
+        *)
+            TRASH_DIR=~/.trash
+            REAL_PATH=`realpath $@`
+            TRASH_NAME=`realpath $@ | sed 's/\//^^/g'`
+            TIME=`date "+%Y-%m-%d-%H:%M:%S"`
+            TRASH_PATH=$TRASH_DIR/$TIME-%trash%-$TRASH_NAME
+
+            if [ "$REAL_PATH" != "/" ]; then
+                mkdir -p $TRASH_DIR
+                mv $REAL_PATH $TRASH_PATH
+                echo "del $REAL_PATH to $TRASH_PATH"
+            fi
+            ;;
+    esac
+}
 
 # proxy
 proxy() {
@@ -99,20 +100,20 @@ proxy() {
             case "$2" in
                 "la")
                     case "$3" in
-                        "h"|"http") export {http,https,ftp}_proxy="http://localhost:1080";;
-                        "s"|"socks") export {http,https,ftp}_proxy="http://localhost:1081";;
+                        "h"|"http") export ALL_PROXY=http://127.0.0.1:1080;;
+                        "s"|"socks") export ALL_PROXY=socks5://127.0.0.1:1081;;
                         *) echo "type error";;
                     esac;;
                 "hk")
                     case "$3" in
-                        "h"|"http") export {http,https,ftp}_proxy="http://localhost:1090";;
-                        "s"|"socks") export {http,https,ftp}_proxy="http://localhost:1091";;
+                        "h"|"http") export ALL_PROXY=http://127.0.0.1:1090;;
+                        "s"|"socks") export ALL_PROXY=socks5://127.0.0.1:1091;;
                         *) echo "type error";;
                     esac;;
                 "yl")
                     case "$3" in
-                        "h"|"http") export {http,https,ftp}_proxy="http://localhost:1070";;
-                        "s"|"socks") export {http,https,ftp}_proxy="http://localhost:1071";;
+                        "h"|"http") export ALL_PROXY=http://127.0.0.1:1070;;
+                        "s"|"socks") export ALL_PROXY=socks5://127.0.0.1:1071;;
                         "l"|"lan") export {http,https,ftp}_proxy="netproxy.yealinkops.com:8123";;
                         *) echo "type error";;
                     esac;;
