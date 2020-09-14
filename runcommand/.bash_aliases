@@ -88,32 +88,35 @@ trash() {
 
 # proxy
 proxy() {
+    PROXY_HOST=127.0.0.1
     case "$1" in 
         "-l"|"--list")
-            echo ALL_PROXY=$ALL_PROXY
+            echo http_proxy=$http_proxy
+            echo https_proxy=$https_proxy
+            echo ftp_proxy=$ftp_proxy
             ;;
         "-c"|"--clean")
-            export ALL_PROXY=""
+            export {http,https,ftp}_proxy=""
             ;;
         "-s"|"--set")
             case "$2" in
                 "la")
                     case "$3" in
-                        "h"|"http") export ALL_PROXY=http://127.0.0.1:1080;;
-                        "s"|"socks") export ALL_PROXY=socks5://127.0.0.1:1081;;
+                        "h"|"http") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1080";;
+                        "s"|"socks") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1081";;
                         *) echo "type error";;
                     esac;;
                 "hk")
                     case "$3" in
-                        "h"|"http") export ALL_PROXY=http://127.0.0.1:1090;;
-                        "s"|"socks") export ALL_PROXY=socks5://127.0.0.1:1091;;
+                        "h"|"http") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1090";;
+                        "s"|"socks") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1091";;
                         *) echo "type error";;
                     esac;;
                 "yl")
                     case "$3" in
-                        "h"|"http") export ALL_PROXY=http://127.0.0.1:1070;;
-                        "s"|"socks") export ALL_PROXY=socks5://127.0.0.1:1071;;
-                        "l"|"lan") export ALL_PROXY="netproxy.yealinkops.com:8123";;
+                        "h"|"http") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1070";;
+                        "s"|"socks") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1071";;
+                        "l"|"lan") export {http,https,ftp}_proxy="netproxy.yealinkops.com:8123";;
                         *) echo "type error";;
                     esac;;
                 *)
@@ -126,10 +129,11 @@ proxy() {
                     echo "type:"
                     echo "    h, http     http_proxy"
                     echo "    s, socks    socks_proxy"
-                    echo "    l, lan      only yealink lan proxy use it"
+                    echo "    l, lan     only yealink lan proxy use it"
                     ;;
             esac;;
         *)
+            echo "PROXY_HOST=${PROXY_HOST}"
             echo "help:"
             echo "    -h, --help                  help"
             echo "    -l, --list                  list current proxy and optional proxy"
