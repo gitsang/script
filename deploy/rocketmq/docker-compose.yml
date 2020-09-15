@@ -1,5 +1,5 @@
-# docker-compose up -d
 # mkdir -p /opt/rocketmq/{conf,logs,store}
+# docker-compose up -d
 
 version: '2'
 services:

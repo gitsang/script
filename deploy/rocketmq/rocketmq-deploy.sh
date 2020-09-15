@@ -1,4 +1,6 @@
 
+# ----------------------------------------------------------------------------------------------------------------------
+
 kill_namesrv() {
     ps aux | grep namesrv | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
 }
@@ -16,6 +18,8 @@ kill_all() {
     kill_broker
     kill_console
 }
+
+# ----------------------------------------------------------------------------------------------------------------------
 
 clean_data_console() {
     rm -fr /tmp/tomcat*
@@ -37,6 +41,8 @@ drop_caches() {
     free -h | grep Mem
 }
 
+# ----------------------------------------------------------------------------------------------------------------------
+
 config_loglevel() {
     sed -i 's/INFO/DEBUG/g' conf/logback_namesrv.xml
     sed -i 's/INFO/DEBUG/g' conf/logback_broker.xml
@@ -57,17 +63,16 @@ config_broker_master_slave() {
     mkdir -p conf
     mkdir -p conf/${BROKER_PATH}
     echo "" > conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "brokerClusterName=DefaultCluster" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "brokerName=${brokerName}"         >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "brokerId=${brokerId}"             >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "deleteWhen=04"                    >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "fileReservedTime=48"              >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "brokerRole=${brokerRole}"         >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "flushDiskType=ASYNC_FLUSH"        >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "namesrvAddr=${namesrvAddr}"       >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "listenPort=${listenPort}"         >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "brokerIP1=${brokerIP1}"        >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    
+    echo "brokerClusterName     = DefaultCluster"                           >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "brokerName            = ${brokerName}"                            >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "brokerId              = ${brokerId}"                              >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "deleteWhen            = 04"                                       >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "fileReservedTime      = 48"                                       >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "brokerRole            = ${brokerRole}"                            >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "flushDiskType         = ASYNC_FLUSH"                              >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "namesrvAddr           = ${namesrvAddr}"                           >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "listenPort            = ${listenPort}"                            >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "brokerIP1             = ${brokerIP1}"                             >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storePathRootDir      = data/${BROKER_PATH}/${BROKER_NAME}/store" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storePathCommitLog    = data/${BROKER_PATH}/${BROKER_NAME}/log"   >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storePathConsumeQueue = data/${BROKER_PATH}/${BROKER_NAME}/queue" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
@@ -80,24 +85,25 @@ config_broker_dledger() {
     mkdir -p conf
     mkdir -p conf/${BROKER_PATH}
     echo "" > conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "brokerClusterName=RaftCluster" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "enableDLegerCommitLog=true"    >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "sendMessageThreadPoolNums=16"  >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "brokerName=${brokerName}"      >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "dLegerSelfId=${dLegerSelfId}"  >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "dLegerGroup=${dLegerGroup}"    >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "dLegerPeers=${dLegerPeers}"    >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "namesrvAddr=${namesrvAddr}"    >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "listenPort=${listenPort}"      >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "brokerIP1=${brokerIP1}"        >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-
-    echo "storePathRootDir      = data/${BROKER_PATH}/${BROKER_NAME}/store" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "storePathCommitLog    = data/${BROKER_PATH}/${BROKER_NAME}/log"   >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "storePathConsumeQueue = data/${BROKER_PATH}/${BROKER_NAME}/queue" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "storePathIndex        = data/${BROKER_PATH}/${BROKER_NAME}/index" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "storeCheckpoint       = data/${BROKER_PATH}/${BROKER_NAME}/ckp"   >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
-    echo "abortFile             = data/${BROKER_PATH}/${BROKER_NAME}/abort" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "brokerClusterName         = RaftCluster"                              >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "enableDLegerCommitLog     = true"                                     >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "sendMessageThreadPoolNums = 16"                                       >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "brokerName                = ${brokerName}"                            >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "dLegerSelfId              = ${dLegerSelfId}"                          >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "dLegerGroup               = ${dLegerGroup}"                           >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "dLegerPeers               = ${dLegerPeers}"                           >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "namesrvAddr               = ${namesrvAddr}"                           >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "listenPort                = ${listenPort}"                            >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "brokerIP1                 = ${brokerIP1}"                             >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "storePathRootDir          = data/${BROKER_PATH}/${BROKER_NAME}/store" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "storePathCommitLog        = data/${BROKER_PATH}/${BROKER_NAME}/log"   >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "storePathConsumeQueue     = data/${BROKER_PATH}/${BROKER_NAME}/queue" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "storePathIndex            = data/${BROKER_PATH}/${BROKER_NAME}/index" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "storeCheckpoint           = data/${BROKER_PATH}/${BROKER_NAME}/ckp"   >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "abortFile                 = data/${BROKER_PATH}/${BROKER_NAME}/abort" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
 }
+
+# ----------------------------------------------------------------------------------------------------------------------
 
 run_namesrv_core() {
     mkdir -p data/namesrv/
@@ -105,11 +111,13 @@ run_namesrv_core() {
     nohup sh bin/mqnamesrv -c conf/namesrv/${NAMESRV_NAME}.conf > data/namesrv/${NAMESRV_NAME}.log 2>&1 &
 }
 
-run_broker() {
+run_broker_core() {
     mkdir -p data/${BROKER_PATH}/
     echo "run ${BROKER_PATH}/${BROKER_NAME}"
     nohup sh bin/mqbroker -c conf/${BROKER_PATH}/${BROKER_NAME}.properties > data/${BROKER_PATH}/${BROKER_NAME}.log 2>&1 &
 }
+
+# ----------------------------------------------------------------------------------------------------------------------
 
 run_namesrv() {
     NAMESRV_NAME=namesrv-a
@@ -134,7 +142,7 @@ run_2m2s_async() {
         brokerRole=ASYNC_MASTER
         listenPort=10010
         config_broker_master_slave
-        run_broker
+        run_broker_core
         
         # broker-a-s
         BROKER_NAME=broker-a-s
@@ -142,7 +150,7 @@ run_2m2s_async() {
         brokerRole=SLAVE
         listenPort=10020
         config_broker_master_slave
-        run_broker
+        run_broker_core
     fi
 
     if [[ "$1" == "b" ]] || [[ "$1" == "" ]]; then
@@ -157,7 +165,7 @@ run_2m2s_async() {
         brokerRole=ASYNC_MASTER
         listenPort=20010
         config_broker_master_slave
-        run_broker
+        run_broker_core
         
         # broker-b-s
         BROKER_NAME=broker-b-s
@@ -165,7 +173,7 @@ run_2m2s_async() {
         brokerRole=SLAVE
         listenPort=20020
         config_broker_master_slave
-        run_broker
+        run_broker_core
     fi
 }
 
@@ -185,21 +193,21 @@ run_dledger() {
     dLegerSelfId=n0
     listenPort=39${NODE}00
     config_broker_dledger
-    run_broker
+    run_broker_core
 
     # n1
     BROKER_NAME=broker-n${NODE}1
     dLegerSelfId=n1
     listenPort=39${NODE}10
     config_broker_dledger
-    run_broker
+    run_broker_core
     
     # n2
     BROKER_NAME=broker-n${NODE}2
     dLegerSelfId=n2
     listenPort=39${NODE}20
     config_broker_dledger
-    run_broker
+    run_broker_core
 }
 
 run_console() {
@@ -223,9 +231,19 @@ run_console() {
     echo rocketmq-console at http://10.200.112.67:${PORT}/
 }
 
+# ----------------------------------------------------------------------------------------------------------------------
+
 case "$1" in
     "help")
-        echo "usage: $0 init/run [namesrv/broker [async/dledger]/console [port:-8080]]/kill [all/namesrv/broker/console]/reboot [n0/n1/n2]/auto/help"
+        echo "usage: $0 options"
+        echo "options:"
+        echo "    auto                              [warning] will auto run, do not use it unless you know what you do"
+        echo "    init                              init config and loglevel, kill all rocketmq progress, reset data file, drop caches"
+        echo "    run namesrv                       run namesrv [default will run namesrv-a at localhost:9876]"
+        echo "        broker async [a/b]            run broker in async model, a/b to define which broker cluster to run"
+        echo "        broker dledger [num]          run broker in dledger model, num to define which broker cluster to run (can be 1-9)"
+        echo "        console [port:-8080]          run console [default at localhost:8080]"
+        echo "    kill all/namesrv/broker/console   kill process"
         ;;
     "init")
         config_running
@@ -279,20 +297,6 @@ case "$1" in
                 ;;
         esac
         ;;
-    "reboot")
-        BROKER_PATH=dledger
-        if [ "$2" == "n0" ]; then
-            BROKER_NAME=broker-n0
-        elif [ "$2" == "n1" ]; then
-            BROKER_NAME=broker-n1
-        elif [ "$2" == "n2" ]; then
-            BROKER_NAME=broker-n2
-        else
-            echo "usage $0 reboot n0/n1/n2"
-            exit
-        fi
-        reboot_broker
-        ;;
     "auto")
         $0 init
         $0 run namesrv
@@ -302,5 +306,4 @@ case "$1" in
         ;;
     *)
         $0 help
-        #bash -x $0 auto
 esac
