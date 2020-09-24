@@ -26,45 +26,40 @@ set shiftwidth=4
 set softtabstop=4
 set tabstop=4
 set expandtab
-noremap <LEADER><TAB> :%retab!<CR>gg=G<C-o><C-o>zz
 map =b =iB<C-o>
  
 "--------------------
-" Search and Highlight
+" Leader Keymap
 "--------------------
-set hlsearch
-exec "nohlsearch"
-set incsearch
-set ignorecase
-set smartcase
+" source vimrc
+noremap <LEADER>r :source $MYVIMRC<CR>
+" no highlight
 noremap <LEADER><CR> :nohlsearch<CR>
+" remove trailing spaces
+noremap <LEADER>s $a  g_ldwj
+" retab
+noremap <LEADER><TAB> :%retab!<CR>gg=G<C-o><C-o>zz
+" unix format
+noremap <LEADER>f :set ff=unix<CR>:set ff?<CR>
 
 "--------------------
-" Shortcut Key
+" Keymap
 "--------------------
-map R :source $MYVIMRC<CR>
 map ; $
 map j gj
 map k gk
 map S :w<CR>
 map Q :q<CR>
 
-let @c = "^i//j"
-let @u = "^:s/\\/\\//j"
-map <LEADER>/ @c
-map <LEADER>? @u:nohl<CR>
-map <LEADER>9 ko#if 0<esc>
-map <LEADER>0 o#endif<esc>
+"--------------------
+" Search and Highlight
+"--------------------
+exec "nohlsearch"
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
 
-"--------------------
-" Register
-"--------------------
-let @w = "+"
-let @s = "-"
-let @a = "<"
-let @d = ">"
-let @f = "$a  g_ldwj"
- 
 "--------------------
 " Cursor
 "--------------------
