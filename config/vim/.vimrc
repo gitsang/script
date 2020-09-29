@@ -71,7 +71,7 @@ highlight CursorLine cterm=NONE ctermbg=Black
 " Brown(DarkYellow)、LightGray(LightGrey、Gray、Grey)、DarkGray(DarkGrey)、
 " Blue(LightBlue)、Green(LightGreen)、Cyan(LightCyan)、Red(LightRed)、
 " Magenta(LightMagenta)、Yellow(LightYellow)、White
- 
+
 "--------------------
 " Plugin
 "--------------------
@@ -81,11 +81,16 @@ filetype plugin on
 
 if empty(system('command -v git'))
     silent !yum install git -y
+    silent !dnf install git -y
+    silent !apt install git -y
 endif
 if empty(glob('~/.vim/bundle/Vundle.vim'))
     silent !git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
     autocmd VimEnter * source $MYVIMRC
     autocmd VimEnter * PluginInstall
+else
+    "autocmd FileType go TagbarToggle
+    "autocmd FileType go NERDTreeToggle
 endif
 
 set rtp+=~/.vim/bundle/Vundle.vim
