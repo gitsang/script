@@ -1,6 +1,42 @@
 
 # ----------------------------------------------------------------------------------------------------------------------
 
+rocketmq_build() {
+    ROCKETMQ_VERSION=4.7.0
+    ROCKETMQ_ZIP=rocketmq-all-${ROCKETMQ_VERSION}-source-release.zip
+    ROCKETMQ_DIR=rocketmq-all-${ROCKETMQ_VERSION}-source-release
+    ROCKETMQ_TARGET_DIR=distribution/target/rocketmq-${ROCKETMQ_VERSION}/rocketmq-${ROCKETMQ_VERSION}
+
+    # make tmp file
+    CWD=`pwd`
+    mkdir -p tmp_rocketmq
+    cd tmp_rocketmq
+    # download source release zip
+    if [ ! -f "${ROCKETMQ_ZIP}" ]; then
+        wget https://mirrors.tuna.tsinghua.edu.cn/apache/rocketmq/$VERSION/$ROCKETMQ_ZIP
+    fi
+    # unzip file
+    if [ ! -d "${ROCKETMQ_DIR}" ]; then
+        unzip ${ROCKETMQ_ZIP}
+    fi
+    # compile and copy target
+    cd ${ROCKETMQ_DIR}
+    if [ ! -d "${ROCKETMQ_TARGET_DIR}" ]; then
+        mvn -Prelease-all -DskipTests clean install -U
+    fi
+    if [ ! -d "${CWD}/rocketmq" ]; then
+        cp -r ${ROCKETMQ_TARGET_DIR} $CWD/rocketmq
+    fi
+    # copy deploy shell
+    cd ${CWD}
+    if [ ! -f "rocketmq/rocketmq-deploy.sh" ]; then
+        cp rocketmq-deploy.sh rocketmq/
+        chmod +x rocketmq/rocketmq-deploy.sh
+    fi
+}
+
+# ----------------------------------------------------------------------------------------------------------------------
+
 kill_namesrv() {
     ps aux | grep namesrv | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
 }
@@ -48,9 +84,13 @@ config_loglevel() {
     sed -i 's/INFO/DEBUG/g' conf/logback_broker.xml
 }
 
+config_acl() {
+    cp  conf/plain_acl.yml conf/${BROKER_PATH}/plain_acl.yml
+}
+
 config_running() {
-    sed -i '/-server/{ s/Xms.g/Xms2g/g; s/Xmx.g/Xmx2g/g; s/Xmn.g/Xmn1g/g;}' bin/runbroker.sh
-    sed -i '/-server/{ s/Xms.g/Xms2g/g; s/Xmx.g/Xmx2g/g; s/Xmn.g/Xmn1g/g;}' bin/runserver.sh
+    sed -i '/-server/{ s/Xms.g/Xms1g/g; s/Xmx.g/Xmx1g/g; s/Xmn.g/Xmn1g/g;}' bin/runbroker.sh
+    sed -i '/-server/{ s/Xms.g/Xms1g/g; s/Xmx.g/Xmx1g/g; s/Xmn.g/Xmn1g/g;}' bin/runserver.sh
 }
 
 config_namesrv() {
@@ -73,12 +113,14 @@ config_broker_master_slave() {
     echo "namesrvAddr           = ${namesrvAddr}"                           >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "listenPort            = ${listenPort}"                            >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "brokerIP1             = ${brokerIP1}"                             >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "aclEnable             = true"                                     >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storePathRootDir      = data/${BROKER_PATH}/${BROKER_NAME}/store" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storePathCommitLog    = data/${BROKER_PATH}/${BROKER_NAME}/log"   >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storePathConsumeQueue = data/${BROKER_PATH}/${BROKER_NAME}/queue" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storePathIndex        = data/${BROKER_PATH}/${BROKER_NAME}/index" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storeCheckpoint       = data/${BROKER_PATH}/${BROKER_NAME}/ckp"   >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "abortFile             = data/${BROKER_PATH}/${BROKER_NAME}/abort" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    config_acl
 }
 
 config_broker_dledger() {
@@ -95,12 +137,14 @@ config_broker_dledger() {
     echo "namesrvAddr               = ${namesrvAddr}"                           >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "listenPort                = ${listenPort}"                            >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "brokerIP1                 = ${brokerIP1}"                             >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    echo "aclEnable                 = true"                                     >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storePathRootDir          = data/${BROKER_PATH}/${BROKER_NAME}/store" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storePathCommitLog        = data/${BROKER_PATH}/${BROKER_NAME}/log"   >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storePathConsumeQueue     = data/${BROKER_PATH}/${BROKER_NAME}/queue" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storePathIndex            = data/${BROKER_PATH}/${BROKER_NAME}/index" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "storeCheckpoint           = data/${BROKER_PATH}/${BROKER_NAME}/ckp"   >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
     echo "abortFile                 = data/${BROKER_PATH}/${BROKER_NAME}/abort" >> conf/${BROKER_PATH}/${BROKER_NAME}.properties
+    config_acl
 }
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -210,6 +254,8 @@ run_dledger() {
     run_broker_core
 }
 
+# ----------------------------------------------------------------------------------------------------------------------
+
 run_console() {
     PORT=${1:-8080}
     mkdir -p data/rocketmq-console/
@@ -238,12 +284,16 @@ case "$1" in
         echo "usage: $0 options"
         echo "options:"
         echo "    auto                              [warning] will auto run, do not use it unless you know what you do"
+        echo "    build                             download source release and compile project"
         echo "    init                              init config and loglevel, kill all rocketmq progress, reset data file, drop caches"
         echo "    run namesrv                       run namesrv [default will run namesrv-a at localhost:9876]"
         echo "        broker async [a/b]            run broker in async model, a/b to define which broker cluster to run"
         echo "        broker dledger [num]          run broker in dledger model, num to define which broker cluster to run (can be 1-9)"
         echo "        console [port:-8080]          run console [default at localhost:8080]"
         echo "    kill all/namesrv/broker/console   kill process"
+        ;;
+    "build")
+        rocketmq_build
         ;;
     "init")
         config_running
@@ -300,8 +350,7 @@ case "$1" in
     "auto")
         $0 init
         $0 run namesrv
-        $0 run broker dledger 0
-        $0 run broker dledger 1
+        $0 run broker async a
         $0 run console
         ;;
     *)
