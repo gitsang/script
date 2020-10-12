@@ -43,12 +43,20 @@ alias ..5='cd ../../../../'
 alias ......='cd ../../../../'
 
 # other
-alias vi='vim'
 alias wip='curl ifconfig.me'
 alias ports='netstat -ntlp'
 alias pss='ps auxf --sort=cmd | grep -v "\[*\]$" | grep -v -E "bash|ps -ef|grep"'
 alias eplib='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib && echo $LD_LIBRARY_PATH'
 alias drst='docker stop $(docker ps -aq) && docker rm $(docker ps -aq)'
+
+# vim
+alias vi='vim'
+alias vnp='vim --noplugin'
+alias vit='vim --startuptime startuptime.log'
+
+# git
+alias upimg='git add image.yaml && git commit -m "update image.yaml" && git push'
+alias autopush='git add --all . && git commit -m "auto commit" && git push && git status'
 
 # jobs
 alias j='jobs'
@@ -99,6 +107,22 @@ trash() {
     esac
 }
 
+# backup
+alias bk='backup'
+backup() {
+    BACKUP_DIR=~/..backup
+    REAL_PATH=`realpath $@`
+    BACKUP_NAME=`realpath $@ | sed 's/\//^^/g'`
+    TIME=`date "+%Y-%m-%d-%H:%M:%S"`
+    BACKUP_PATH=$BACKUP_DIR/$TIME-%trash%-$BACKUP_NAME
+
+    if [ "$REAL_PATH" != "/" ]; then
+        mkdir -p $BACKUP_DIR
+        cp -r $REAL_PATH $BACKUP_PATH
+        echo "copy $REAL_PATH to $BACKUP_PATH"
+    fi
+}
+
 # proxy
 proxy() {
     PROXY_HOST=127.0.0.1
@@ -116,19 +140,19 @@ proxy() {
                 "la")
                     case "$3" in
                         "h"|"http") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1080";;
-                        "s"|"socks") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1081";;
+                        "s"|"socks") export {http,https,ftp}_proxy="socks5://${PROXY_HOST}:1081";;
                         *) echo "type error";;
                     esac;;
                 "hk")
                     case "$3" in
                         "h"|"http") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1090";;
-                        "s"|"socks") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1091";;
+                        "s"|"socks") export {http,https,ftp}_proxy="socks5://${PROXY_HOST}:1091";;
                         *) echo "type error";;
                     esac;;
                 "yl")
                     case "$3" in
                         "h"|"http") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1070";;
-                        "s"|"socks") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1071";;
+                        "s"|"socks") export {http,https,ftp}_proxy="socks5://${PROXY_HOST}:1071";;
                         "l"|"lan") export {http,https,ftp}_proxy="netproxy.yealinkops.com:8123";;
                         *) echo "type error";;
                     esac;;
@@ -158,6 +182,7 @@ proxy() {
     esac
 }
 
+# tunnel
 tunnel() {
     SECTOR=x
     if [ $SECTOR == "x" ]; then
@@ -189,8 +214,3 @@ tunnel() {
     fi
 }
 
-# =============== User specific aliases and functions =============== #
-
-# git
-alias upimg='git add image.yaml && git commit -m "update image.yaml" && git push'
-alias autopush='git add --all . && git commit -m "auto commit" && git push && git status'
