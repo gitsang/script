@@ -88,118 +88,7 @@ if empty(glob(expand('~/.vim/autoload/plug.vim')))
 endif    
 
 call plug#begin()
-
-    "--------------------
-    " Markdown
-    "--------------------
-    Plug 'plasticboy/vim-markdown', { 'for': ['md'] }
-        let g:vim_markdown_folding_disabled=1
-
-    Plug 'dhruvasagar/vim-table-mode', { 'for': ['md'] }
-        let g:table_mode_corner = '|'
-        let g:table_mode_border = 0
-        let g:table_mode_fillchar = ' '
-
-        function! s:isAtStartOfLine(mapping)
-            let text_before_cursor = getline('.')[0 : col('.')-1]
-            let mapping_pattern = '\V' . escape(a:mapping, '\')
-            let comment_pattern = '\V' . escape(substitute(&l:commentstring, '%s.*$', '', ''), '\')
-            return (text_before_cursor =~? '^' . ('\v(' . comment_pattern . '\v)?') . '\s*\v' . mapping_pattern . '\v$')
-        endfunction
-
-        inoreabbrev <expr> <bar><bar>
-                    \ <SID>isAtStartOfLine('\|\|') ?
-                    \ '<c-o>:TableModeEnable<cr><bar><space><bar><left><left>' : '<bar><bar>'
-        inoreabbrev <expr> __
-                    \ <SID>isAtStartOfLine('__') ?
-                    \ '<c-o>:silent! TableModeDisable<cr>' : '__'
-
-    "--------------------
-    " NERDTree
-    "--------------------
-    Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
-        map <leader>t :NERDTreeToggle<CR>
-
-    Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeToggle' }
-        let g:NERDTreeGitStatusIndicatorMapCustom = {
-                \ "Modified"  : "✹",
-                \ "Staged"    : "✚",
-                \ "Untracked" : "✭",
-                \ "Renamed"   : "➜",
-                \ "Unmerged"  : "═",
-                \ "Deleted"   : "✖",
-                \ "Dirty"     : "✗",
-                \ "Clean"     : "✔︎",
-                \ "Ignored"   : "☒",
-                \ "Unknown"   : "?"
-                \ }
-
-    "--------------------
-    " Vim-go
-    "--------------------
-    Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': ['go'] }
-        let g:syntastic_go_checkers = ['go', 'golint']
-
-        let g:go_fmt_command = "goimports" " 格式化将默认的 gofmt 替换
-        let g:go_autodetect_gopath = 1
-        let g:go_list_type = "quickfix"
-
-        let g:go_version_warning = 1
-        let g:go_highlight_types = 1
-        let g:go_highlight_fields = 1
-        let g:go_highlight_functions = 1
-        let g:go_highlight_function_calls = 1
-        let g:go_highlight_operators = 1
-        let g:go_highlight_extra_types = 1
-        let g:go_highlight_methods = 1
-        let g:go_highlight_generate_tags = 1
-
-    Plug 'dgryski/vim-godef', { 'for': ['go'] }
-        let g:godef_split=2
-
-    "--------------------
-    " Tagbar
-    "--------------------
-    Plug 'majutsushi/tagbar'
-        map <leader>g :TagbarToggle<CR>
-        if empty(system('command -v ctags'))
-            silent !yum install ctags -y
-        endif
-        let g:tagbar_type_go = {
-                \ 'ctagstype' : 'go',
-                \ 'kinds'     : [
-                \ 'p:package',
-                \ 'i:imports:1',
-                \ 'c:constants',
-                \ 'v:variables',
-                \ 't:types',
-                \ 'n:interfaces',
-                \ 'w:fields',
-                \ 'e:embedded',
-                \ 'm:methods',
-                \ 'r:constructor',
-                \ 'f:functions'
-                \ ],
-                \ 'sro' : '.',
-                \ 'kind2scope' : {
-                \ 't' : 'ctype',
-                \ 'n' : 'ntype'
-                \ },
-                \ 'scope2kind' : {
-                \ 'ctype' : 't',
-                \ 'ntype' : 'n'
-                \ },
-                \ 'ctagsbin'  : 'gotags',
-                \ 'ctagsargs' : '-sort -silent'
-                \ }
-
-    "--------------------
-    " You Complete Me
-    "--------------------
-    Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --go-completer', 'for': ['go'] }
-        " --clang-completer --system-libclang
-        let g:ycm_global_ycm_extra_conf='~/.vim/plugged/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py'
-
+    
     "--------------------
     " Vim airline
     "--------------------
@@ -245,6 +134,117 @@ call plug#begin()
 
     Plug 'vim-airline/vim-airline-themes'
         let g:airline_theme='luna'
+
+    "--------------------
+    " Markdown
+    "--------------------
+    Plug 'plasticboy/vim-markdown', { 'for': ['md'] }
+        let g:vim_markdown_folding_disabled=1
+
+    Plug 'dhruvasagar/vim-table-mode', { 'for': ['md'] }
+        let g:table_mode_corner = '|'
+        let g:table_mode_border = 0
+        let g:table_mode_fillchar = ' '
+
+        function! s:isAtStartOfLine(mapping)
+            let text_before_cursor = getline('.')[0 : col('.')-1]
+            let mapping_pattern = '\V' . escape(a:mapping, '\')
+            let comment_pattern = '\V' . escape(substitute(&l:commentstring, '%s.*$', '', ''), '\')
+            return (text_before_cursor =~? '^' . ('\v(' . comment_pattern . '\v)?') . '\s*\v' . mapping_pattern . '\v$')
+        endfunction
+
+        inoreabbrev <expr> <bar><bar>
+                    \ <SID>isAtStartOfLine('\|\|') ?
+                    \ '<c-o>:TableModeEnable<cr><bar><space><bar><left><left>' : '<bar><bar>'
+        inoreabbrev <expr> __
+                    \ <SID>isAtStartOfLine('__') ?
+                    \ '<c-o>:silent! TableModeDisable<cr>' : '__'
+
+    "--------------------
+    " NERDTree
+    "--------------------
+    Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+        map <leader>t :NERDTreeToggle<CR>
+
+    Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeToggle' }
+        let g:NERDTreeGitStatusIndicatorMapCustom = {
+                \ "Modified"  : "✹",
+                \ "Staged"    : "✚",
+                \ "Untracked" : "✭",
+                \ "Renamed"   : "➜",
+                \ "Unmerged"  : "═",
+                \ "Deleted"   : "✖",
+                \ "Dirty"     : "✗",
+                \ "Clean"     : "✔︎",
+                \ "Ignored"   : "☒",
+                \ "Unknown"   : "?"
+                \ }
+    
+    "--------------------
+    " Tagbar
+    "--------------------
+    Plug 'majutsushi/tagbar', { 'on': 'TagbarToggle' }
+        map <leader>g :TagbarToggle<CR>
+        if empty(system('command -v ctags'))
+            silent !yum install ctags -y
+        endif
+        let g:tagbar_type_go = {
+                \ 'ctagstype' : 'go',
+                \ 'kinds'     : [
+                \ 'p:package',
+                \ 'i:imports:1',
+                \ 'c:constants',
+                \ 'v:variables',
+                \ 't:types',
+                \ 'n:interfaces',
+                \ 'w:fields',
+                \ 'e:embedded',
+                \ 'm:methods',
+                \ 'r:constructor',
+                \ 'f:functions'
+                \ ],
+                \ 'sro' : '.',
+                \ 'kind2scope' : {
+                \ 't' : 'ctype',
+                \ 'n' : 'ntype'
+                \ },
+                \ 'scope2kind' : {
+                \ 'ctype' : 't',
+                \ 'ntype' : 'n'
+                \ },
+                \ 'ctagsbin'  : 'gotags',
+                \ 'ctagsargs' : '-sort -silent'
+                \ }
+
+    "--------------------
+    " Vim-go
+    "--------------------
+    Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': ['go'] }
+        let g:syntastic_go_checkers = ['go', 'golint']
+
+        let g:go_fmt_command = "goimports" " 格式化将默认的 gofmt 替换
+        let g:go_autodetect_gopath = 1
+        let g:go_list_type = "quickfix"
+
+        let g:go_version_warning = 1
+        let g:go_highlight_types = 1
+        let g:go_highlight_fields = 1
+        let g:go_highlight_functions = 1
+        let g:go_highlight_function_calls = 1
+        let g:go_highlight_operators = 1
+        let g:go_highlight_extra_types = 1
+        let g:go_highlight_methods = 1
+        let g:go_highlight_generate_tags = 1
+
+    Plug 'dgryski/vim-godef', { 'for': ['go'] }
+        let g:godef_split=2
+
+    "--------------------
+    " You Complete Me
+    "--------------------
+    Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --go-completer', 'for': ['go'] }
+        " --clang-completer --system-libclang
+        let g:ycm_global_ycm_extra_conf='~/.vim/plugged/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py'
 
     "--------------------
     " Other
