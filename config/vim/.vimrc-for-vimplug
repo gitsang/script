@@ -78,6 +78,13 @@ highlight CursorLine cterm=NONE ctermbg=Black
 "--------------------
 " Plug
 "--------------------
+if version < 800 || !has("python3")
+    echom 'update vim:'
+    echom '    git clone http://github.com/vim/vim.git'
+    echom '    ./configure --enable-python3interp=yes'
+    echom '    make && make install'
+endif
+
 filetype off
 filetype plugin indent on
 filetype plugin on
@@ -85,10 +92,10 @@ filetype plugin on
 if empty(glob(expand('~/.vim/autoload/plug.vim')))
     silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif    
+endif
 
 call plug#begin()
-    
+
     "--------------------
     " Vim airline
     "--------------------
@@ -138,10 +145,10 @@ call plug#begin()
     "--------------------
     " Markdown
     "--------------------
-    Plug 'plasticboy/vim-markdown', { 'for': ['md'] }
+    Plug 'plasticboy/vim-markdown', { 'for': ['markdown'] }
         let g:vim_markdown_folding_disabled=1
 
-    Plug 'dhruvasagar/vim-table-mode', { 'for': ['md'] }
+    Plug 'dhruvasagar/vim-table-mode', { 'for': ['markdown'] }
         let g:table_mode_corner = '|'
         let g:table_mode_border = 0
         let g:table_mode_fillchar = ' '
@@ -179,15 +186,12 @@ call plug#begin()
                 \ "Ignored"   : "☒",
                 \ "Unknown"   : "?"
                 \ }
-    
+
     "--------------------
     " Tagbar
     "--------------------
-    Plug 'majutsushi/tagbar', { 'on': 'TagbarToggle' }
+    Plug 'majutsushi/tagbar', { 'do': 'yum install ctags -y', 'on': 'TagbarToggle' }
         map <leader>g :TagbarToggle<CR>
-        if empty(system('command -v ctags'))
-            silent !yum install ctags -y
-        endif
         let g:tagbar_type_go = {
                 \ 'ctagstype' : 'go',
                 \ 'kinds'     : [
@@ -219,32 +223,36 @@ call plug#begin()
     "--------------------
     " Vim-go
     "--------------------
-    Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': ['go'] }
-        let g:syntastic_go_checkers = ['go', 'golint']
+    if !empty(system('command -v go'))
+        Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': ['go'] }
+            let g:syntastic_go_checkers = ['go', 'golint']
 
-        let g:go_fmt_command = "goimports" " 格式化将默认的 gofmt 替换
-        let g:go_autodetect_gopath = 1
-        let g:go_list_type = "quickfix"
+            "let g:go_fmt_command = "goimports"
+            let g:go_autodetect_gopath = 1
+            let g:go_list_type = "quickfix"
 
-        let g:go_version_warning = 1
-        let g:go_highlight_types = 1
-        let g:go_highlight_fields = 1
-        let g:go_highlight_functions = 1
-        let g:go_highlight_function_calls = 1
-        let g:go_highlight_operators = 1
-        let g:go_highlight_extra_types = 1
-        let g:go_highlight_methods = 1
-        let g:go_highlight_generate_tags = 1
+            let g:go_version_warning = 1
+            let g:go_highlight_types = 1
+            let g:go_highlight_fields = 1
+            let g:go_highlight_functions = 1
+            let g:go_highlight_function_calls = 1
+            let g:go_highlight_operators = 1
+            let g:go_highlight_extra_types = 1
+            let g:go_highlight_methods = 1
+            let g:go_highlight_generate_tags = 1
 
-    Plug 'dgryski/vim-godef', { 'for': ['go'] }
-        let g:godef_split=2
+        Plug 'dgryski/vim-godef', { 'for': ['go'] }
+            let g:godef_split=2
+    endif
 
     "--------------------
-    " You Complete Me
+    " YouCompleteMe
     "--------------------
-    Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --go-completer', 'for': ['go'] }
-        " --clang-completer --system-libclang
-        let g:ycm_global_ycm_extra_conf='~/.vim/plugged/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py'
+    if version > 800 && has("python3")
+        Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --go-completer', 'for': ['go'] }
+            " --clang-completer --system-libclang
+            let g:ycm_global_ycm_extra_conf='~/.vim/plugged/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py'
+    endif
 
     "--------------------
     " Other
@@ -255,12 +263,4 @@ call plug#begin()
     "Plug 'iamcco/markdown-preview.vim'
 
 call plug#end()
-
-"--------------------
-" Vim update doc
-"--------------------
-" git clone https://github.com/vim/vim.git
-" ./configure  --enable-python3interp=yes
-" make -j8
-" make install
 
