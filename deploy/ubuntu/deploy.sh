@@ -65,10 +65,12 @@ filerun_db() {
     ## database
     apt install -y mysql-server
     mysql -u root -e 'CREATE DATABASE filerun;'
+    echo ""
     echo "add filerun user by:"
     echo "    CREATE USER 'filerun'@'localhost' IDENTIFIED BY 'filerun';"
     echo "    GRANT ALL ON filerun.* TO 'filerun'@'localhost';"
     echo "    FLUSH PRIVILEGES;"
+    echo ""
     mysql
 }
 
@@ -110,4 +112,6 @@ init
 config
 samba
 h5ai
-filerun
+filerun_db
+filerun_php
+filerun_install
