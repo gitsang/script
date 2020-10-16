@@ -57,11 +57,11 @@ h5ai() {
     echo "h5ai install finished."
 }
 
-filerun() {
-    # filerun
-    # http://blog.filerun.com/
-    # http://blog.filerun.com/how-to-install-filerun-on-ubuntu-20/
+# filerun
+# http://blog.filerun.com/
+# http://blog.filerun.com/how-to-install-filerun-on-ubuntu-20/
 
+filerun_db() {
     ## database
     apt install -y mysql-server
     mysql -u root -e 'CREATE DATABASE filerun;'
@@ -70,7 +70,9 @@ filerun() {
     echo "    GRANT ALL ON filerun.* TO 'filerun'@'localhost';"
     echo "    FLUSH PRIVILEGES;"
     mysql
+}
 
+filerun_php() {
     ## php
     apt install -y \
         php php-cli \
@@ -78,16 +80,23 @@ filerun() {
         php-mbstring php-zip php-curl php-gd \
         php-ldap php-xml php-imagick
 
-    # wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
-    # tar zxvf ioncube_loaders_lin_x86-64.tar.gz
-    # cp ioncube/ioncube_loader_lin_7.2.so /usr/lib/php/20171007
-    # echo "zend_extension = /usr/lib/php/ioncube_loader_lin_7.2.so" > \
-    #     /etc/php/7.2/apache2/conf.d/00-ioncube.ini
-
-    ## filerun php-apache config
     PHP_VERSION=`php -v | awk 'NR==1' | awk -F ' ' '{print substr($2,1,3)}'`
-    cp script/deploy/filerun/filerun.ini /etc/php/${PHP_VERSION}/apache2/conf.d/filerun.ini
+    IONCUBE=ioncube_loader_lin_${PHP_VERSION}
+    EXFILE=`ls /usr/lib/php/ | awk 'NR==1 {print $1}'`
 
+    ## ioncube
+    # wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
+    wget http://aliyun.sang.pp.ua:8080/share/package/filesystem/ioncube_loaders_lin_x86-64.tar.gz
+    tar zxvf ioncube_loaders_lin_x86-64.tar.gz
+    cp ioncube/${IONCUBE}.so /usr/lib/php/${EXFILE}/
+    echo "zend_extension = /usr/lib/php/${IONCUBE}.so" > \
+        /etc/php/${PHP_VERSION}/apache2/conf.d/00-ioncube.ini
+
+    ## php-apache config
+    cp script/deploy/filerun/filerun.ini /etc/php/${PHP_VERSION}/apache2/conf.d/filerun.ini
+}
+
+filerun_install() {
     ## install filerun
     #wget -O FileRun.zip http://www.filerun.com/download-latest
     wget http://aliyun.sang.pp.ua:8080/share/package/filesystem/FileRun.zip
