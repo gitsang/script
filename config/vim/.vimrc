@@ -190,7 +190,7 @@ call plug#begin()
     "--------------------
     " Tagbar
     "--------------------
-    Plug 'majutsushi/tagbar', { 'do': 'yum install ctags -y', 'on': 'TagbarToggle' }
+    Plug 'majutsushi/tagbar', { 'do': 'apt install ctags -y', 'on': 'TagbarToggle' }
         map <leader>g :TagbarToggle<CR>
         let g:tagbar_type_go = {
                 \ 'ctagstype' : 'go',
