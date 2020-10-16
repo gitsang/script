@@ -2,8 +2,8 @@
 
 init() {
     apt update
-    apt upgrade
-    apt autoremove
+    apt upgrade -y
+    apt autoremove -y
     apt install -y \
         net-tools iftop \
         git vim \
@@ -33,7 +33,7 @@ samba() {
     # samba
     apt install -y samba
     cp script/deploy/samba/smb.conf /etc/samba/
-    mkdir /share
+    mkdir -p /share
     smbpasswd -a root
     systemctl restart smbd
     echo "samba install finished."
@@ -47,6 +47,7 @@ h5ai() {
         ffmpeg graphicsmagick
 
     wget https://release.larsjung.de/h5ai/h5ai-0.29.2.zip
+    rm -fr /var/www/html/_h5ai
     unzip h5ai-0.29.2.zip -d /var/www/html/
     chmod 0777 -R /var/www/html/_h5ai
     rm /var/www/html/index.html -f
@@ -90,9 +91,10 @@ filerun() {
     ## install filerun
     #wget -O FileRun.zip http://www.filerun.com/download-latest
     wget http://aliyun.sang.pp.ua:8080/share/package/filesystem/FileRun.zip
+    rm -fr /var/www/html/filerun
     unzip FileRun.zip -d /var/www/html/filerun
     chown -R www-data:www-data /var/www/html/
-    echo "visit http://server-ip to install"
+    echo "visit http://server-ip/filerun to install"
 }
 
 init
