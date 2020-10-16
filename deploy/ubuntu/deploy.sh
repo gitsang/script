@@ -90,8 +90,8 @@ filerun_php() {
     # wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
     wget http://aliyun.sang.pp.ua:8080/share/package/filesystem/ioncube_loaders_lin_x86-64.tar.gz
     tar zxvf ioncube_loaders_lin_x86-64.tar.gz
-    cp ioncube/${IONCUBE}.so /usr/lib/php/${EXFILE}/
-    echo "zend_extension = /usr/lib/php/${IONCUBE}.so" > \
+    cp ioncube/${IONCUBE}.so /usr/lib/php/${EXFILE}
+    echo "zend_extension = /usr/lib/php/${EXFILE}/${IONCUBE}.so" > \
         /etc/php/${PHP_VERSION}/apache2/conf.d/00-ioncube.ini
 
     ## php-apache config
@@ -106,6 +106,8 @@ filerun_install() {
     unzip FileRun.zip -d /var/www/html/filerun
     chown -R www-data:www-data /var/www/html/
     echo "visit http://server-ip/filerun to install"
+
+    systemctl restart apache2
 }
 
 init
