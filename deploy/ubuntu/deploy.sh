@@ -110,6 +110,15 @@ filerun_install() {
     systemctl restart apache2
 }
 
+v2ray() {
+    wget http://aliyun.sang.pp.ua:8080/share/package/v2ray/v2ray-linux-64.zip
+    bash <(curl -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh) -l v2ray-linux-64.zip
+    rm -fr /usr/local/etc/v2ray/config.json
+    unzip script/deploy/v2ray/config.zip -d /usr/local/etc/v2ray/
+    systemctl enable v2ray
+    systemctl restart v2ray
+}
+
 init
 config
 samba
@@ -117,3 +126,4 @@ h5ai
 filerun_db
 filerun_php
 filerun_install
+v2ray
