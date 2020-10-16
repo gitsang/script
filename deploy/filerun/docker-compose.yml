@@ -35,4 +35,5 @@ services:
       - "8081:80"
     volumes:
       - /data/filerun/html:/var/www/html
+      - /var/www/html:/user-files/html
       - /mnt:/user-files/mnt
