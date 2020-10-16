@@ -54,7 +54,8 @@ h5ai() {
         php php-gd \
         ffmpeg graphicsmagick
 
-    wget https://release.larsjung.de/h5ai/h5ai-0.29.2.zip
+    #wget https://release.larsjung.de/h5ai/h5ai-0.29.2.zip
+    wget http://aliyun.sang.pp.ua:8080/share/package/filesystem/h5ai-0.29.2.zip
     rm -fr /var/www/html/_h5ai
     unzip h5ai-0.29.2.zip -d /var/www/html/
     chmod 0777 -R /var/www/html/_h5ai
@@ -81,6 +82,7 @@ filerun_db() {
     echo "    CREATE USER 'filerun'@'localhost' IDENTIFIED BY 'filerun';"
     echo "    GRANT ALL ON filerun.* TO 'filerun'@'localhost';"
     echo "    FLUSH PRIVILEGES;"
+    echo "    exit"
     echo ""
     echo "============================================================================================================="
     mysql
@@ -134,7 +136,7 @@ v2ray() {
     wget http://aliyun.sang.pp.ua:8080/share/package/v2ray/v2ray-linux-64.zip
     #cp script/deploy/v2ray/install-release.sh ./
     wget https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh
-    chmod +x install-releash.sh && ./install-release.sh -l v2ray-linux-64.zip
+    chmod +x install-release.sh && ./install-release.sh -l v2ray-linux-64.zip
     rm -fr /usr/local/etc/v2ray/config.json
     unzip script/deploy/v2ray/config.zip -d /usr/local/etc/v2ray/
     systemctl enable v2ray
