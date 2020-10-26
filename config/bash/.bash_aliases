@@ -58,6 +58,16 @@ alias vit='vim --startuptime startuptime.log'
 alias upimg='git add image.yaml && git commit -m "update image.yaml" && git push'
 alias autopush='git add --all . && git commit -m "auto commit" && git push && git status'
 
+# cache
+alias dropcaches='drop_caches'
+drop_caches() {
+    free -h | grep Mem
+    sync; echo 1 > /proc/sys/vm/drop_caches
+    sync; echo 2 > /proc/sys/vm/drop_caches
+    sync; echo 3 > /proc/sys/vm/drop_caches
+    free -h | grep Mem
+}
+
 # jobs
 alias j='jobs'
 kj() {
@@ -114,7 +124,7 @@ backup() {
     REAL_PATH=`realpath $@`
     BACKUP_NAME=`realpath $@ | sed 's/\//^^/g'`
     TIME=`date "+%Y-%m-%d-%H:%M:%S"`
-    BACKUP_PATH=$BACKUP_DIR/$TIME-%trash%-$BACKUP_NAME
+    BACKUP_PATH=$BACKUP_DIR/$TIME-%backup%-$BACKUP_NAME
 
     if [ "$REAL_PATH" != "/" ]; then
         mkdir -p $BACKUP_DIR
