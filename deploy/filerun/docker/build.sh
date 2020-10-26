@@ -1,5 +1,5 @@
 
-yum install -y docker-compose
+#yum install -y docker-compose
 
 mkdir -p /data/filerun/html
 mkdir -p /data/filerun/db

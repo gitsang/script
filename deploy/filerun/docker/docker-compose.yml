@@ -10,7 +10,7 @@ services:
       MYSQL_PASSWORD: filerun
       MYSQL_DATABASE: filerun
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - /data/filerun/db:/var/lib/mysql
 
@@ -35,5 +35,4 @@ services:
       - "8081:80"
     volumes:
       - /data/filerun/html:/var/www/html
-      - /var/www/html:/user-files/html
-      - /mnt:/user-files/mnt
+      - /share:/user-files/share
