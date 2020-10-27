@@ -131,6 +131,18 @@ filerun_install() {
     echo "============================================================================================================="
 }
 
+docker() {
+    apt install docker.io
+}
+
+onlyoffice() {
+    docker pull onlyoffice/documentserver
+    docker run --name onlyoffice \
+        --restart=always \
+        -p 10080:80 -p 10443:443 \
+        -d onlyoffice/documentserver
+}
+
 v2ray() {
     #wget https://github.com/v2fly/v2ray-core/releases/download/v4.31.0/v2ray-linux-64.zip
     wget http://aliyun.sang.pp.ua:8080/share/package/v2ray/v2ray-linux-64.zip
@@ -146,11 +158,24 @@ v2ray() {
     echo "============================================================================================================="
 }
 
+
+# init
 init
 config
+
+# samba
 samba
+
+# h5ai
 h5ai
+
+# v2ray
+v2ray
+
+# filerun
 filerun_db
 filerun_php
 filerun_install
-v2ray
+docker
+onlyoffice
+
