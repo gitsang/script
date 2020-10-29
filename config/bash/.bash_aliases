@@ -195,23 +195,26 @@ proxy() {
 # tunnel
 tunnel() {
     SECTOR=x
+    DST_USR=root
+    DST_ADDR=aliyun.sang.pp.ua
     if [ $SECTOR == "x" ]; then
         echo "SECTOR not define, please edit in ~/.bash_alias"
     else
         case "$1" in
             "init")
                 yum install -y autossh
-                apt-get install -y autossh
+                apt install -y autossh
                 ssh-keygen
-                ssh-copy-id -i ~/.ssh/id_rsa.pub -p 22 root@aliyun.sang.pp.ua
+                ssh-copy-id -i ~/.ssh/id_rsa.pub -p 22 ${DST_USR}@${DST_ADDR}
                 ;;
             "build")
-                autossh -NR :${SECTOR}0022:0.0.0.0:22   -M ${SECTOR}0022:22   -f root@aliyun.sang.pp.ua
-                autossh -NR :${SECTOR}0080:0.0.0.0:80   -M ${SECTOR}0080:80   -f root@aliyun.sang.pp.ua
-                autossh -NR :${SECTOR}0443:0.0.0.0:443  -M ${SECTOR}0443:443  -f root@aliyun.sang.pp.ua
-                autossh -NR :${SECTOR}0445:0.0.0.0:445  -M ${SECTOR}0445:445  -f root@aliyun.sang.pp.ua
-                autossh -NR :${SECTOR}8123:0.0.0.0:8123 -M ${SECTOR}8213:8123 -f root@aliyun.sang.pp.ua
-                ;;
+                if [ ! -z $2 ]; then
+                    SRC_PORT=$2
+                    DST_PORT=`expr ${SECTOR} \* 10000 + ${SRC_PORT}`
+                    autossh -NR :${DST_PORT}:0.0.0.0:${SRC_PORT} -M ${DST_PORT}:${SRC_PORT} -f ${DST_USR}@${DST_ADDR}
+                else
+                    echo "usage: tunnel build (port)"
+                fi
             "close")
                 ps auxf | grep ssh | grep NR | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
                 ;;
