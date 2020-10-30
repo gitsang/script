@@ -141,6 +141,129 @@ filerun() {
         -d onlyoffice/documentserver
 }
 
+aria2() {
+    apt install -y aria2 nodejs
+    mkdir /etc/aria2
+    touch /etc/aria2/aria2.session
+    chmod 0777 /etc/aria2/aria2.session
+
+    echo ""                                      > /etc/aria2/aria2.conf
+    echo "# default"                             >> /etc/aria2/aria2.conf
+    echo "dir=/share/download"                   >> /etc/aria2/aria2.conf
+    echo "disk-cache=16M"                        >> /etc/aria2/aria2.conf
+    echo "continue=true"                         >> /etc/aria2/aria2.conf
+    echo "log=aria2.log"                         >> /etc/aria2/aria2.conf
+    echo "file-allocation=prealloc"              >> /etc/aria2/aria2.conf
+    echo "# limit"                               >> /etc/aria2/aria2.conf
+    echo "max-concurrent-downloads=100"          >> /etc/aria2/aria2.conf
+    echo "max-connection-per-server=16"          >> /etc/aria2/aria2.conf
+    echo "max-overall-download-limit=0"          >> /etc/aria2/aria2.conf
+    echo "max-download-limit=0"                  >> /etc/aria2/aria2.conf
+    echo "max-overall-upload-limit=0"            >> /etc/aria2/aria2.conf
+    echo "max-upload-limit=0"                    >> /etc/aria2/aria2.conf
+    echo "disable-ipv6=false"                    >> /etc/aria2/aria2.conf
+    echo "# split"                               >> /etc/aria2/aria2.conf
+    echo "min-split-size=10M"                    >> /etc/aria2/aria2.conf
+    echo "split=16"                              >> /etc/aria2/aria2.conf
+    echo "# session"                             >> /etc/aria2/aria2.conf
+    echo "input-file=/etc/aria2/aria2.session"   >> /etc/aria2/aria2.conf
+    echo "save-session=/etc/aria2/aria2.session" >> /etc/aria2/aria2.conf
+    echo "save-session-interval=60"              >> /etc/aria2/aria2.conf
+    echo "# rpc"                                 >> /etc/aria2/aria2.conf
+    echo "enable-rpc=true"                       >> /etc/aria2/aria2.conf
+    echo "rpc-allow-origin-all=true"             >> /etc/aria2/aria2.conf
+    echo "rpc-listen-all=true"                   >> /etc/aria2/aria2.conf
+    echo "rpc-listen-port=6800"                  >> /etc/aria2/aria2.conf
+    echo "rpc-secret=123456"                     >> /etc/aria2/aria2.conf
+    echo "# bt"                                  >> /etc/aria2/aria2.conf
+    echo "follow-torrent=true"                   >> /etc/aria2/aria2.conf
+    echo "listen-port=51413"                     >> /etc/aria2/aria2.conf
+    echo "#bt-max-peers=55"                      >> /etc/aria2/aria2.conf
+    echo "enable-dht=true"                       >> /etc/aria2/aria2.conf
+    echo "enable-dht6=true"                      >> /etc/aria2/aria2.conf
+    echo "dht-listen-port=6881-6999"             >> /etc/aria2/aria2.conf
+    echo "bt-enable-lpd=true"                    >> /etc/aria2/aria2.conf
+    echo "enable-peer-exchange=true"             >> /etc/aria2/aria2.conf
+    echo "bt-request-peer-speed-limit=50K"       >> /etc/aria2/aria2.conf
+    echo "# pt"                                  >> /etc/aria2/aria2.conf
+    echo "peer-id-prefix=-TR2770-"               >> /etc/aria2/aria2.conf
+    echo "user-agent=Transmission/2.77"          >> /etc/aria2/aria2.conf
+    echo "# seed"                                >> /etc/aria2/aria2.conf
+    echo "seed-ratio=0"                          >> /etc/aria2/aria2.conf
+    echo "force-save=true"                       >> /etc/aria2/aria2.conf
+    echo "#bt-hash-check-seed=true"              >> /etc/aria2/aria2.conf
+    echo "bt-seed-unverified=true"               >> /etc/aria2/aria2.conf
+    echo "bt-save-metadata=true"                 >> /etc/aria2/aria2.conf
+    echo "bt-max-peers=0"                        >> /etc/aria2/aria2.conf
+    echo "#seed-time = 60"                       >> /etc/aria2/aria2.conf
+    echo "bt-detach-seed-only=true"              >> /etc/aria2/aria2.conf
+    echo "bt-tracker=" \
+        "udp://tracker.coppersurfer.tk:6969/announce," \
+        "udp://tracker.internetwarriors.net:1337/announce," \
+        "udp://tracker.opentrackr.org:1337/announce" >> /etc/aria2/aria2.conf
+
+    aria2c --conf-path=/etc/aria2/aria2.conf -D
+
+    # webui
+    cd /etc/aria2 && git clone https://github.com/ziahamza/webui-aria2.git
+    cd /etc/aria2/webui-aria2/ && nohup node node-server.js &
+}
+
+blog() {
+    git clone https://github.com/gitsang/gitsang.github.io.git -b gh-pages /var/www/gitsang.github.io
+    grep -q -e "Listen 8083" /etc/apache2/ports.conf || echo "Listen 8083" >> /etc/apache2/ports.conf
+    echo "<VirtualHost *:8083>"                        >  /etc/apache2/sites-available/blog.conf
+    echo "    ServerName 47.103.32.175"                >> /etc/apache2/sites-available/blog.conf
+    echo "    DirectoryIndex index.html"               >> /etc/apache2/sites-available/blog.conf
+    echo "    DocumentRoot /var/www/gitsang.github.io" >> /etc/apache2/sites-available/blog.conf
+    echo "</VirtualHost>"                              >> /etc/apache2/sites-available/blog.conf
+    a2ensite blog
+    apache2ctl configtest
+    systemctl reload apache2
+}
+
+index() {
+    #apt install -y apache2
+    mkdir -p /var/www/html/
+    grep -q -e "Listen 8080" /etc/apache2/ports.conf || echo "Listen 8080" >> /etc/apache2/ports.conf
+    echo "<VirtualHost *:8080>"            >  /etc/apache2/sites-available/index.conf
+    echo "    ServerName 47.103.32.175"    >> /etc/apache2/sites-available/index.conf
+    echo "    DirectoryIndex index.html"   >> /etc/apache2/sites-available/index.conf
+    echo "    DocumentRoot /var/www/html"  >> /etc/apache2/sites-available/index.conf
+    echo "</VirtualHost>"                  >> /etc/apache2/sites-available/index.conf
+    a2ensite index
+    apache2ctl configtest
+    systemctl reload apache2
+
+    echo ""                                                                   >  /var/www/html/index.html
+    echo "<style>"                                                            >> /var/www/html/index.html
+    echo "    .main{"                                                         >> /var/www/html/index.html
+    echo "        text-align: center;"                                        >> /var/www/html/index.html
+    echo "        background-color: #fff;"                                    >> /var/www/html/index.html
+    echo "        border-radius: 20px;"                                       >> /var/www/html/index.html
+    echo "        width: 300px;"                                              >> /var/www/html/index.html
+    echo "        height: 300px;"                                             >> /var/www/html/index.html
+    echo "        margin: auto;"                                              >> /var/www/html/index.html
+    echo "        position: absolute;"                                        >> /var/www/html/index.html
+    echo "        top: 0;"                                                    >> /var/www/html/index.html
+    echo "        left: 0;"                                                   >> /var/www/html/index.html
+    echo "        right: 0;"                                                  >> /var/www/html/index.html
+    echo "        bottom: 0;"                                                 >> /var/www/html/index.html
+    echo "        font-size:25px;"                                            >> /var/www/html/index.html
+    echo "    }"                                                              >> /var/www/html/index.html
+    echo "</style>"                                                           >> /var/www/html/index.html
+    echo ""                                                                   >> /var/www/html/index.html
+    echo "<body>"                                                             >> /var/www/html/index.html
+    echo "	<div class="main">"                                               >> /var/www/html/index.html
+    echo "        <a href="http://47.103.32.175:8080/">index</a></br></br>"   >> /var/www/html/index.html
+    echo "        <a href="http://47.103.32.175:8081/">h5ai</a></br></br>"    >> /var/www/html/index.html
+    echo "        <a href="http://47.103.32.175:8082/">filerun</a></br></br>" >> /var/www/html/index.html
+    echo "        <a href="http://47.103.32.175:8083/">blog</a></br></br>"    >> /var/www/html/index.html
+    echo "        <a href="http://47.103.32.175:8888/">aria2</a></br></br>"   >> /var/www/html/index.html
+    echo "    </div>"                                                         >> /var/www/html/index.html
+    echo "</body>"                                                            >> /var/www/html/index.html
+}
+
 v2ray() {
     wget https://github.com/v2fly/v2ray-core/releases/download/v4.31.0/v2ray-linux-64.zip
     wget https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh
@@ -157,3 +280,6 @@ config
 samba
 h5ai
 filerun
+
+blog
+index
