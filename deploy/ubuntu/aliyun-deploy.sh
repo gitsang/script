@@ -52,6 +52,9 @@ h5ai() {
     chmod 0777 -R /var/www/h5ai/_h5ai
     cp script/deploy/h5ai/options.json /var/www/h5ai/_h5ai/private/conf/options.json
     systemctl restart apache2
+    
+    mkdir -p /share
+    ln -s /share /var/www/h5ai/share
 }
 
 filerun() {
@@ -129,6 +132,8 @@ filerun() {
     wget -O FileRun.zip http://www.filerun.com/download-latest
     unzip FileRun.zip -d /var/www/filerun
     chown -R www-data:www-data /var/www/filerun/
+    mkdir -p /share
+    chmod 0777 /share
     systemctl restart apache2
 
     # 5. install plugin
