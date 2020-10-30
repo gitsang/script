@@ -147,8 +147,8 @@ v2ray() {
     chmod +x install-release.sh && ./install-release.sh -l v2ray-linux-64.zip
     rm -fr /usr/local/etc/v2ray/config.json
     unzip script/deploy/v2ray/config.zip -d /usr/local/etc/v2ray/
-    systemctl disable v2ray
-    systemctl stop v2ray
+    systemctl enable v2ray
+    systemctl restart v2ray
 }
 
 init
@@ -156,5 +156,4 @@ config
 
 samba
 h5ai
-v2ray
 filerun
