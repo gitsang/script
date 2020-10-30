@@ -7,9 +7,6 @@ export GOPATH=/root/go
 export GOBIN=$GOPATH/bin
 export GOPROXY=https://goproxy.cn
 export GO111MODULE=on
-export GONOPROXY=*.yealink.com
-export GONOSUMDB=*.yealink.com
-export GOPRIVATE=gitcode.yealink.com
 export PATH=$PATH:$GOROOT/bin:$GOBIN
 
 # =============== Color Option =============== #
@@ -215,6 +212,7 @@ tunnel() {
                 else
                     echo "usage: tunnel build (port)"
                 fi
+                ;;
             "close")
                 ps auxf | grep ssh | grep NR | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
                 ;;
