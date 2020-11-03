@@ -94,8 +94,7 @@ filerun() {
     echo "zend_extension = /usr/lib/php/${EXFILE}/${IONCUBE}.so" > \
         /etc/php/${PHP_VERSION}/apache2/conf.d/00-ioncube.ini
     
-    cp script/deploy/filerun/filerun.ini /etc/php/${PHP_VERSION}/apache2/conf.d/filerun.ini
-    echo "expose_php              = Off"               >> /etc/php/${PHP_VERSION}/apache2/conf.d/filerun.ini
+    echo "expose_php              = Off"               >  /etc/php/${PHP_VERSION}/apache2/conf.d/filerun.ini
     echo "error_reporting         = E_ALL & ~E_NOTICE" >> /etc/php/${PHP_VERSION}/apache2/conf.d/filerun.ini
     echo "display_errors          = Off"               >> /etc/php/${PHP_VERSION}/apache2/conf.d/filerun.ini
     echo "display_startup_errors  = Off"               >> /etc/php/${PHP_VERSION}/apache2/conf.d/filerun.ini
@@ -152,7 +151,7 @@ aria2() {
     touch /etc/aria2/aria2.session
     chmod 0777 /etc/aria2/aria2.session
 
-    echo ""                                      > /etc/aria2/aria2.conf
+    echo ""                                      >  /etc/aria2/aria2.conf
     echo "# default"                             >> /etc/aria2/aria2.conf
     echo "dir=/share/download"                   >> /etc/aria2/aria2.conf
     echo "disk-cache=16M"                        >> /etc/aria2/aria2.conf
@@ -214,6 +213,21 @@ aria2() {
     cd /etc/aria2/webui-aria2/ && nohup node node-server.js &
 }
 
+oss() {
+    wget http://gosspublic.alicdn.com/ossutil/1.6.19/ossutil64 -O /usr/local/bin/ossutil64
+    chmod +x /usr/local/bin/ossutil64
+}
+
+v2ray() {
+    wget https://github.com/v2fly/v2ray-core/releases/download/v4.31.0/v2ray-linux-64.zip
+    wget https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh
+    chmod +x install-release.sh && ./install-release.sh -l v2ray-linux-64.zip
+    rm -fr /usr/local/etc/v2ray/config.json
+    unzip script/deploy/v2ray/config.zip -d /usr/local/etc/v2ray/
+    systemctl enable v2ray
+    systemctl restart v2ray
+}
+
 blog() {
     git clone https://github.com/gitsang/gitsang.github.io.git -b gh-pages /var/www/gitsang.github.io
     grep -q -e "Listen 8083" /etc/apache2/ports.conf || echo "Listen 8083" >> /etc/apache2/ports.conf
@@ -267,21 +281,6 @@ index() {
     echo "        <a href="http://47.103.32.175:8888/">aria2</a></br></br>"   >> /var/www/html/index.html
     echo "    </div>"                                                         >> /var/www/html/index.html
     echo "</body>"                                                            >> /var/www/html/index.html
-}
-
-oss() {
-    wget http://gosspublic.alicdn.com/ossutil/1.6.19/ossutil64 -O /usr/local/bin/ossutil64
-    chmod +x /usr/local/bin/ossutil64
-}
-
-v2ray() {
-    wget https://github.com/v2fly/v2ray-core/releases/download/v4.31.0/v2ray-linux-64.zip
-    wget https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh
-    chmod +x install-release.sh && ./install-release.sh -l v2ray-linux-64.zip
-    rm -fr /usr/local/etc/v2ray/config.json
-    unzip script/deploy/v2ray/config.zip -d /usr/local/etc/v2ray/
-    systemctl enable v2ray
-    systemctl restart v2ray
 }
 
 init
