@@ -269,6 +269,10 @@ index() {
     echo "</body>"                                                            >> /var/www/html/index.html
 }
 
+oss() {
+    wget http://gosspublic.alicdn.com/ossutil/1.6.19/ossutil64 -O /usr/local/bin/ossutil64
+}
+
 v2ray() {
     wget https://github.com/v2fly/v2ray-core/releases/download/v4.31.0/v2ray-linux-64.zip
     wget https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh
@@ -285,6 +289,8 @@ config
 samba
 h5ai
 filerun
-
+aria2
+oss
 blog
+
 index
