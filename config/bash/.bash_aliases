@@ -7,6 +7,9 @@ export GOPATH=/root/go
 export GOBIN=$GOPATH/bin
 export GOPROXY=https://goproxy.cn
 export GO111MODULE=on
+export GONOPROXY=*.sang.pp.ua
+export GONOSUMDB=*.sang.pp.ua
+export GOPRIVATE=gitcode.sang.pp.ua
 export PATH=$PATH:$GOROOT/bin:$GOBIN
 
 # =============== Color Option =============== #
@@ -51,10 +54,6 @@ alias vi='vim'
 alias vnp='vim --noplugin'
 alias vit='vim --startuptime startuptime.log'
 
-# git
-alias upimg='git add image.yaml && git commit -m "update image.yaml" && git push'
-alias autopush='git add --all . && git commit -m "auto commit" && git push && git status'
-
 # cache
 alias dropcaches='drop_caches'
 drop_caches() {
@@ -71,10 +70,42 @@ kj() {
     kill -9 %$@
 }
 
+# git
+alias upimg='git add image.yaml && git commit -m "update image.yaml" && git push'
+gh() {
+    DATE=`date '+%Y%m%d_%H%M'`
+    echo "gh      echo git alias help"
+    echo "gs      git status"
+    echo "gl      git log"
+    echo "ga      git add --all ."
+    echo "gcm     git commit -m"
+    echo "gpush   git add --all . && git commit -m \"auto commit\" && git push && git status'"
+    echo "gpull   git pull"
+    echo "gsubmit git push origin master:master_submit_${DATE}_chensx"
+    echo "gtmp    git push origin master:master_tmp_${DATE}_chensx"
+}
+alias gs='git status'
+alias gl='git log'
+alias ga='git add --all .'
+alias gpush='git add --all . && git commit -m "auto commit" && git push && git status'
+alias gpull='git pull'
+alias gcm='git commit -m'
+gsubmit() {
+    DATE=`date '+%Y%m%d_%H%M'`
+    git push origin master:master_submit_${DATE}_chensx
+}
+gtmp() {
+    DATE=`date '+%Y%m%d_%H%M'`
+    git push origin master:master_tmp_${DATE}_chensx
+}
+
 # trash
 alias del='trash'
 trash() {
     case "$1" in 
+        "help"|"h")
+            echo "usage: trash [ clean/cl | recover/rec | help/h ]"
+            ;;
         "recover"|"rec")
             TRASH_DIR=~/.trash
             REAL_PATH=`echo $@ | awk -F'-%trash%-' '{ print $2 }' | sed 's/^^/\//g'`
@@ -222,6 +253,42 @@ tunnel() {
                 ps auxf | grep ssh | grep NR | grep -v grep
                 ;;
         esac
+    fi
+}
+
+# download tgz
+alias dtgz='download_tgz'
+download_tgz() {
+    if [ $# -lt 1 ]; then
+        echo "usage: dtgz service [version]"
+        return
+    fi
+
+    REPO_DEV_URL=https://nexus.sang.pp.ua/repository/packages-repo-develop/cloud
+    REPO_RELEASE_URL=https://nexus.sang.pp.ua/repository/packages-repo/cloud
+
+    SERVICE=$1
+    VERSION=${2:-latest}
+    REPO_URL=${REPO_DEV_URL}
+    TGZ=${SERVICE}.tar.gz
+    TAR=${SERVICE}-${VERSION}.tar.gz
+
+    if [ "develop" == "${VERSION:0:7}" ]; then
+        REPO_URL=${REPO_DEV_URL}
+    elif [ "release" == "${VERSION:0:7}" ]; then
+        REPO_URL=${REPO_RELEASE_URL}
+    fi
+
+    echo service: $SERVICE
+    echo version: $VERSION
+    echo repo_url: $REPO_URL
+    echo tgz: $TGZ
+    echo tar: $TAR
+    echo
+
+    if [ ! -f "${TAR}" ]; then
+        wget ${REPO_URL}/${SERVICE}/${VERSION#*-}/linux/${TGZ} -O ${TAR}
+        tar zxvf ${TAR} && mv ${SERVICE} ${SERVICE}-${VERSION}
     fi
 }
 
