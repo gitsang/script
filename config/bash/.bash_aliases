@@ -77,7 +77,8 @@ gh() {
     echo "gh      echo git alias help"
     echo "gs      git status"
     echo "gl      git log"
-    echo "ga      git add --all ."
+    echo "ga      git add"
+    echo "gaa     git add --all ."
     echo "gcm     git commit -m"
     echo "gpush   git add --all . && git commit -m \"auto commit\" && git push && git status'"
     echo "gpull   git pull"
@@ -86,7 +87,8 @@ gh() {
 }
 alias gs='git status'
 alias gl='git log'
-alias ga='git add --all .'
+alias ga='git add'
+alias gaa='git add --all .'
 alias gpush='git add --all . && git commit -m "auto commit" && git push && git status'
 alias gpull='git pull'
 alias gcm='git commit -m'
