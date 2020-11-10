@@ -42,6 +42,8 @@ noremap <LEADER>s $a  g_ldwj
 noremap <LEADER><TAB> :%retab!<CR>gg=G<C-o><C-o>zz
 " unix format
 noremap <LEADER>f :set ff=unix<CR>:set ff?<CR>
+" bar
+noremap <leader>b :NERDTreeToggle<CR>:TagbarToggle<CR><C-w>l
 
 "--------------------
 " Keymap
@@ -90,7 +92,7 @@ filetype plugin indent on
 filetype plugin on
 
 if empty(glob(expand('~/.vim/autoload/plug.vim')))
-    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    silent curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
@@ -190,7 +192,7 @@ call plug#begin()
     "--------------------
     " Tagbar
     "--------------------
-    Plug 'majutsushi/tagbar', { 'do': 'apt install ctags -y', 'on': 'TagbarToggle' }
+    Plug 'majutsushi/tagbar', { 'do': 'yum install ctags -y', 'on': 'TagbarToggle' }
         map <leader>g :TagbarToggle<CR>
         let g:tagbar_type_go = {
                 \ 'ctagstype' : 'go',
