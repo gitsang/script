@@ -80,8 +80,9 @@ gh() {
     echo "ga      git add"
     echo "gaa     git add --all ."
     echo "gcm     git commit -m"
-    echo "gpush   git add --all . && git commit -m \"auto commit\" && git push && git status'"
+    echo "gpush   git push"
     echo "gpull   git pull"
+    echo "gaupush git add --all . && git commit -m \"auto commit\" && git push && git status'"
     echo "gsubmit git push origin master:master_submit_${DATE}_chensx"
     echo "gtmp    git push origin master:master_tmp_${DATE}_chensx"
 }
@@ -89,8 +90,9 @@ alias gs='git status'
 alias gl='git log'
 alias ga='git add'
 alias gaa='git add --all .'
-alias gpush='git add --all . && git commit -m "auto commit" && git push && git status'
+alias gpush='git push'
 alias gpull='git pull'
+alias gaupush='git add --all . && git commit -m "auto commit" && git push && git status'
 alias gcm='git commit -m'
 gsubmit() {
     DATE=`date '+%Y%m%d_%H%M'`
