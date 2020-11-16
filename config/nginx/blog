@@ -1,0 +1,14 @@
+server {
+	listen 8083;
+	listen [::]:8083;
+
+    server_name _;
+
+	root /var/www/gitsang.github.io;
+
+	index index.html index.php;
+
+	location / {
+		try_files $uri $uri/ =404;
+	}
+}

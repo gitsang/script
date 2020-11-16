@@ -1,0 +1,24 @@
+server {
+	listen 8081;
+	listen [::]:8081;
+
+    server_name _;
+
+    root /var/www/h5ai;
+
+    index index.html index.php /_h5ai/public/index.php;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass 127.0.0.1:9000;
+     }
+
+    location ~ /\.ht {
+        deny all;
+    }
+
+}
