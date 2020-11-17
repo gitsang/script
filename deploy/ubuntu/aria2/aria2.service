@@ -1,0 +1,12 @@
+[Unit]
+Description=aria2c
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/bin/aria2c --conf-path=/etc/aria2/aria2.conf
+
+[Install]
+WantedBy=multi-user.target
