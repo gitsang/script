@@ -1,0 +1,24 @@
+[common]
+server_addr = frp-sz.sang.pp.ua
+server_port = 7000
+tls_enable = true
+
+[home-ssh]
+type = tcp
+local_ip = 127.0.0.1
+local_port = 22
+remote_port = 40022
+subdomain = home
+
+[home-80]
+type = tcp
+local_ip = 127.0.0.1
+local_port = 80
+remote_port = 40080
+subdomain = home
+
+[home-http]
+type = http
+local_ip = 127.0.0.1
+local_port = 80
+custom_domains = *.home.frp-sz.sang.pp.ua
