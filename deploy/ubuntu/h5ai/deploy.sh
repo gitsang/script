@@ -1,4 +1,6 @@
 
+DOMAIN=us.sang.pp.ua
+
 h5ai() {
     # install
     apt install -y apache2 php php-gd ffmpeg graphicsmagick
@@ -16,13 +18,27 @@ h5ai() {
 
     # config
     cp options.json /var/www/h5ai/_h5ai/private/conf/options.json
-    
-    # apache2
+}
+
+apache2() {
     grep -q -e "Listen 80" /etc/apache2/ports.conf || echo "Listen 80" >> /etc/apache2/ports.conf
-    cp ../apache2/h5ai.conf /etc/apache2/sites-available/h5ai.conf
+
+    sed "s/%DOMAIN%/${DOMAIN}/g" h5ai.apache2.conf.example > h5ai.apache2.conf
+    cp h5ai.apache2.conf /etc/apache2/sites-available/h5ai.conf
+
     a2ensite h5ai
     apache2ctl configtest
     systemctl restart apache2
 }
 
-h5ai
+case $1 in
+    "h5ai")
+        h5ai
+        ;;
+    "apache2")
+        apache2
+        ;;
+    *)
+        h5ai
+        apache2
+esac
