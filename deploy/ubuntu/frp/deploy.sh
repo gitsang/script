@@ -4,6 +4,7 @@ FRP_DOMAIN=frp-us.sang.pp.ua
 
 frp() {
     FRP=frp_0.34.2_linux_amd64
+
     # frp
     if [ ! -f "${FRP}.tar.gz" ]; then
         wget https://github.com/fatedier/frp/releases/download/v0.34.2/frp_0.34.2_linux_amd64.tar.gz
@@ -11,31 +12,26 @@ frp() {
     if [ ! -d "${FRP}" ]; then
         tar zxvf frp_0.34.2_linux_amd64.tar.gz
     fi
-    cd ${FRP}
 
     # bin
-    cp frpc /usr/bin/
-    cp frps /usr/bin/
-
-    # config
-    mkdir -p /etc/frp/
-    cp frpc.ini /etc/frp/
-    cp frps.ini /etc/frp/
-
-    # systemd
-    cp systemd/frpc.service /usr/lib/systemd/system/
-    cp systemd/frps.service /usr/lib/systemd/system/
-    systemctl status frpc
-    systemctl status frps
-
-    cd -
+    cp ${FRP}/frpc /usr/bin/
+    cp ${FRP}/frps /usr/bin/
 }
 
-frpc() {
-    cp frpc.ini.example /etc/frp/frpc.ini
-    systemctl enable frpc
-    systemctl restart frpc
-    systemctl status frpc
+frpc_us() {
+    cp frpc-sz.ini.example /etc/frp/frpc-sz.ini
+    cp frpc-sz.service.example /usr/lib/systemd/system/frpc-sz.service
+    systemctl enable frpc-sz
+    systemctl restart frpc-sz
+    systemctl status frpc-sz
+}
+
+frpc_us() {
+    cp frpc-us.ini.example /etc/frp/frpc-us.ini
+    cp frpc-us.service.example /usr/lib/systemd/system/frpc-us.service
+    systemctl enable frpc-us
+    systemctl restart frpc-us
+    systemctl status frpc-us
 }
 
 frps() {
@@ -63,10 +59,13 @@ case $1 in
     "frp")
         frp
         ;;
-    "frpc")
+    "frpc-sz")
         frp
-        frpc
-        apache2
+        frpc_sz
+        ;;
+    "frpc-us")
+        frp
+        frpc_us
         ;;
     "frps")
         frp
@@ -83,5 +82,5 @@ case $1 in
         apache2
         ;;
     *)
-        echo "usage $0 frpc/frps/all"
+        echo "usage $0 frpc-[us|sz] | frps"
 esac
