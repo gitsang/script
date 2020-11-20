@@ -3,7 +3,7 @@ DOMAIN=us.sang.pp.ua
 
 h5ai() {
     # install
-    apt install -y apache2 php php-gd ffmpeg graphicsmagick
+    apt install -y php php-gd ffmpeg graphicsmagick
 
     # file
     rm -fr /var/www/h5ai/

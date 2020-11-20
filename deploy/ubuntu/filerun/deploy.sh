@@ -1,3 +1,18 @@
+
+DOMAIN=us.sang.pp.ua
+
+apache2() {
+    grep -q -e "Listen 80" /etc/apache2/ports.conf || echo "Listen 80" >> /etc/apache2/ports.conf
+
+    cp filerun.apache2.conf.template filerun.apache2.conf
+    sed -i "s/%DOMAIN%/${DOMAIN}/g" filerun.apache2.conf
+    cp filerun.apache2.conf /etc/apache2/sites-available/filerun.conf
+
+    a2ensite filerun
+    apache2ctl configtest
+    systemctl restart apache2
+}
+
 filerun() {
     rm -fr /var/www/filerun/
     mkdir -p /var/www/filerun/
@@ -41,18 +56,6 @@ php() {
     cp filerun.ini /etc/php/${PHP_VERSION}/apache2/conf.d/filerun.ini
 }
 
-apache2() {
-    # install
-    apt install -y apache2
-
-    # apache2
-    grep -q -e "Listen 80" /etc/apache2/ports.conf || echo "Listen 80" >> /etc/apache2/ports.conf
-    cp ../apache2/filerun.conf /etc/apache2/sites-available/filerun.conf
-    a2ensite filerun
-    apache2ctl configtest
-    systemctl restart apache2
-}
-
 plugin() {
     apt install -y imagemagick ffmpeg
 
@@ -63,10 +66,21 @@ plugin() {
         -d onlyoffice/documentserver
 }
 
-filerun
-database
-php
-apache2
-plugin
-
-cat help
+case $1 in
+    "filerun")
+        filerun
+        database
+        php
+        cat README.md
+        ;;
+    "apache2")
+        apache2
+        ;;
+    "plugin")
+        plugin
+        ;;
+    *)
+        echo "usage $0 [filerun | apache2 | plugin]"
+        cat README.md
+        ;;
+esac

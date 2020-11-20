@@ -5,7 +5,9 @@ init() {
     apt install -y \
         net-tools iftop \
         git vim \
-        zip unzip
+        zip unzip \
+        apache2 \
+        docker.io
 
     git config --global user.email "sang.chen@outlook.com"
     git config --global user.name "gitsang"
