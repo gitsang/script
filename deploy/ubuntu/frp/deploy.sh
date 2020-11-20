@@ -18,7 +18,7 @@ frp() {
     cp ${FRP}/frps /usr/bin/
 }
 
-frpc_us() {
+frpc_sz() {
     cp frpc-sz.ini.example /etc/frp/frpc-sz.ini
     cp frpc-sz.service.example /usr/lib/systemd/system/frpc-sz.service
     systemctl enable frpc-sz
