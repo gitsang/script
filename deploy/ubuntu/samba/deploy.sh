@@ -1,4 +1,4 @@
-yum install samba -y
+apt install samba -y
 
 cp smb.conf /etc/samba/smb.conf
 
