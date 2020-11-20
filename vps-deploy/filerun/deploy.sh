@@ -1,5 +1,5 @@
 
-DOMAIN=us.sang.pp.ua
+DOMAIN=local.sang.pp.ua
 
 apache2() {
     grep -q -e "Listen 80" /etc/apache2/ports.conf || echo "Listen 80" >> /etc/apache2/ports.conf
@@ -34,7 +34,7 @@ database() {
     echo "FLUSH PRIVILEGES;" | mysql
 }
 
-php() {
+install_php() {
     # install
     apt install -y php php-cli \
         libapache2-mod-php php-mysql \
@@ -44,6 +44,7 @@ php() {
     PHP_VERSION=`php -v | awk 'NR==1' | awk -F ' ' '{print substr($2,1,3)}'`
     IONCUBE=ioncube_loader_lin_${PHP_VERSION}
     EXFILE=`ls /usr/lib/php/ | awk 'NR==1 {print $1}'`
+    echo $PHP_VERSION $IONCUBE $EXFILE
 
     # ioncube
     wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz
@@ -70,8 +71,11 @@ case $1 in
     "filerun")
         filerun
         database
-        php
+        install_php
         cat README.md
+        ;;
+    "php")
+        install_php
         ;;
     "apache2")
         apache2

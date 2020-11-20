@@ -1,2 +1,4 @@
 filerun.apache2.conf
+ioncube/
+*.tar.gz
 *.zip
