@@ -1,0 +1,15 @@
+#!/bin/bash
+
+config() {
+    APP=$1
+    cp ${APP}.conf /etc/apache2/sites-available/
+    a2ensite ${APP}
+    apache2ctl configtest
+    systemctl restart apache2
+}
+
+case $1 in 
+    *)
+        config $1
+        ;;
+esac
