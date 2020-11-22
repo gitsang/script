@@ -1,6 +1,6 @@
 
-DOMAIN=us.sang.pp.ua
-FRP_DOMAIN=frp-us.sang.pp.ua
+DOMAIN=sh.sang.pp.ua
+FRP_DOMAIN=frp-sh.sang.pp.ua
 
 frp() {
     FRP=frp_0.34.2_linux_amd64
@@ -16,6 +16,14 @@ frp() {
     # bin
     cp ${FRP}/frpc /usr/bin/
     cp ${FRP}/frps /usr/bin/
+}
+
+frpc_sh() {
+    cp frpc-sh.ini.example /etc/frp/frpc-sh.ini
+    cp frpc-sh.service.example /usr/lib/systemd/system/frpc-sh.service
+    systemctl enable frpc-sh
+    systemctl restart frpc-sh
+    systemctl status frpc-sh
 }
 
 frpc_sz() {
@@ -35,7 +43,9 @@ frpc_us() {
 }
 
 frps() {
+    mkdir -p /etc/frp
     cp frps.ini.example /etc/frp/frps.ini
+    cp frps.service.example /usr/lib/systemd/system/frps.service
     systemctl enable frps
     systemctl restart frps
     systemctl status frps
@@ -58,6 +68,10 @@ apache2() {
 case $1 in
     "frp")
         frp
+        ;;
+    "frpc-sh")
+        frp
+        frpc_sh
         ;;
     "frpc-sz")
         frp
