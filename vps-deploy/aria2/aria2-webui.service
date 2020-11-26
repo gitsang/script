@@ -1,0 +1,14 @@
+[Unit]
+Description=aria2 web ui
+After=network.target
+
+[Service]
+Type=simple
+User=nobody
+Restart=on-failure
+RestartSec=5s
+WorkingDirectory=/etc/aria2/webui-aria2/
+ExecStart=/usr/bin/node /etc/aria2/webui-aria2/node-server.js
+
+[Install]
+WantedBy=multi-user.target

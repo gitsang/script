@@ -1,0 +1,7 @@
+<VirtualHost *:80>
+    ServerName %DOMAIN%
+    ServerAlias filerun.%DOMAIN%
+    DirectoryIndex index.html index.php
+    DocumentRoot /var/www/filerun
+</VirtualHost>
+
