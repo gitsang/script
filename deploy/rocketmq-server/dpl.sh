@@ -99,11 +99,6 @@ init_broker() {
     echo "aclEnable          = ${ACL_ENABLE}"        >> ${CONF_PATH}
     echo "storePathRootDir   = ${DATA_PATH}/store"   >> ${CONF_PATH}
     echo "storePathCommitLog = ${DATA_PATH}/log"     >> ${CONF_PATH}
-
-    if [ "${ACL_ENABLE}" == true ]; then
-        mkdir -p ${DATA_PATH}/store
-        cp plain_acl.template ${DATA_PATH}/store/plain_acl.yml
-    fi
 }
 
 # ----------------------------------------------------------------------------------------------------------------------
