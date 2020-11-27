@@ -41,7 +41,7 @@ init_redis() {
             echo "loglevel debug" >> ${CONF}
             echo "dir ${DATA_PATH}" >> ${CONF}
             echo "appendonly yes" >> ${CONF}
-            echo "aof-use-rdb-preamble" >> ${CONF}
+            echo "aof-use-rdb-preamble yes" >> ${CONF}
             ;;
         "slave")
             echo "port ${PORT}" >> ${CONF}
@@ -49,7 +49,7 @@ init_redis() {
             echo "loglevel debug" >> ${CONF}
             echo "dir ${DATA_PATH}" >> ${CONF}
             echo "appendonly yes" >> ${CONF}
-            echo "aof-use-rdb-preamble" >> ${CONF}
+            echo "aof-use-rdb-preamble yes" >> ${CONF}
             echo "slaveof ${MASTER_HOST} ${MASTER_PORT}" >> ${CONF}
             ;;
         "sentinel")
@@ -80,6 +80,16 @@ run_redis() {
 
 kill_redis() {
     ps -ef | grep -v grep | grep redis-server | grep ${PORT} | awk '{print $2}' | xargs -i -t kill -9 {}
+}
+
+status_redis() {
+    ps -ef | grep -v grep | grep redis-server | grep ${PORT}
+}
+
+log_redis() {
+    DATA_PATH=data/${ROLE}-${PORT}
+    LOG=${DATA_PATH}/${ROLE}.log
+    tail -f -n 100 ${LOG}
 }
 
 # ==============================================================================
@@ -137,7 +147,6 @@ if [ $# -gt 2 ]; then
     for id in $@
     do
         if [ $id != $1 ]; then
-            echo "$1 $id"
             $0 $1 $id
         fi
     done
@@ -145,10 +154,7 @@ elif [ $# -eq 2 ]; then
     FUNC=$1
     ID=$2
     check_id
-    case $1 in
-        "-b"|"build")
-            build
-            ;;
+    case ${FUNC} in
         "-i"|"init")
             init_redis
             ;;
@@ -158,11 +164,26 @@ elif [ $# -eq 2 ]; then
         "-k"|"kill")
             kill_redis
             ;;
+        "-s"|"status")
+            status_redis
+            ;;
+        "-l"|"log")
+            log_redis
+            ;;
     esac
 else
-    echo "usage $0"
-    echo "    -i init (id)"
-    echo "    -r run (id)"
-    echo "    -k kill (id)"
+    case ${FUNC} in
+        "-b"|"build")
+            build
+            ;;
+        *)
+            echo "usage $0"
+            echo "    -b build"
+            echo "    -i init (id)"
+            echo "    -r run (id)"
+            echo "    -s status (id)"
+            echo "    -k kill (id)"
+            ;;
+    esac
 fi
 
