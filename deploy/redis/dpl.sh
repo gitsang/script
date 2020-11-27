@@ -1,4 +1,23 @@
-
+# ==============================================================================
+# readme
+# ==============================================================================
+#
+# 该脚本适配于 redis-v5，其他版本不一定适用
+# 使用前请先确认 "running config" 项目下的配置正确，包括 redis-cli 位置，ip，端口等
+#
+# 使用方式：
+# ./dpl option [id]
+# option:
+#     -b build
+#     -i init [id]   初始化数据目录和配置文件
+#     -r run [id]    运行 redis
+#     -s status [id] 查看 redis 运行状态
+#     -k kill [id]   结束 redis 进程
+#     -l log [id]    监控日志文件
+#
+# 脚本使用 ID 来管理 redis 实例，如需添加新的实例，可在 check_id() 函数内添加对应参数
+# id 值为 all 时，会将命令应用到所有已配置的实例，配置项为 ALL_INSTANCE
+#
 # ==============================================================================
 # install redis
 # ==============================================================================
@@ -96,9 +115,11 @@ log_redis() {
 # running config
 # ==============================================================================
 
-DEFAULT_CONF=templates/redis.conf
+# redis-server path
 REDIS_SERVER=redis-5.0.10/src/redis-server
+ALL_INSTANCE=r0 r1 r2 s0 s1 s2
 
+# redis instance manager
 check_id() {
     case ${ID} in
         "r0") 
@@ -140,9 +161,10 @@ check_id() {
             ;;
     esac
 
-    echo "func: ${FUNC}, role: ${ROLE}, port: ${PORT}, master_host: ${MASTER_HOST}, master_port: ${MASTER_PORT}, quorum: ${QUORUM}"
+    echo "option: ${OPT}, role: ${ROLE}, port: ${PORT}, master_host: ${MASTER_HOST}, master_port: ${MASTER_PORT}, quorum: ${QUORUM}"
 }
 
+# shell param manager
 if [ $# -gt 2 ]; then
     for id in $@
     do
@@ -151,14 +173,14 @@ if [ $# -gt 2 ]; then
         fi
     done
 elif [ $# -eq 2 ]; then
-    FUNC=$1
+    OPT=$1
     ID=$2
     if [ ${ID} == "all" ]; then
-        $0 ${FUNC} r0 r1 r2 s0 s1 s2
+        $0 ${OPT} ${ALL_INSTANCE}
         exit
     fi
     check_id
-    case ${FUNC} in
+    case ${OPT} in
         "-i"|"init")
             init_redis
             ;;
@@ -176,17 +198,22 @@ elif [ $# -eq 2 ]; then
             ;;
     esac
 else
-    case ${FUNC} in
+    case ${OPT} in
         "-b"|"build")
             build
             ;;
         *)
-            echo "usage $0"
+            echo "[warn] checkout config under 'running config' tag before using"
+            echo "usage $0 option [id]"
+            echo "option:"
             echo "    -b build"
-            echo "    -i init (id)"
-            echo "    -r run (id)"
-            echo "    -s status (id)"
-            echo "    -k kill (id)"
+            echo "    -i init [id]   init data path and config file"
+            echo "    -r run [id]    run redis instance"
+            echo "    -s status [id] get process status"
+            echo "    -k kill [id]   kill process"
+            echo "    -l log [id]    tail log"
+            echo "id list is defined in check_id() function"
+            echo "when id equal 'all', script will apply option at all id that config in ALL_INSTANCE"
             ;;
     esac
 fi
