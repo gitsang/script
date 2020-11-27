@@ -153,6 +153,10 @@ if [ $# -gt 2 ]; then
 elif [ $# -eq 2 ]; then
     FUNC=$1
     ID=$2
+    if [ ${ID} == "all" ]; then
+        $0 ${FUNC} r0 r1 r2 s0 s1 s2
+        exit
+    fi
     check_id
     case ${FUNC} in
         "-i"|"init")
