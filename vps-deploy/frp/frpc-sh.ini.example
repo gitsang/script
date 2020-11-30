@@ -27,5 +27,6 @@ subdomain = home
 [home-http]
 type = http
 local_ip = 127.0.0.1
-local_port = 80
+local_port = 8080
 custom_domains = *.home.frp-sh.sang.pp.ua
+
