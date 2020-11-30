@@ -1,5 +1,5 @@
 [Unit]
-Description=Frp Client Service [US]
+Description=Frp Client Service [SZ]
 After=network.target
 
 [Service]

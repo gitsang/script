@@ -17,6 +17,13 @@ local_port = 445
 remote_port = 40445
 subdomain = home
 
+[home-proxy]
+type = tcp
+local_ip = 127.0.0.1
+local_port = 443
+remote_port = 40443
+subdomain = home
+
 [home-http]
 type = http
 local_ip = 127.0.0.1

@@ -1,6 +1,5 @@
 
-DOMAIN=sh.sang.pp.ua
-FRP_DOMAIN=frp-sh.sang.pp.ua
+# frp --------------------------------------------------------------------------
 
 frp() {
     FRP=frp_0.34.2_linux_amd64
@@ -14,9 +13,15 @@ frp() {
     fi
 
     # bin
-    cp ${FRP}/frpc /usr/bin/
-    cp ${FRP}/frps /usr/bin/
+    if [ ! -f "/usr/bin/frpc" ]; then
+        cp ${FRP}/frpc /usr/bin/
+    fi
+    if [ ! -f "/usr/bin/frps" ]; then
+        cp ${FRP}/frps /usr/bin/
+    fi
 }
+
+# frpc -------------------------------------------------------------------------
 
 frpc_sh() {
     cp frpc-sh.ini.example /etc/frp/frpc-sh.ini
@@ -42,6 +47,17 @@ frpc_us() {
     systemctl status frpc-us
 }
 
+frpc() {
+    frpc_sh
+    frpc_sz
+    frpc_us
+}
+
+# frps -------------------------------------------------------------------------
+
+DOMAIN=sh.sang.pp.ua
+FRP_DOMAIN=frp-sh.sang.pp.ua
+
 frps() {
     mkdir -p /etc/frp
     cp frps.ini.example /etc/frp/frps.ini
@@ -65,36 +81,18 @@ apache2() {
     systemctl restart apache2
 }
 
+# opts -------------------------------------------------------------------------
+
 case $1 in
-    "frp")
+    "frpc")
         frp
-        ;;
-    "frpc-sh")
-        frp
-        frpc_sh
-        ;;
-    "frpc-sz")
-        frp
-        frpc_sz
-        ;;
-    "frpc-us")
-        frp
-        frpc_us
+        frpc
         ;;
     "frps")
         frp
         frps
         apache2
         ;;
-    "apache2")
-        apache2
-        ;;
-    "all")
-        frp
-        frpc
-        frps
-        apache2
-        ;;
     *)
-        echo "usage $0 frpc-[us|sz] | frps"
+        echo "usage $0 frpc / frps"
 esac
