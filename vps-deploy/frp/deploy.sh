@@ -55,9 +55,6 @@ frpc() {
 
 # frps -------------------------------------------------------------------------
 
-DOMAIN=sh.sang.pp.ua
-FRP_DOMAIN=frp-sh.sang.pp.ua
-
 frps() {
     mkdir -p /etc/frp
     cp frps.ini.example /etc/frp/frps.ini
@@ -66,6 +63,9 @@ frps() {
     systemctl restart frps
     systemctl status frps
 }
+
+DOMAIN=us.sang.pp.ua
+FRP_DOMAIN=frp-us.sang.pp.ua
 
 apache2() {
     grep -q -e "Listen 80" /etc/apache2/ports.conf || echo "Listen 80" >> /etc/apache2/ports.conf
