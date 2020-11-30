@@ -1,0 +1,16 @@
+<VirtualHost *:%PORT%>
+    ServerName %DOMAIN%
+    ServerAlias frp.%DOMAIN%
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:7500/
+    ProxyPassReverse / http://localhost:7500/
+</VirtualHost>
+
+<VirtualHost *:%PORT%>
+    ServerName %FRP_DOMAIN%
+    ServerAlias *.%FRP_DOMAIN%
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:7000/
+    ProxyPassReverse / http://localhost:7000/
+</VirtualHost>
+

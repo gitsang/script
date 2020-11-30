@@ -1,0 +1,7 @@
+<VirtualHost *:80>
+    ServerName sang.pp.ua
+    ServerAlias www.sang.pp.ua
+    DirectoryIndex index.html index.php
+    DocumentRoot /var/www/center
+</VirtualHost>
+

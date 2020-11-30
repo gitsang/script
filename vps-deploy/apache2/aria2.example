@@ -1,0 +1,8 @@
+<VirtualHost *:%PORT%>
+    ServerName %DOMAIN%
+    ServerAlias aria2.%DOMAIN%
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:8888/
+    ProxyPassReverse / http://localhost:8888/
+</VirtualHost>
+

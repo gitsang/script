@@ -1,0 +1,7 @@
+<VirtualHost *:%PORT%>
+    ServerName %DOMAIN%
+    ServerAlias h5ai.%DOMAIN%
+    DirectoryIndex index.html index.php /_h5ai/public/index.php
+    DocumentRoot /var/www/h5ai
+</VirtualHost>
+

@@ -1,0 +1,7 @@
+<VirtualHost *:%PORT%>
+    ServerName %DOMAIN%
+    ServerAlias www.%DOMAIN%
+    DirectoryIndex index.html index.php
+    DocumentRoot /var/www/html
+</VirtualHost>
+

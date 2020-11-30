@@ -1,0 +1,48 @@
+#!/bin/bash
+
+DOMAIN=us.sang.pp.ua
+FRP_DOMAIN=frp-us.sang.pp.ua
+PORT=80
+
+config() {
+    APP=$1
+    if [ ! -f "${APP}.example" ]; then
+        echo "unknown app, example file unexist"
+        exit
+    fi
+
+    echo "DOMAIN=${DOMAIN}"
+    echo "FRP_DOMAIN=${FRP_DOMAIN}"
+    echo "PORT=${PORT}"
+    echo ""
+
+    grep -q -e "Listen ${PORT}" /etc/apache2/ports.conf || echo "Listen ${PORT}" >> /etc/apache2/ports.conf
+    cp ${APP}.example ${APP}.conf
+    sed -i "s/%PORT%/${PORT}/g"             ${APP}.conf
+    sed -i "s/%DOMAIN%/${DOMAIN}/g"         ${APP}.conf
+    sed -i "s/%FRP_DOMAIN%/${FRP_DOMAIN}/g" ${APP}.conf
+    cp ${APP}.conf /etc/apache2/sites-available/
+    a2ensite ${APP}
+    a2enmod proxy_http
+    apache2ctl configtest
+    systemctl restart apache2
+}
+
+disable() {
+    APP=$1
+    rm -f /etc/apache2/sites-available/${APP}.conf
+    rm -f /etc/apache2/sites-enabled/${APP}.conf
+    systemctl restart apache2
+}
+
+case $1 in 
+    "clean")
+        rm ./*.conf -f
+        ;;
+    "disable")
+        disable $2
+        ;;
+    *)
+        config $1
+        ;;
+esac
