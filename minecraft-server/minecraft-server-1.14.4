@@ -51,12 +51,14 @@ echo_help() {
 
 echo_version() {
     echo "server $MCSRV_NAME"
+    echo "script-version 20.12.3"
 }
 
 #========== init ==========#
 
 install_dependencies() {
     yum install -y screen java-1.8.0-openjdk-devel
+    apt install -y screen openjdk-8-jre-headless
 }
 
 download_origin() {
@@ -199,9 +201,9 @@ drop_caches() {
 
 tail_log() {
     if [ $# -gt 1 ]; then
-        tailf logs/latest.log -n $2
+        tail -f logs/latest.log -n $2
     else
-        tailf logs/latest.log
+        tail -f logs/latest.log
     fi
 }
 
@@ -241,9 +243,9 @@ case "$OPT" in
         agree_eula
         ;;
     "--forge")
-        #download_origin
-        #download_forge
-        #install_forge
+        download_origin
+        download_forge
+        install_forge
         backup_jar
         ;;
     "-r");&
