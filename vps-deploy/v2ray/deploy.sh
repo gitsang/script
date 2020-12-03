@@ -11,6 +11,8 @@ v2ray() {
     rm -fr /usr/local/etc/v2ray/config.json
     unzip config.zip -d /usr/local/etc/v2ray/
 
+    ./bbr.sh
+
     systemctl enable v2ray
     systemctl restart v2ray
 }
