@@ -36,6 +36,7 @@ echo_help() {
     echo "     --reboot         reboot Minecraft server"
     echo " -s, --status         view server status"
     echo "     --soft-link      make a soft-link for this shell"
+    echo " -v, --version        version"
     echo ""
     echo " usage: \"ctrl + a + d\" to detach screen"
     echo ""
@@ -46,6 +47,10 @@ echo_help() {
     echo "# minecraft-server --create-crontab"
     echo "# minecraft-server --run"
     echo "# <ctrl + a + d>"
+}
+
+echo_version() {
+    echo "server $MCSRV_NAME"
 }
 
 #========== init ==========#
@@ -225,6 +230,10 @@ case "$OPT" in
     "-h");&
     "--help")
         echo_help
+        ;;
+    "-v");&
+    "--version")
+	echo_version
         ;;
     "-i");&
     "--init")
