@@ -10,12 +10,39 @@ deploy_h5ai() {
     cd - 
 }
 
+deploy_init() {
+    cd init
+    ./apt-init.sh
+    ./git-init.sh
+    cd -
+}
+
 case $1 in 
     "init")
+        deploy_init
 	    ;;
     "h5ai")
         deploy_h5ai
         ;;
+    "samba");;
+    "filerun");;
+    "v2ray");;
+    "aria2");;
+    "frp");;
+
+    "apache2");;
+    "html");;
+
+    "oss");;
+    "wlan");;
+
+    "minecraft");;
+    "registry");;
+    "gitlab");;
+
+    "rocketmq");;
+    "redis");;
+
     *)
         if [ "${DOMAIN}" == "" ]; then
             echo "set up DOMAIN before using this script"
