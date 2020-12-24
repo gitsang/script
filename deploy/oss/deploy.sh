@@ -3,3 +3,5 @@ oss() {
     chmod +x /usr/local/bin/ossutil64
 }
 
+oss
+
