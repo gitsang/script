@@ -11,6 +11,8 @@ deploy_h5ai() {
 }
 
 case $1 in 
+    "init")
+	    ;;
     "h5ai")
         deploy_h5ai
         ;;
