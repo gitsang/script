@@ -1,10 +1,10 @@
 
-getAccessConfigSubCommand() {
-    ADMIN=./rocketmq/bin/mqadmin
-    FUNC=getAccessConfigSubCommand
+ADMIN=./rocketmq/bin/mqadmin
+NAMESRV_ADDR=localhost:9876
+CLUSTER_NAME=DefaultCluster
 
-    CLUSTER_NAME=DefaultCluster
-    NAMESRV_ADDR=localhost:9876
+getAccessConfigSubCommand() {
+    FUNC=getAccessConfigSubCommand
 
     ${ADMIN} ${FUNC} \
         --clusterName ${CLUSTER_NAME} \
@@ -12,21 +12,15 @@ getAccessConfigSubCommand() {
 }
 
 statsAll() {
-    ADMIN=./rocketmq/bin/mqadmin
     FUNC=statsAll
 
-    NAMESRV_ADDR=localhost:9876
-
-    ${ADMIN} ${FUNC} --namesrvAddr ${NAMESRV_ADDR}
+    ${ADMIN} ${FUNC} \
+        --namesrvAddr ${NAMESRV_ADDR}
 }
 
 updateTopic() {
-    ADMIN=./rocketmq/bin/mqadmin
     FUNC=updateTopic
-
-    CLUSTER_NAME=DefaultCluster
-    NAMESRV_ADDR=localhost:9876
-    TOPIC=EXAMPLE_TOPIC
+    TOPIC=${1:-EXAMPLE_TOPIC}
     PERM=6
     RQN=4
     WQN=4
@@ -40,13 +34,30 @@ updateTopic() {
         --topic ${TOPIC} 
 }
 
+deleteTopic() {
+    FUNC=deleteTopic
+    TOPIC=${1:-EXAMPLE_TOPIC}
+
+    ${ADMIN} ${FUNC} \
+        --clusterName ${CLUSTER_NAME} \
+        --namesrvAddr ${NAMESRV_ADDR} \
+        --topic ${TOPIC} 
+}
+
 case $1 in
-    "getAcl")
+    "acl"|"getAcl"|"getacl")
         getAccessConfigSubCommand ;;
-    "statsAll")
+    "sa"|"statsAll"|"statsall")
         statsAll ;;
-    "updateTopic")
-        updateTopic ;;
+    "ut"|"updateTopic"|"updatetopic")
+        updateTopic $2 ;;
+    "dt"|"deleteTopic"|"deletetopic")
+        deleteTopic $2 ;;
     *)
-        echo "usage $0 getAcl/statsAll/updateTopic"
+        echo "usage $0 getAcl/statsAll/updateTopic/deleteTopic"
+        echo "options"
+        echo "    acl/getAcl"
+        echo "    sa/statsAll"
+        echo "    ut/updateTopic [topic]"
+        echo "    dt/deleteTopic [topic]"
 esac
