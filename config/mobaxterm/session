@@ -1,0 +1,128 @@
+#!/bin/bash
+
+SESSION_ID_ALL="11 12 13 21 22 23 31 32 33 ticn tius tigg s-sh s-sz s-us"
+
+session_check() {
+    case ${ID} in
+        "ticn")
+            GROUP=sync
+            ROLE=root
+            IP=tidb-cn.l7i.top
+            ;;
+        "tius")
+            GROUP=sync
+            ROLE=root
+            IP=tidb-us.l7i.top
+            ;;
+        "tigg")
+            GROUP=sync
+            ROLE=root
+            IP=tidb-gg.l7i.top
+            ;;
+        "11")
+            GROUP=yms
+            ROLE=root
+            IP=10.83.1.73
+            ;;
+        "12")
+            GROUP=yms
+            ROLE=root
+            IP=10.83.1.74
+            ;;
+        "13")
+            GROUP=yms
+            ROLE=root
+            IP=10.83.1.75
+            ;;
+        "21")
+            GROUP=
+            ROLE=root
+            IP=10.71.6.10
+            ;;
+        "22")
+            GROUP=
+            ROLE=root
+            IP=10.71.6.11
+            ;;
+        "23")
+            GROUP=
+            ROLE=root
+            IP=10.71.6.13
+            ;;
+        "31")
+            GROUP=
+            ROLE=root
+            IP=10.200.112.195
+            ;;
+        "32")
+            GROUP=
+            ROLE=root
+            IP=10.200.112.74
+            ;;
+        "33")
+            GROUP=
+            ROLE=root
+            IP=10.200.112.119
+            ;;
+        "s-sh")
+            GROUP=sang
+            ROLE=root
+            IP=sh.sang.pp.ua
+            ;;
+        "s-sz")
+            GROUP=sang
+            ROLE=root
+            IP=sz.sang.pp.ua
+            ;;
+        "s-us")
+            GROUP=sang
+            ROLE=root
+            IP=us.sang.pp.ua
+            ;;
+    esac
+}
+
+session_info() {
+    session_check
+    echo -e "[group:${GROUP}]\t[id:${ID}]\t[role:${ROLE}]\t[ip:${IP}]"
+}
+
+session_info_all() {
+    for ID in ${SESSION_ID_ALL}
+    do
+        session_check
+        session_info
+    done
+}
+
+session_conn() {
+    session_check
+    ssh ${ROLE}@${IP}
+}
+
+session_help() {
+    echo "usage: $0 [list | help | sessionId]"
+    echo ""
+}
+
+if [ $# -eq 0 ]; then
+    session_help
+    session_info_all
+else
+    case $1 in
+        "list")
+            if [ ! -z $2 ]; then
+                ID=$2
+                session_info
+            else
+                session_info_all
+            fi
+            ;;
+        "help")
+            session_help
+            ;;
+        *)
+            ID=$1
+            session_conn $1
+    esac
+fi
