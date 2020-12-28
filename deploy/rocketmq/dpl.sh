@@ -4,11 +4,13 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 rocketmq_build() {
-    ROCKETMQ_VERSION=4.7.0
+    ROCKETMQ_VERSION=4.7.1
     ROCKETMQ_ZIP=rocketmq-all-${ROCKETMQ_VERSION}-source-release.zip
     ROCKETMQ_DIR=rocketmq-all-${ROCKETMQ_VERSION}-source-release
     ROCKETMQ_TARGET_DIR=distribution/target/rocketmq-${ROCKETMQ_VERSION}/rocketmq-${ROCKETMQ_VERSION}
-    ZIP_URL=https://mirrors.tuna.tsinghua.edu.cn/apache/rocketmq/${VERSION}/${ROCKETMQ_ZIP}
+    APACHE_DIST=https://archive.apache.org/dist/rocketmq
+    TSINGHUA_DIST=https://mirrors.tuna.tsinghua.edu.cn/apache/rocketmq
+    ZIP_URL=${APACHE_DIST}/${ROCKETMQ_VERSION}/${ROCKETMQ_ZIP}
     SRC_PATH=./src
     EXEC_PATH=`pwd`
 
@@ -216,6 +218,8 @@ rocketmq_status() {
 }
 
 case $1 in 
+    "build")
+        rocketmq_build ;;
     "kill") 
         rocketmq_kill ;;
     "init") 
@@ -225,6 +229,6 @@ case $1 in
     "status") 
         rocketmq_status ;;
     *) 
-        echo "usage $0 kill | init | run | status" ;;
+        echo "usage $0 build | kill | init | run | status" ;;
 esac
 
