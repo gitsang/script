@@ -1,9 +1,26 @@
 #!/bin/bash
 
-SESSION_ID_ALL="11 12 13 21 22 23 31 32 33 ticn tius tigg s-sh s-sz s-us"
+SESSION_ID_ALL="
+    mq1 mq2 
+    ticn tius tigg 
+    s-sh s-sz s-us
+    yms1 yms2 yms3 
+    21 22 23 
+    31 32 33 
+"
 
 session_check() {
     case ${ID} in
+        "mq1")
+            GROUP=sync
+            ROLE=root
+            IP=10.200.112.158
+            ;;
+        "mq2")
+            GROUP=sync
+            ROLE=root
+            IP=10.200.112.159
+            ;;
         "ticn")
             GROUP=sync
             ROLE=root
@@ -19,17 +36,32 @@ session_check() {
             ROLE=root
             IP=tidb-gg.l7i.top
             ;;
-        "11")
+        "s-sh")
+            GROUP=sang
+            ROLE=root
+            IP=sh.sang.pp.ua
+            ;;
+        "s-sz")
+            GROUP=sang
+            ROLE=root
+            IP=sz.sang.pp.ua
+            ;;
+        "s-us")
+            GROUP=sang
+            ROLE=root
+            IP=us.sang.pp.ua
+            ;;
+        "yms1")
             GROUP=yms
             ROLE=root
             IP=10.83.1.73
             ;;
-        "12")
+        "yms2")
             GROUP=yms
             ROLE=root
             IP=10.83.1.74
             ;;
-        "13")
+        "yms3")
             GROUP=yms
             ROLE=root
             IP=10.83.1.75
@@ -64,27 +96,14 @@ session_check() {
             ROLE=root
             IP=10.200.112.119
             ;;
-        "s-sh")
-            GROUP=sang
-            ROLE=root
-            IP=sh.sang.pp.ua
-            ;;
-        "s-sz")
-            GROUP=sang
-            ROLE=root
-            IP=sz.sang.pp.ua
-            ;;
-        "s-us")
-            GROUP=sang
-            ROLE=root
-            IP=us.sang.pp.ua
-            ;;
     esac
 }
 
+# ==============================================================================
+
 session_info() {
     session_check
-    echo -e "[group:${GROUP}]\t[id:${ID}]\t[role:${ROLE}]\t[ip:${IP}]"
+    echo -e "[group:${GROUP}]\t\t[id:${ID}]\t\t[role:${ROLE}]\t\t[ip:${IP}]"
 }
 
 session_info_all() {
