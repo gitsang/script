@@ -103,7 +103,7 @@ session_check() {
 
 session_info() {
     session_check
-    echo -e "[group:${GROUP}]\t\t[id:${ID}]\t\t[role:${ROLE}]\t\t[ip:${IP}]"
+    echo -e "[group: ${GROUP}]\t\t[id: ${ID}]\t\t[role: ${ROLE}]\t\t[ip: ${IP}]"
 }
 
 session_info_all() {
