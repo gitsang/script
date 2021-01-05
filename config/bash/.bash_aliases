@@ -93,15 +93,12 @@ alias gps='git push'
 alias gpl='git pull'
 gau() {
     BRANCH=`git branch | grep "*" | awk '{print $2}'`
-    MODIFIED=`git status | grep modified | awk '{print $3}'`
-    MODIFIED_NAME=`echo ${MODIFIED} | awk -F '/' '{print $NF}'`
-    DELETED=`git status | grep deleted | awk '{print $3}'`
-    DELETED_NAME=`echo ${DELETED} | awk -F '/' '{print $NF}'`
-    NEWFILE=`git status | grep "new file" | awk '{print $3}'`
-    NEWFILE_NAME=`echo ${NEWFILE} | awk -F '/' '{print $NF}'`
-    echo MODIFIED[${MODIFIED}] DELETED[${DELETED}] NEWFILE[${NEWFILE}]
-    git add --all ${MODIFIED} ${DELETED} ${NEWFILE}
-    git commit -m "update ${MODIFIED_NAME} ${DELETED_NAME} ${NEWFILE_NAME}"
+    UPDATED=`git status | grep -E "modified|deleted|new file|renamed" | awk '{print $3}'`
+    UPDATED_NAME=`echo ${MODIFIED} | awk -F '/' '{print $NF}'`
+
+    echo UPDATED: ${UPDATED_NAME}
+    git add --all ${UPDATED}
+    git commit -m "update ${UPDATED_NAME}"
     git push origin ${BRANCH}
     git status
 }
