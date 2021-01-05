@@ -94,14 +94,16 @@ alias gpl='git pull'
 gau() {
     BRANCH=`git branch | grep "*" | awk '{print $2}'`
     MODIFIED=`git status | grep modified | awk '{print $3}'`
-    MODIFIED_FILENAME=`echo ${MODIFIED} | awk -F '/' '{print $NF}'`
+    MODIFIED_NAME=`echo ${MODIFIED} | awk -F '/' '{print $NF}'`
     DELETED=`git status | grep deleted | awk '{print $3}'`
-    DELETED_FILENAME=`echo ${DELETED} | awk -F '/' '{print $NF}'`
+    DELETED_NAME=`echo ${DELETED} | awk -F '/' '{print $NF}'`
     NEWFILE=`git status | grep "new file" | awk '{print $3}'`
-    NEWFILE_FILENAME=`echo ${NEWFILE} | awk -F '/' '{print $NF}'`
+    NEWFILE_NAME=`echo ${NEWFILE} | awk -F '/' '{print $NF}'`
 
-    git add --all ${MODIFIED} ${DELETE}
-    git commit -m "update ${MODIFIED_FILENAME} ${DELETE_FILENAME}"
+    echo ${MODIFIED} ${DELETED} ${NEWFILE}
+
+    git add --all ${MODIFIED} ${DELETED} ${NEWFILE}
+    git commit -m "update ${MODIFIED_NAME} ${DELETED_NAME} ${NEWFILE_NAME}"
     git push origin ${BRANCH}
     git status
 }
