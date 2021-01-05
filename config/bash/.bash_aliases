@@ -55,8 +55,7 @@ alias vnp='vim --noplugin'
 alias vit='vim --startuptime startuptime.log'
 
 # cache
-alias dropcaches='drop_caches'
-drop_caches() {
+dropcaches() {
     free -h | grep Mem
     sync; echo 1 > /proc/sys/vm/drop_caches
     sync; echo 2 > /proc/sys/vm/drop_caches
@@ -71,36 +70,46 @@ kj() {
 }
 
 # git
-alias upimg='git add image.yaml && git commit -m "update image.yaml" && git push'
 gh() {
-    DATE=`date '+%Y%m%d_%H%M'`
-    echo "gh      echo git alias help"
+    echo "gh      help"
     echo "gs      git status"
+    echo "gd      git diff"
     echo "gl      git log"
     echo "ga      git add"
     echo "gaa     git add --all ."
     echo "gcm     git commit -m"
-    echo "gpush   git push"
-    echo "gpull   git pull"
-    echo "gaupush git add --all . && git commit -m \"auto commit\" && git push && git status'"
-    echo "gsubmit git push origin master:master_submit_${DATE}_chensx"
-    echo "gtmp    git push origin master:master_tmp_${DATE}_chensx"
+    echo "gps     git push"
+    echo "gpl     git pull"
+    echo "gau     auto push"
+    echo "gsubmit auto submit"
 }
 alias gs='git status'
+alias gd='git diff'
 alias gl='git log'
 alias ga='git add'
 alias gaa='git add --all .'
-alias gpush='git push'
-alias gpull='git pull'
-alias gaupush='git add --all . && git commit -m "auto commit" && git push && git status'
 alias gcm='git commit -m'
-gsubmit() {
-    DATE=`date '+%Y%m%d_%H%M'`
-    git push origin master:master_submit_${DATE}_chensx
+alias gps='git push'
+alias gpl='git pull'
+gau() {
+    BRANCH=`git branch | grep "*" | awk '{print $2}'`
+    MODIFIED=`git status | grep modified | awk '{print $3}'`
+    MODIFIED_FILENAME=`echo ${MODIFIED} | awk -F '/' '{print $NF}'`
+    DELETED=`git status | grep deleted | awk '{print $3}'`
+    DELETED_FILENAME=`echo ${DELETED} | awk -F '/' '{print $NF}'`
+    NEWFILE=`git status | grep "new file" | awk '{print $3}'`
+    NEWFILE_FILENAME=`echo ${NEWFILE} | awk -F '/' '{print $NF}'`
+
+    git add --all ${MODIFIED} ${DELETE}
+    git commit -m "update ${MODIFIED_FILENAME} ${DELETE_FILENAME}"
+    git push origin ${BRANCH}
+    git status
 }
-gtmp() {
+gsubmit() {
+    BRANCH=`git branch | grep "*" | awk '{print $2}'`
     DATE=`date '+%Y%m%d_%H%M'`
-    git push origin master:master_tmp_${DATE}_chensx
+    USER=chensx
+    git push origin ${BRANCH}:master-dev_submit_${DATE}_${USER}
 }
 
 # trash
@@ -161,13 +170,14 @@ backup() {
     if [ "$REAL_PATH" != "/" ]; then
         mkdir -p $BACKUP_DIR
         cp -r $REAL_PATH $BACKUP_PATH
-        echo "copy $REAL_PATH to $BACKUP_PATH"
+        echo "backup $REAL_PATH to $BACKUP_PATH"
     fi
 }
 
 # proxy
 proxy() {
     PROXY_HOST=127.0.0.1
+    echo "PROXY_HOST=${PROXY_HOST}"
     case "$1" in 
         "-l"|"--list")
             echo http_proxy=$http_proxy
@@ -185,12 +195,6 @@ proxy() {
                         "s"|"socks") export {http,https,ftp}_proxy="socks5://${PROXY_HOST}:1081";;
                         *) echo "type error";;
                     esac;;
-                "hk")
-                    case "$3" in
-                        "h"|"http") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1090";;
-                        "s"|"socks") export {http,https,ftp}_proxy="socks5://${PROXY_HOST}:1091";;
-                        *) echo "type error";;
-                    esac;;
                 "yl")
                     case "$3" in
                         "h"|"http") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1070";;
@@ -199,100 +203,22 @@ proxy() {
                         *) echo "type error";;
                     esac;;
                 *)
-                    echo "set uasge:"
-                    echo "    proxy --set [location] [type]"
-                    echo "location:"
-                    echo "    la          Los Angeles"
-                    echo "    hk          HongKong"
-                    echo "    yl          yealink"
-                    echo "type:"
-                    echo "    h, http     http_proxy"
-                    echo "    s, socks    socks_proxy"
-                    echo "    l, lan     only yealink lan proxy use it"
                     ;;
             esac;;
         *)
-            echo "PROXY_HOST=${PROXY_HOST}"
             echo "help:"
-            echo "    -h, --help                  help"
-            echo "    -l, --list                  list current proxy and optional proxy"
-            echo "    -c, --clean                 clean proxy"
-            echo "    -s, --set [location] [type] set proxy, type \`proxy -s\` for more help"
-            echo "example:"
-            echo "    proxy --set la http"
+            echo "    -h, --help                     help"
+            echo "    -l, --list                     list current proxy"
+            echo "    -c, --clean                    clean proxy"
+            echo "    -s, --set [location] [type]    set proxy"
+            echo "              location:"
+            echo "                  la          Los Angeles"
+            echo "                  yl          yealink"
+            echo "              type:"
+            echo "                  h, http     http proxy"
+            echo "                  s, socks    socks proxy"
+            echo "                  l, lan      internal proxy"
             ;;
     esac
-}
-
-# tunnel
-tunnel() {
-    SECTOR=x
-    DST_USR=root
-    DST_ADDR=aliyun.sang.pp.ua
-    if [ $SECTOR == "x" ]; then
-        echo "SECTOR not define, please edit in ~/.bash_alias"
-    else
-        case "$1" in
-            "init")
-                yum install -y autossh
-                apt install -y autossh
-                ssh-keygen
-                ssh-copy-id -i ~/.ssh/id_rsa.pub -p 22 ${DST_USR}@${DST_ADDR}
-                ;;
-            "build")
-                if [ ! -z $2 ]; then
-                    SRC_PORT=$2
-                    DST_PORT=`expr ${SECTOR} \* 10000 + ${SRC_PORT}`
-                    autossh -NR :${DST_PORT}:0.0.0.0:${SRC_PORT} -M ${DST_PORT}:${SRC_PORT} -f ${DST_USR}@${DST_ADDR}
-                else
-                    echo "usage: tunnel build (port)"
-                fi
-                ;;
-            "close")
-                ps auxf | grep ssh | grep NR | grep -v grep | awk '{print $2}' | xargs -i -t kill -9 {}
-                ;;
-            *)
-                echo "help:"
-                echo "    tunnel [init|build|close]"
-                ps auxf | grep ssh | grep NR | grep -v grep
-                ;;
-        esac
-    fi
-}
-
-# download tgz
-alias dtgz='download_tgz'
-download_tgz() {
-    if [ $# -lt 1 ]; then
-        echo "usage: dtgz service [version]"
-        return
-    fi
-
-    REPO_DEV_URL=https://nexus.sang.pp.ua/repository/packages-repo-develop/cloud
-    REPO_RELEASE_URL=https://nexus.sang.pp.ua/repository/packages-repo/cloud
-
-    SERVICE=$1
-    VERSION=${2:-latest}
-    REPO_URL=${REPO_DEV_URL}
-    TGZ=${SERVICE}.tar.gz
-    TAR=${SERVICE}-${VERSION}.tar.gz
-
-    if [ "develop" == "${VERSION:0:7}" ]; then
-        REPO_URL=${REPO_DEV_URL}
-    elif [ "release" == "${VERSION:0:7}" ]; then
-        REPO_URL=${REPO_RELEASE_URL}
-    fi
-
-    echo service: $SERVICE
-    echo version: $VERSION
-    echo repo_url: $REPO_URL
-    echo tgz: $TGZ
-    echo tar: $TAR
-    echo
-
-    if [ ! -f "${TAR}" ]; then
-        wget ${REPO_URL}/${SERVICE}/${VERSION#*-}/linux/${TGZ} -O ${TAR}
-        tar zxvf ${TAR} && mv ${SERVICE} ${SERVICE}-${VERSION}
-    fi
 }
 
