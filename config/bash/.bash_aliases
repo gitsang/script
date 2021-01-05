@@ -99,14 +99,10 @@ gau() {
     DELETED_NAME=`echo ${DELETED} | awk -F '/' '{print $NF}'`
     NEWFILE=`git status | grep "new file" | awk '{print $3}'`
     NEWFILE_NAME=`echo ${NEWFILE} | awk -F '/' '{print $NF}'`
-
-    echo git add --all ${MODIFIED} ${DELETED} ${NEWFILE}
+    echo MODIFIED[${MODIFIED}] DELETED[${DELETED}] NEWFILE[${NEWFILE}]
     git add --all ${MODIFIED} ${DELETED} ${NEWFILE}
-    echo git commit -m "update ${MODIFIED_NAME} ${DELETED_NAME} ${NEWFILE_NAME}"
     git commit -m "update ${MODIFIED_NAME} ${DELETED_NAME} ${NEWFILE_NAME}"
-    echo git push origin ${BRANCH}
     git push origin ${BRANCH}
-    echo git status
     git status
 }
 gsubmit() {
