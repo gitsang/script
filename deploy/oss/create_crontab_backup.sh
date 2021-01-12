@@ -24,7 +24,6 @@ reset_crond
 add_date_log
 add_backup_path /share/package oss://sang-repo/package
 add_backup_path /share/project oss://sang-repo/project
-add_backup_path /share/books   oss://sang-repo/books
 add_backup_path /mnt/sda1      oss://sang-mnt/sda1
 add_backup_path /mnt/sda2      oss://sang-mnt/sda2
 
