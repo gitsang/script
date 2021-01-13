@@ -110,60 +110,63 @@ gsubmit() {
 # trash
 alias del='trash'
 trash() {
+    T_DIR=~/.trash
     case "$1" in 
         "help"|"-h")
             echo "usage: trash [ clean(-c) | recover(-r) | backup(-b) | help(-h) ]"
             ;;
         "recover"|"-r")
-            TRASH_DIR=~/.trash
-            REAL_PATH=`echo $@ | awk -F'-%TRASH%-' '{print $2}' | sed 's/##/\//g'`
-
-            if [ -f "$REAL_PATH" ]; then
-                echo "file exist: $REAL_PATH"
-            elif [ -d "$REAL_PATH" ]; then
-                echo "folder exist: $REAL_PATH"
+            T_NAME=$2
+            if [ "$T_NAME" == "" ]; then
+                T_NAME=`ls -t $T_DIR | grep -v total | tail -1`
+            fi
+            T_REAL=`echo $T_NAME | awk -F'-%TRASH%-' '{print $2}' | sed 's/##/\//g'`
+            T_REAL_DIR=`dirname $T_REAL`
+            if [ -f "$T_REAL" ]; then
+                echo "file exist: $T_REAL"
+            elif [ -d "$T_REAL" ]; then
+                echo "folder exist: $T_REAL"
             else
-                mv $@ $REAL_PATH
-                echo "recover $@ to $REAL_PATH"
+                mkdir -p $T_REAL_DIR
+                mv $T_NAME $T_REAL
+                echo "recover $T_NAME to $T_REAL"
             fi
             ;;
         "clean"|"-c")
-            TRASH_DIR=~/.trash
-            MAX_TRASH_SIZE=20000000
-            TRASH_SIZE=`du --max-depth=0 $TRASH_DIR | awk '{print $1}'`
-
-            while [ $TRASH_SIZE -gt $MAX_TRASH_SIZE ]
+            T_MAX=20000000
+            T_SIZE=`du --max-depth=0 ${T_DIR} | awk '{print $1}'`
+            while [ ${T_SIZE} -gt ${T_MAX} ]
             do
-                echo "trash-size: $TRASH_SIZE > $MAX_TRASH_SIZE clean up:" && ls $TRASH_DIR | grep -v total | head -1
-                ls $TRASH_DIR | grep -v total | head -1 | xargs -i -n1 rm -fr $TRASH_DIR/{}
-                TRASH_SIZE=`du --max-depth=0 $TRASH_DIR | awk '{print $1}'`
+                echo "trash-size: ${T_SIZE} > ${T_MAX} clean up:" && ls ${T_DIR} | grep -v total | head -1
+                ls ${T_DIR} | grep -v total | head -1 | xargs -i -n1 rm -fr ${T_DIR}/{}
+                T_SIZE=`du --max-depth=0 ${T_DIR} | awk '{print $1}'`
             done
-            echo "trash-size: $TRASH_SIZE"
+            echo "trash-size: ${T_SIZE}"
             ;;
         "backup"|"-b")
-            BACKUP_DIR=~/.trash
-            REAL_PATH=`realpath $@`
-            BACKUP_NAME=`realpath $@ | sed 's/\//##/g'`
-            TIME=`date "+%Y%m%d-%H%M%S"`
-            BACKUP_PATH=$BACKUP_DIR/$TIME-%BACKUP%-$BACKUP_NAME
-
-            if [ "$REAL_PATH" != "/" ]; then
-                mkdir -p $BACKUP_DIR
-                cp -r $REAL_PATH $BACKUP_PATH
-                echo "backup $REAL_PATH to $BACKUP_PATH"
+            T_ORIGIN=$2
+            T_FLAG=%BACKUP%
+            T_REAL=`realpath ${T_ORIGIN}`
+            T_NAME=`realpath ${T_ORIGIN} | sed 's/\//##/g'`
+            T_TIME=`date "+%Y%m%d-%H%M%S"`
+            T_PATH=${T_DIR}/${T_TIME}-${T_FLAG}-${T_NAME}
+            if [ "${T_REAL}" != "/" ]; then
+                mkdir -p ${T_DIR}
+                mv ${T_REAL} ${T_PATH}
+                echo "del ${T_REAL} to ${T_PATH}"
             fi
             ;;
         *)
-            TRASH_DIR=~/.trash
-            REAL_PATH=`realpath $@`
-            TRASH_NAME=`realpath $@ | sed 's/\//##/g'`
-            TIME=`date "+%Y%m%d-%H%M%S"`
-            TRASH_PATH=$TRASH_DIR/$TIME-%TRASH%-$TRASH_NAME
-
-            if [ "$REAL_PATH" != "/" ]; then
-                mkdir -p $TRASH_DIR
-                mv $REAL_PATH $TRASH_PATH
-                echo "del $REAL_PATH to $TRASH_PATH"
+            T_ORIGIN=$1
+            T_FLAG=%TRASH%
+            T_REAL=`realpath ${T_ORIGIN}`
+            T_NAME=`realpath ${T_ORIGIN} | sed 's/\//##/g'`
+            T_TIME=`date "+%Y%m%d-%H%M%S"`
+            T_PATH=${T_DIR}/${T_TIME}-${T_FLAG}-${T_NAME}
+            if [ "${T_REAL}" != "/" ]; then
+                mkdir -p ${T_DIR}
+                mv ${T_REAL} ${T_PATH}
+                echo "del ${T_REAL} to ${T_PATH}"
             fi
             ;;
     esac
