@@ -117,19 +117,19 @@ trash() {
             ;;
         "recover"|"-r")
             T_NAME=$2
-            if [ "$T_NAME" == "" ]; then
-                T_NAME=`ls $T_DIR | grep -v total | tail -1`
+            if [ "${T_NAME}" == "" ]; then
+                T_NAME=`ls ${T_DIR} | grep -v total | tail -1`
             fi
-            T_REAL=`echo $T_NAME | awk -F'-%TRASH%-' '{print $2}' | sed 's/##/\//g'`
-            T_REAL_DIR=`dirname $T_REAL`
-            if [ -f "$T_REAL" ]; then
-                echo "file exist: $T_REAL"
-            elif [ -d "$T_REAL" ]; then
-                echo "folder exist: $T_REAL"
+            T_REAL=`echo ${T_NAME} | awk -F'-%TRASH%-' '{print $2}' | sed 's/##/\//g'`
+            T_REAL_DIR=`dirname ${T_REAL}`
+            if [ -f "${T_REAL}" ]; then
+                echo "file exist: ${T_REAL}"
+            elif [ -d "${T_REAL}" ]; then
+                echo "folder exist: ${T_REAL}"
             else
-                mkdir -p $T_REAL_DIR
-                mv $T_NAME $T_REAL
-                echo "recover $T_NAME to $T_REAL"
+                mkdir -p ${T_REAL_DIR}
+                mv ${T_DIR}/${T_NAME} ${T_REAL}
+                echo "recover ${T_NAME} to ${T_REAL}"
             fi
             ;;
         "clean"|"-c")
