@@ -111,24 +111,27 @@ gsubmit() {
 alias del='trash'
 trash() {
     case "$1" in 
-        "help"|"h")
-            echo "usage: trash [ clean/cl | recover/rec | help/h ]"
+        "help"|"-h")
+            echo "usage: trash [ clean(-c) | recover(-r) | backup(-b) | help(-h) ]"
             ;;
-        "recover"|"rec")
+        "recover"|"-r")
             TRASH_DIR=~/.trash
-            REAL_PATH=`echo $@ | awk -F'-%trash%-' '{ print $2 }' | sed 's/^^/\//g'`
+            REAL_PATH=`echo $@ | awk -F'-%TRASH%-' '{print $2}' | sed 's/##/\//g'`
+
             if [ -f "$REAL_PATH" ]; then
                 echo "file exist: $REAL_PATH"
             elif [ -d "$REAL_PATH" ]; then
                 echo "folder exist: $REAL_PATH"
             else
                 mv $@ $REAL_PATH
+                echo "recover $@ to $REAL_PATH"
             fi
             ;;
-        "clean"|"cl")
+        "clean"|"-c")
             TRASH_DIR=~/.trash
             MAX_TRASH_SIZE=20000000
             TRASH_SIZE=`du --max-depth=0 $TRASH_DIR | awk '{print $1}'`
+
             while [ $TRASH_SIZE -gt $MAX_TRASH_SIZE ]
             do
                 echo "trash-size: $TRASH_SIZE > $MAX_TRASH_SIZE clean up:" && ls $TRASH_DIR | grep -v total | head -1
@@ -137,12 +140,25 @@ trash() {
             done
             echo "trash-size: $TRASH_SIZE"
             ;;
+        "backup"|"-b")
+            BACKUP_DIR=~/.trash
+            REAL_PATH=`realpath $@`
+            BACKUP_NAME=`realpath $@ | sed 's/\//##/g'`
+            TIME=`date "+%Y%m%d-%H%M%S"`
+            BACKUP_PATH=$BACKUP_DIR/$TIME-%BACKUP%-$BACKUP_NAME
+
+            if [ "$REAL_PATH" != "/" ]; then
+                mkdir -p $BACKUP_DIR
+                cp -r $REAL_PATH $BACKUP_PATH
+                echo "backup $REAL_PATH to $BACKUP_PATH"
+            fi
+            ;;
         *)
             TRASH_DIR=~/.trash
             REAL_PATH=`realpath $@`
-            TRASH_NAME=`realpath $@ | sed 's/\//^^/g'`
-            TIME=`date "+%Y-%m-%d-%H:%M:%S"`
-            TRASH_PATH=$TRASH_DIR/$TIME-%trash%-$TRASH_NAME
+            TRASH_NAME=`realpath $@ | sed 's/\//##/g'`
+            TIME=`date "+%Y%m%d-%H%M%S"`
+            TRASH_PATH=$TRASH_DIR/$TIME-%TRASH%-$TRASH_NAME
 
             if [ "$REAL_PATH" != "/" ]; then
                 mkdir -p $TRASH_DIR
@@ -151,22 +167,6 @@ trash() {
             fi
             ;;
     esac
-}
-
-# backup
-alias bk='backup'
-backup() {
-    BACKUP_DIR=~/..backup
-    REAL_PATH=`realpath $@`
-    BACKUP_NAME=`realpath $@ | sed 's/\//^^/g'`
-    TIME=`date "+%Y-%m-%d-%H:%M:%S"`
-    BACKUP_PATH=$BACKUP_DIR/$TIME-%backup%-$BACKUP_NAME
-
-    if [ "$REAL_PATH" != "/" ]; then
-        mkdir -p $BACKUP_DIR
-        cp -r $REAL_PATH $BACKUP_PATH
-        echo "backup $REAL_PATH to $BACKUP_PATH"
-    fi
 }
 
 # proxy
