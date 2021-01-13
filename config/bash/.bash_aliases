@@ -118,7 +118,7 @@ trash() {
         "recover"|"-r")
             T_NAME=$2
             if [ "$T_NAME" == "" ]; then
-                T_NAME=`ls -t $T_DIR | grep -v total | tail -1`
+                T_NAME=`ls $T_DIR | grep -v total | tail -1`
             fi
             T_REAL=`echo $T_NAME | awk -F'-%TRASH%-' '{print $2}' | sed 's/##/\//g'`
             T_REAL_DIR=`dirname $T_REAL`
