@@ -17,6 +17,14 @@ set encoding=utf-8 fileencodings=utf-8
 syntax on
 
 "--------------------
+" Diff
+"--------------------
+hi DiffAdd    cterm=reverse ctermbg=235 ctermfg=108
+hi DiffDelete cterm=reverse ctermbg=235 ctermfg=131
+hi DiffChange cterm=reverse ctermbg=235 ctermfg=11
+hi DiffText   cterm=reverse ctermbg=235 ctermfg=192
+
+"--------------------
 " Indent
 "--------------------
 filetype indent on
@@ -92,7 +100,7 @@ filetype plugin indent on
 filetype plugin on
 
 if empty(glob(expand('~/.vim/autoload/plug.vim')))
-    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    silent curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
@@ -192,7 +200,7 @@ call plug#begin()
     "--------------------
     " Tagbar
     "--------------------
-    Plug 'majutsushi/tagbar', { 'do': 'apt install ctags -y', 'on': 'TagbarToggle' }
+    Plug 'majutsushi/tagbar', { 'do': 'yum install ctags -y', 'on': 'TagbarToggle' }
         map <leader>g :TagbarToggle<CR>
         let g:tagbar_type_go = {
                 \ 'ctagstype' : 'go',
@@ -226,7 +234,8 @@ call plug#begin()
     " Vim-go
     "--------------------
     if !empty(system('command -v go'))
-        Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': ['go'] }
+        "Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': ['go'] }
+        Plug 'fatih/vim-go', { 'for': ['go'] }
             let g:syntastic_go_checkers = ['go', 'golint']
 
             "let g:go_fmt_command = "goimports"
