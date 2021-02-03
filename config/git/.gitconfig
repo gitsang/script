@@ -1,0 +1,26 @@
+[credential]
+    helper = store
+[user]
+    name = gitsang
+	email = sang.chen@outlook.com
+[core]
+    autocrlf = input
+	editor = vim
+[push]
+	default = simple
+[gui]
+    encoding = utf-8
+[i18n]
+    commitencoding = utf-8
+[svn]
+    pathnameencoding = utf-8
+[core]
+    quotepath = false
+[pager]
+	show = vim -
+    diff = vim -
+[diff]
+    tool = vimdiff
+[difftool]
+	prompt = false
+    trustExitCode = true
