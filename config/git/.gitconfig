@@ -2,12 +2,12 @@
     helper = store
 [user]
     name = gitsang
-	email = sang.chen@outlook.com
+    email = sang.chen@outlook.com
 [core]
     autocrlf = input
-	editor = vim
+    editor = vim
 [push]
-	default = simple
+    default = simple
 [gui]
     encoding = utf-8
 [i18n]
@@ -17,10 +17,10 @@
 [core]
     quotepath = false
 [pager]
-	show = vim -
+    show = vim -
     diff = vim -
 [diff]
     tool = vimdiff
 [difftool]
-	prompt = false
+    prompt = false
     trustExitCode = true
