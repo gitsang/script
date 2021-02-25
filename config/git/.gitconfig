@@ -24,3 +24,5 @@
 [difftool]
     prompt = false
     trustExitCode = true
+[mergetool]
+    trustExitCode = true
