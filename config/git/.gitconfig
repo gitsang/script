@@ -17,8 +17,8 @@
 [core]
     quotepath = false
 [pager]
-    diff = "vim -c '%sm/\\e.\\{-}m//ge' -c 'set ft=diff' -c 'normal gg' -c 'setlocal buftype=nofile' -" –
-    show = "vim -c '%sm/\\e.\\{-}m//ge' -c 'set ft=diff' -c 'normal gg' -c 'setlocal buftype=nofile' -" –
+    diff = "vim -c '%sm/\\e.\\{-}m//ge' -c 'set ft=diff' -c 'normal gg' -c 'setlocal buftype=nofile' -"
+    show = "vim -c '%sm/\\e.\\{-}m//ge' -c 'set ft=diff' -c 'normal gg' -c 'setlocal buftype=nofile' -"
 [diff]
     tool = vimdiff
 [difftool]
