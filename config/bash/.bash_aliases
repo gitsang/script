@@ -93,13 +93,9 @@ alias glp='git log -p'
 alias ga='git add'
 alias gaa='git add --all .'
 alias gcm='git commit -m'
+alias gps='git push'
 alias gpl='git pull'
-gps() {
-    SRC_BRANCH=`git branch | grep "*" | awk '{print $2}'`
-    DST_BRANCH=${1:-${SRC_BRANCH}}
-    shift
-    git push origin ${SRC_BRANCH}:${DST_BRANCH} $@
-}
+alias gf='git fetch'
 gau() {
     BRANCH=`git branch | grep "*" | awk '{print $2}'`
     UPDATED=`git status | grep -E "modified|deleted|new file|renamed" | awk '{print $NF}' | xargs`
