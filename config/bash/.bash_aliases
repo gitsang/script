@@ -84,13 +84,22 @@ gh() {
     echo "gsubmit auto submit"
 }
 alias gs='git status'
+alias gb='git branch'
 alias gd='git diff'
+alias gdt='git difftool'
 alias gl='git log'
+alias gls='git log --stat'
+alias glp='git log -p'
 alias ga='git add'
 alias gaa='git add --all .'
 alias gcm='git commit -m'
-alias gps='git push'
 alias gpl='git pull'
+gps() {
+    SRC_BRANCH=`git branch | grep "*" | awk '{print $2}'`
+    DST_BRANCH=${1:-${SRC_BRANCH}}
+    shift
+    git push origin ${SRC_BRANCH}:${DST_BRANCH} $@
+}
 gau() {
     BRANCH=`git branch | grep "*" | awk '{print $2}'`
     UPDATED=`git status | grep -E "modified|deleted|new file|renamed" | awk '{print $NF}' | xargs`
@@ -100,11 +109,43 @@ gau() {
     git push origin ${BRANCH}
     git status
 }
-gsubmit() {
-    BRANCH=`git branch | grep "*" | awk '{print $2}'`
+gsubm() {
+    USER=`hostname`
     DATE=`date '+%Y%m%d_%H%M'`
-    USER=chensx
-    git push origin ${BRANCH}:master-dev_submit_${DATE}_${USER}
+    SRC_BRANCH=`git branch | grep "*" | awk '{print $2}'`
+    SUBMIT_BRANCH=${1:-${SRC_BRANCH}}
+    DST_BRANCH=${SUBMIT_BRANCH}_submit_${DATE}_${USER}
+    while true; do
+        echo -e "submit to branch \e[31m${SUBMIT_BRANCH}\e[0m_submit_${DATE}_\e[31m${USER}\e[0m, \c"
+        read -r -p "continue? (Default:Y) [Y/n] " input
+        case $input in
+            [yY][eE][sS]|[yY]|"")
+                git push origin ${SRC_BRANCH}:${DST_BRANCH}
+                break
+                ;;
+            [nN][oO]|[nN])
+                break
+                ;;
+            *)
+                echo "Invalid input..." ;;
+        esac
+    done
+}
+grb() {
+    if [ ${#1} -gt 3 ]; then
+        git rebase -i ${1}
+    else
+        git rebase -i HEAD~${1}
+    fi
+}
+grst() {
+    if [ ${1} == "-h" ]; then
+        git reset --hard ${2}
+    elif [ ${1} == "-s" ]; then
+        git reset --soft ${2}
+    else
+        git reset $@
+    fi
 }
 
 # trash
@@ -175,9 +216,9 @@ trash() {
 # proxy
 proxy() {
     PROXY_HOST=127.0.0.1
-    echo "PROXY_HOST=${PROXY_HOST}"
-    case "$1" in 
+    case "$1" in
         "-l"|"--list")
+            echo PROXY_HOST=$PROXY_HOST
             echo http_proxy=$http_proxy
             echo https_proxy=$https_proxy
             echo ftp_proxy=$ftp_proxy
@@ -188,34 +229,20 @@ proxy() {
         "-s"|"--set")
             case "$2" in
                 "la")
-                    case "$3" in
-                        "h"|"http") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1080";;
-                        "s"|"socks") export {http,https,ftp}_proxy="socks5://${PROXY_HOST}:1081";;
-                        *) echo "type error";;
-                    esac;;
-                "yl")
-                    case "$3" in
-                        "h"|"http") export {http,https,ftp}_proxy="http://${PROXY_HOST}:1070";;
-                        "s"|"socks") export {http,https,ftp}_proxy="socks5://${PROXY_HOST}:1071";;
-                        "l"|"lan") export {http,https,ftp}_proxy="netproxy.yealinkops.com:8123";;
-                        *) echo "type error";;
-                    esac;;
+                    export {http,https,ftp}_proxy="http://${PROXY_HOST}:1081";;
+                "co")
+                    export {http,https,ftp}_proxy="http://${PROXY_HOST}:1082";;
                 *)
                     ;;
             esac;;
         *)
             echo "help:"
-            echo "    -h, --help                     help"
-            echo "    -l, --list                     list current proxy"
-            echo "    -c, --clean                    clean proxy"
-            echo "    -s, --set [location] [type]    set proxy"
-            echo "              location:"
-            echo "                  la          Los Angeles"
-            echo "                  yl          yealink"
-            echo "              type:"
-            echo "                  h, http     http proxy"
-            echo "                  s, socks    socks proxy"
-            echo "                  l, lan      internal proxy"
+            echo "    -h, --help           help"
+            echo "    -l, --list           list current proxy"
+            echo "    -c, --clean          clean proxy"
+            echo "    -s, --set [location] set proxy"
+            echo "              la         Los Angeles"
+            echo "              co         Co."
             ;;
     esac
 }
