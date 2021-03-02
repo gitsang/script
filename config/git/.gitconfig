@@ -17,10 +17,12 @@
 [core]
     quotepath = false
 [pager]
-    show = vim -
-    diff = vim -
+    diff = "vim -c '%sm/\\e.\\{-}m//ge' -c 'set ft=diff' -c 'normal gg' -c 'setlocal buftype=nofile' -"
+    show = "vim -c '%sm/\\e.\\{-}m//ge' -c 'set ft=diff' -c 'normal gg' -c 'setlocal buftype=nofile' -"
 [diff]
     tool = vimdiff
 [difftool]
     prompt = false
+    trustExitCode = true
+[mergetool]
     trustExitCode = true

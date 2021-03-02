@@ -20,9 +20,9 @@ case $1 in
         cp -r html-us/ /var/www/html
         echo "deploy us success"
         ;;
-    "local")
+    "home")
         rm -fr /var/www/html
-        cp -r html-local/ /var/www/html
+        cp -r html-home/ /var/www/html
         echo "deploy local success"
         ;;
     *)

@@ -52,6 +52,8 @@ noremap <LEADER><TAB> :%retab!<CR>gg=G<C-o><C-o>zz
 noremap <LEADER>f :set ff=unix<CR>:set ff?<CR>
 " bar
 noremap <leader>b :NERDTreeToggle<CR>:TagbarToggle<CR><C-w>l
+" date
+noremap <leader>d :r!date --iso-8601=seconds<CR>
 
 "--------------------
 " Keymap
@@ -100,7 +102,7 @@ filetype plugin indent on
 filetype plugin on
 
 if empty(glob(expand('~/.vim/autoload/plug.vim')))
-    silent curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 

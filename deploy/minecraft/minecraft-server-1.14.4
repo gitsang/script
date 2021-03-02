@@ -8,6 +8,7 @@ MAX_BAK_CNT=10
 MCSRV_PATH=/root/project/minecraft-server-forge-1.14.4
 MCSRV_JAR=minecraft-server-forge-1.14.4.jar
 MCSRV_NAME=minecraft-server-forge-1.14.4
+SCRIPT_VER=2021.03.01
 
 #========== VAR ==========#
 
@@ -51,7 +52,7 @@ echo_help() {
 
 echo_version() {
     echo "server $MCSRV_NAME"
-    echo "script-version 20.12.3"
+    echo "script-version $SCRIPT_VER"
 }
 
 #========== init ==========#
@@ -150,6 +151,7 @@ backup() {
     mkdir -p backup/
     TIME=`date "+%Y-%m-%d"`
     BKFOLDER=${TIME}-backup/
+    BKFILE=backup/${TIME}-backup.tar.gz
 
     rm -fr $BKFOLDER
     mkdir -p $BKFOLDER
@@ -161,9 +163,11 @@ backup() {
     cp server-icon.png $BKFOLDER
     cp $0 $BKFOLDER
 
-    tar zcvf backup/${TIME}-backup.tar.gz $BKFOLDER
+    tar zcvf $BKFILE $BKFOLDER
     cp backup/${TIME}-backup.tar.gz backup/latest-backup.tar.gz
     rm -fr $BKFOLDER
+
+    /usr/local/bin/ossutil64 cp -r $BKFILE oss://sang-mcbk/ -u
 }
 
 backup_clean() {
