@@ -210,17 +210,21 @@ trash() {
 }
 
 # proxy
+list_proxy() {
+    echo http_proxy=$http_proxy
+    echo https_proxy=$https_proxy
+    echo ftp_proxy=$ftp_proxy
+}
 proxy() {
     PROXY_HOST=127.0.0.1
     case "$1" in
         "-l"|"--list")
             echo PROXY_HOST=$PROXY_HOST
-            echo http_proxy=$http_proxy
-            echo https_proxy=$https_proxy
-            echo ftp_proxy=$ftp_proxy
+            list_proxy
             ;;
         "-c"|"--clean")
             export {http,https,ftp}_proxy=""
+            list_proxy
             ;;
         "-s"|"--set")
             case "$2" in
@@ -230,7 +234,9 @@ proxy() {
                     export {http,https,ftp}_proxy="http://${PROXY_HOST}:1082";;
                 *)
                     ;;
-            esac;;
+            esac
+            list_proxy
+            ;;
         *)
             echo "help:"
             echo "    -h, --help           help"
@@ -239,6 +245,7 @@ proxy() {
             echo "    -s, --set [location] set proxy"
             echo "              la         Los Angeles"
             echo "              co         Co."
+            list_proxy
             ;;
     esac
 }
