@@ -148,7 +148,7 @@ grst() {
 alias del='trash'
 trash() {
     T_DIR=~/.trash
-    case "$1" in 
+    case "$1" in
         "help"|"-h")
             echo "usage: trash [ clean(-c) | recover(-r) | backup(-b) | help(-h) ]"
             ;;
