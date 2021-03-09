@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_VER=2021.03.09.1
+SCRIPT_VER=2021.03.09.2
 
 #========== conf ==========#
 
@@ -9,7 +9,7 @@ XMX="1024m"
 MAX_BAK_CNT=10
 MC_VERSION=1.16.5
 FORGE_VERSION=1.16.5-36.0.46
-MCSRV_PATH=/home/sang/minecraft
+MCSRV_PATH=/root/minecraft-server-forge-1.16.5
 ORIGIN_URL=https://launcher.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar
 
 #========== VAR ==========#
@@ -54,8 +54,10 @@ echo_help() {
 }
 
 echo_version() {
-    echo "server $MCSRV_NAME"
-    echo "script-version $SCRIPT_VER"
+    echo "script-version: $SCRIPT_VER"
+    echo "server-version: $MC_VERSION"
+    echo "forge-version: $FORGE_VERSION"
+    echo "server-path: $MCSRV_PATH"
 }
 
 #========== init ==========#
