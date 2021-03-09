@@ -1,0 +1,16 @@
+global:
+  scrape_interval:     60s
+  evaluation_interval: 60s
+ 
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['yl.sang.pp.ua:9090']
+        labels:
+          instance: prometheus
+ 
+  - job_name: dev
+    metrics_path: /metric
+    static_configs:
+      - targets: ['yl.sang.pp.ua:55555']
+
