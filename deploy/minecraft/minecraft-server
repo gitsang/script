@@ -1,22 +1,26 @@
 #!/bin/bash
 
+SCRIPT_VER=2021.03.09.1
+
 #========== conf ==========#
 
 XMS="512m"
 XMX="1024m"
 MAX_BAK_CNT=10
-MCSRV_PATH=/root/project/minecraft-server-forge-1.16.1
-MCSRV_JAR=minecraft-server-forge-1.16.1.jar
-MCSRV_NAME=minecraft-server-forge-1.16.1
+MC_VERSION=1.16.5
+FORGE_VERSION=1.16.5-36.0.46
+MCSRV_PATH=/home/sang/minecraft
+ORIGIN_URL=https://launcher.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar
 
 #========== VAR ==========#
 
-ORIGIN_URL=https://launcher.mojang.com/v1/objects/a412fd69db1f81db3f511c1463fd304675244077/server.jar
-FORGE_INSTALL_URL=https://files.minecraftforge.net/maven/net/minecraftforge/forge/1.16.1-32.0.61/forge-1.16.1-32.0.61-installer.jar
+MCSRV_NAME=minecraft-server-forge-${MC_VERSION}
+MCSRV_JAR=${MCSRV_NAME}.jar
 
-ORIGIN_JAR=minecraft_server.1.16.1.jar
-FORGE_INSTALL_JAR=forge-1.16.1-32.0.61-installer.jar
-FORGE_SERVER_JAR=forge-1.16.1-32.0.61.jar
+ORIGIN_JAR=minecraft_server.${MV_VERSION}.jar
+FORGE_INSTALL_JAR=forge-${FORGE_VERSION}-installer.jar
+FORGE_INSTALL_URL=https://files.minecraftforge.net/maven/net/minecraftforge/forge/${FORGE_VERSION}/${FORGE_INSTALL_JAR}
+FORGE_SERVER_JAR=forge-${FORGE_VERSION}.jar
 
 #========== help ==========#
 
@@ -36,6 +40,7 @@ echo_help() {
     echo "     --reboot         reboot Minecraft server"
     echo " -s, --status         view server status"
     echo "     --soft-link      make a soft-link for this shell"
+    echo " -v, --version        version"
     echo ""
     echo " usage: \"ctrl + a + d\" to detach screen"
     echo ""
@@ -48,10 +53,16 @@ echo_help() {
     echo "# <ctrl + a + d>"
 }
 
+echo_version() {
+    echo "server $MCSRV_NAME"
+    echo "script-version $SCRIPT_VER"
+}
+
 #========== init ==========#
 
 install_dependencies() {
-    yum install -y screen java-1.8.0-openjdk-devel
+    apt install -y screen openjdk-8-jdk
+    #yum install -y screen java-1.8.0-openjdk-devel
 }
 
 download_origin() {
@@ -144,6 +155,7 @@ backup() {
     mkdir -p backup/
     TIME=`date "+%Y-%m-%d"`
     BKFOLDER=${TIME}-backup/
+    BKFILE=backup/${TIME}-backup.tar.gz
 
     rm -fr $BKFOLDER
     mkdir -p $BKFOLDER
@@ -155,9 +167,11 @@ backup() {
     cp server-icon.png $BKFOLDER
     cp $0 $BKFOLDER
 
-    tar zcvf backup/${TIME}-backup.tar.gz $BKFOLDER
+    tar zcvf $BKFILE $BKFOLDER
     cp backup/${TIME}-backup.tar.gz backup/latest-backup.tar.gz
     rm -fr $BKFOLDER
+
+    /usr/local/bin/ossutil64 cp -r $BKFILE oss://sang-mcbk/ -u
 }
 
 backup_clean() {
@@ -194,15 +208,11 @@ drop_caches() {
 #========== log ==========#
 
 tail_log() {
-    if [ $# -gt 1 ]; then
-        tailf logs/latest.log -n $2
+    if [ $# -gt 0 ]; then
+        tail -f logs/latest.log -n $1
     else
-        tailf logs/latest.log
+        tail -f logs/latest.log
     fi
-}
-
-output_log() {
-    nohup tailf logs/latest.log >> /var/www/html/mclog/mclog 2>&1 &
 }
 
 #========== option ==========#
@@ -218,6 +228,10 @@ case "$OPT" in
     "-h");&
     "--help")
         echo_help
+        ;;
+    "-v");&
+    "--version")
+	    echo_version
         ;;
     "-i");&
     "--init")
