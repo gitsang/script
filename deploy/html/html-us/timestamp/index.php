@@ -31,41 +31,69 @@
     }
 ?>
 
-<html>
+<html lang="ch">
     <head>
         <meta name="viewport" charset="UTF-8" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <title>timestamp</title>
+        <title>Timestamp</title>
+        <link rel="icon"  href="favicon.ico" type="image/x-icon">
     </head>
-    <link rel="icon"  href="favicon.ico" type="image/x-icon">
-    <style>
-        .main{
-            text-align: left;
-            background-color: #fff;
-            border-radius: 20px;
-            width: 400px;
-            height: 100px;
-            margin: auto;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            font-size:18px;
-            font-family:monospace;
-        }
-    </style>
     <body>
-        <div class="main">
-            <form action="<?php $_PHP_SELF ?>" method="post">
-                ts&nbsp;: <input type="text" name="ts" value="<?php if(isset($_POST['ts'])) { echo $_POST['ts']; } else { echo getMillisecond(); } ?>"> <input type="submit" value="convert"><br>
-                date: <?php if(isset($_POST['ts'])) { echo ts_to_date($_POST["ts"]); } else { echo ts_to_date(getMillisecond()); } ?><br>
-                <br>
-                date: <input type="text" name="date" value="<?php if(isset($_POST['date'])) { echo $_POST['date']; } else { echo ts_to_date(getMillisecond()); } ?>"> <input type="submit" value="convert"><br>
-                ts&nbsp;: <?php if(isset($_POST['date'])) { echo date_to_ts($_POST["date"]); } else { echo date_to_ts(ts_to_date(getMillisecond())); } ?><br>
-            </form>
+        <div class="center">
+            <div class="box">
+                <form action="<?php $_PHP_SELF ?>" method="post">
+                    <h4>time_zone: <?php echo date_default_timezone_get(); ?><br></h4>
+                </form>
+            </div>
         </div>
-        <!--
-        -->
+        <div class="center">
+            <div class="box">
+                <form action="<?php $_PHP_SELF ?>" method="post">
+                    <h4>ts&nbsp;: <input type="text" name="ts" value="<?php if(isset($_POST['ts'])) { echo $_POST['ts']; } else { echo getMillisecond(); } ?>"> <input type="submit" value="convert"></h4>
+                    <h4>tm&nbsp;: <?php if(isset($_POST['ts'])) { echo ts_to_date($_POST["ts"]); } else { echo ts_to_date(getMillisecond()); } ?></h4>
+                </form>
+            </div>
+        </div>
+        <div class="center">
+            <div class="box">
+                <form action="<?php $_PHP_SELF ?>" method="post">
+                    <h4>tm&nbsp;: <input type="text" name="date" value="<?php if(isset($_POST['date'])) { echo $_POST['date']; } else { echo ts_to_date(getMillisecond()); } ?>"> <input type="submit" value="convert"></h4>
+                    <h4>ts&nbsp;: <?php if(isset($_POST['date'])) { echo date_to_ts($_POST["date"]); } else { echo date_to_ts(ts_to_date(getMillisecond())); } ?></h4>
+                </form>
+            </div>
+        </div>
     </body>
 </html>
 
+<style>
+    body{
+        margin-top: 40px;
+    }
+    h4{
+        color: #3273dc;
+    }
+    h5{
+        color: #808080;
+    }
+    a{
+        text-decoration: none;
+    }
+    .center{
+        display: -webkit-flex;  
+        -webkit-justify-content: center;  
+        -webkit-align-items: center;  
+    }
+    .box{
+        border-radius: 4px;
+        width: 300px;
+        height: 112px;
+        padding: 0px 30px 0px 30px;
+        background-color: #fff;
+        border-radius: 4px;
+        border: 1px solid #e4ecf3;
+        margin: 20px 0 0 0;
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        -o-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+    }
+</style>
