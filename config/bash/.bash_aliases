@@ -250,3 +250,8 @@ proxy() {
     esac
 }
 
+dplhugo() {
+    npm run build
+    rm -fr /var/www/blog
+    mv public /var/www/blog
+}
