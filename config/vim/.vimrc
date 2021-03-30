@@ -90,13 +90,6 @@ highlight CursorLine cterm=NONE ctermbg=Black
 "--------------------
 " Plug
 "--------------------
-if version < 800 || !has("python3")
-    echom 'update vim:'
-    echom '    git clone http://github.com/vim/vim.git'
-    echom '    ./configure --enable-python3interp=yes'
-    echom '    make && make install'
-endif
-
 filetype off
 filetype plugin indent on
 filetype plugin on
@@ -235,28 +228,29 @@ call plug#begin()
     "--------------------
     " Vim-go
     "--------------------
-    if !empty(system('command -v go'))
-        "Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': ['go'] }
-        Plug 'fatih/vim-go', { 'for': ['go'] }
-            let g:syntastic_go_checkers = ['go', 'golint']
+    Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': ['go'] }
+        let g:syntastic_go_checkers = ['go', 'golint']
+        let g:go_fmt_command = "goimports"
+        let g:go_autodetect_gopath = 1
+        let g:go_list_type = "quickfix"
+        let g:go_auto_type_info = 1
+        let g:go_version_warning = 1
+        let g:go_highlight_types = 1
+        let g:go_highlight_fields = 1
+        let g:go_highlight_functions = 1
+        let g:go_highlight_function_calls = 1
+        let g:go_highlight_operators = 1
+        let g:go_highlight_extra_types = 1
+        let g:go_highlight_methods = 1
+        let g:go_highlight_generate_tags = 1
+        let g:go_def_mode = 'gopls'
 
-            "let g:go_fmt_command = "goimports"
-            let g:go_autodetect_gopath = 1
-            let g:go_list_type = "quickfix"
-
-            let g:go_version_warning = 1
-            let g:go_highlight_types = 1
-            let g:go_highlight_fields = 1
-            let g:go_highlight_functions = 1
-            let g:go_highlight_function_calls = 1
-            let g:go_highlight_operators = 1
-            let g:go_highlight_extra_types = 1
-            let g:go_highlight_methods = 1
-            let g:go_highlight_generate_tags = 1
-
-        Plug 'dgryski/vim-godef', { 'for': ['go'] }
-            let g:godef_split=2
-    endif
+    autocmd FileType go nmap <leader>b <Plug>(go-build)
+    autocmd FileType go nmap <leader>r <Plug>(go-run)
+    autocmd FileType go nmap gd :GoDef<cr>
+    autocmd FileType go nmap gr :GoReferrers<cr>
+    autocmd FileType go nmap gcr :GoCallers<cr>
+    autocmd FileType go nmap gce :GoCallees<cr>
 
     "--------------------
     " YouCompleteMe
