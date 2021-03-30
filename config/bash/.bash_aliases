@@ -21,6 +21,17 @@ export LS_COLORS
 
 # =============== Common specific aliases and functions =============== #
 
+# fuck
+fuck() {
+    if [ $# -eq 1 ] && [ "$1" == "-" ]; then
+        su - root
+    elif [ $# -gt 0 ]; then
+        sudo $@
+    else
+        su root
+    fi
+}
+
 # list
 alias l='ls'
 alias ll='ls -l'
@@ -251,7 +262,8 @@ proxy() {
 }
 
 dplhugo() {
+    set -e
     npm run build
-    rm -fr /var/www/blog
-    mv public /var/www/blog
+    rm -fr /var/www/center
+    mv public /var/www/center
 }
