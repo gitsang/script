@@ -10,7 +10,7 @@ scrape_configs:
           instance: prometheus
  
   - job_name: dev
-    metrics_path: /metric
+    metrics_path: /metrics
     static_configs:
-      - targets: ['yl.sang.pp.ua:55555']
+      - targets: ['yl.sang.pp.ua:9475']
 
