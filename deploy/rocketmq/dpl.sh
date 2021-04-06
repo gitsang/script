@@ -55,7 +55,7 @@ download_console() {
         cd -
     fi
     if [ ! -f "${EXEC_PATH}/${CONSOLE_JAR}" ]; then
-        cp ${CONSOLE_DIR}/rocketmq-console/target/rocketmq-console-ng-1.0.0.jar ${EXEC_PATH}/console.jar
+        cp ${CONSOLE_DIR}/rocketmq-console/target/rocketmq-console-ng-1.0.0.jar ${EXEC_PATH}/src/console.jar
     fi
     cd ${EXEC_PATH}
 }
@@ -122,8 +122,8 @@ run_broker() {
 }
 
 run_console() {
-    PORT=${1:-8080}
-    NAMESRV=${2:-10.200.112.67:9876}
+    CONSOLE_PORT=${CONSOLE_PORT:-8080}
+    CONSOLE_NAMESRV=${CONSOLE_NAMESRV:-10.200.112.67:9876}
     DATA_PATH=data/console
 
     if [ ! -f "${EXEC_PATH}/${CONSOLE_JAR}" ]; then
@@ -131,13 +131,13 @@ run_console() {
     fi
     mkdir -p ${DATA_PATH}
 
-    nohup java -jar console.jar \
-        --server.port=${PORT} \
-        --rocketmq.config.namesrvAddr=${NAMESRV} \
+    nohup java -jar ./src/console.jar \
+        --server.port=${CONSOLE_PORT} \
+        --rocketmq.config.namesrvAddr=${CONSOLE_NAMESRV} \
         --rocketmq.config.dataPath=${DATA_PATH} \
         > ${DATA_PATH}/console.log 2>&1 &
 
-    echo rocketmq-console at http://127.0.0.1:${PORT}/
+    echo rocketmq-console at http://127.0.0.1:${CONSOLE_PORT}/
 }
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -151,69 +151,102 @@ kill_by_key() {
 
 status_by_key() {
     echo "status_by_key $1."
-    ps -ef | grep "$1\." | grep -v grep | grep -v " sh "
+    echo "USER       PID %CPU %MEM     VSZ    RSS   TTY  STAT START   TIME COMMAND"
+    ps -auxf | grep "$1\." | grep -v grep | grep -v " sh "
 }
 
 # ----------------------------------------------------------------------------------------------------------------------
 # running config
 # ----------------------------------------------------------------------------------------------------------------------
 
-rocketmq_init() {
+rocketmq_clean() {
     rm data -fr
     mkdir -p data
+}
+
+rocketmq_run() {
     init_running_memory
 
     NAMESRV_NAME=namesrv-a
-    NAMESRV_PORT=9876
+    NAMESRV_PORT=19876
     init_namesrv
+    run_namesrv
+    
+    #NAMESRV_NAME=namesrv-b
+    #NAMESRV_PORT=29876
+    #init_namesrv
+    #run_namesrv
 
     BROKER_NAME=broker-a
-    BROKER_ID=0
+    BROKER_ID=10
     BROKER_PORT=10010
     CLUSTER_NAME=DefaultCluster
     BROKER_FLUSH_TYPE=ASYNC_FLUSH
     BROKER_ROLE=ASYNC_MASTER
-    NAMESRV_ADDR="10.200.112.67:9876"
+    NAMESRV_ADDR="10.200.112.67:19876, 10.200.112.67:29876"
     BROKER_IP1=10.200.112.67
-    ACL_ENABLE=true
+    ACL_ENABLE=false
     init_broker
+    run_broker
     
-    BROKER_NAME=broker-a-s
-    BROKER_ID=0
-    BROKER_PORT=10020
-    CLUSTER_NAME=DefaultCluster
-    BROKER_FLUSH_TYPE=ASYNC_FLUSH
-    BROKER_ROLE=ASYNC_MASTER
-    NAMESRV_ADDR="10.200.112.67:9876"
-    BROKER_IP1=10.200.112.67
-    ACL_ENABLE=true
-    init_broker
-}
-
-rocketmq_run() {
-    NAMESRV_NAME=namesrv-a
-    run_namesrv
-
-    BROKER_NAME=broker-a
-    run_broker
-
-    BROKER_NAME=broker-a-s
-    run_broker
+    #BROKER_NAME=broker-a-s
+    #BROKER_ID=11
+    #BROKER_PORT=10020
+    #CLUSTER_NAME=DefaultCluster
+    #BROKER_FLUSH_TYPE=ASYNC_FLUSH
+    #BROKER_ROLE=SLAVE
+    #NAMESRV_ADDR="10.200.112.67:19876, 10.200.112.67:29876"
+    #BROKER_IP1=10.200.112.67
+    #ACL_ENABLE=false
+    #init_broker
+    #run_broker
                 
+    #BROKER_NAME=broker-b
+    #BROKER_ID=20
+    #BROKER_PORT=20010
+    #CLUSTER_NAME=DefaultCluster
+    #BROKER_FLUSH_TYPE=ASYNC_FLUSH
+    #BROKER_ROLE=ASYNC_MASTER
+    #NAMESRV_ADDR="10.200.112.67:19876, 10.200.112.67:29876"
+    #BROKER_IP1=10.200.112.67
+    #ACL_ENABLE=false
+    #init_broker
+    #run_broker
+    
+    #BROKER_NAME=broker-b-s
+    #BROKER_ID=21
+    #BROKER_PORT=20020
+    #CLUSTER_NAME=DefaultCluster
+    #BROKER_FLUSH_TYPE=ASYNC_FLUSH
+    #BROKER_ROLE=SLAVE
+    #NAMESRV_ADDR="10.200.112.67:19876, 10.200.112.67:29876"
+    #BROKER_IP1=10.200.112.67
+    #ACL_ENABLE=false
+    #init_broker
+    #run_broker
+
+    CONSOLE_PORT=8080
+    CONSOLE_NAMESRV="10.200.112.67:19876; 10.200.112.67:29876"
     run_console
 }
 
 rocketmq_kill() {
     kill_by_key namesrv-a
+    kill_by_key namesrv-b
     kill_by_key broker-a
     kill_by_key broker-a-s
+    kill_by_key broker-b
+    kill_by_key broker-b-s
     kill_by_key console
 }
 
 rocketmq_status() {
     status_by_key namesrv-a
+    status_by_key namesrv-b
     status_by_key broker-a
     status_by_key broker-a-s
+    status_by_key broker-b
+    status_by_key broker-b-s
     status_by_key console
 }
 
@@ -222,13 +255,15 @@ case $1 in
         rocketmq_build ;;
     "kill") 
         rocketmq_kill ;;
-    "init") 
-        rocketmq_init ;;
+    "clean") 
+        rocketmq_clean ;;
     "run") 
         rocketmq_run ;;
     "status") 
         rocketmq_status ;;
+    "console")
+        run_console ;;
     *) 
-        echo "usage $0 build | kill | init | run | status" ;;
+        echo "usage $0 build | kill | clean | run | status" ;;
 esac
 
