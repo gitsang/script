@@ -3,7 +3,7 @@ Description=xmrig service
 After=network.target nss-lookup.target
 
 [Service]
-User=nobody
+User=root
 ExecStart=/usr/local/bin/xmrig --config /usr/local/etc/xmrig/config.json
 
 [Install]
