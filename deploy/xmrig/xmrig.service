@@ -1,0 +1,10 @@
+[Unit]
+Description=xmrig service
+After=network.target nss-lookup.target
+
+[Service]
+User=nobody
+ExecStart=/usr/local/bin/xmrig --config /usr/local/etc/xmrig/config.json
+
+[Install]
+WantedBy=multi-user.target

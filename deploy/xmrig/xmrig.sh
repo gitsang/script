@@ -9,3 +9,16 @@ DIR=xmrig-6.11.1
 if [ ! -f "${DIR}" ]; then
     tar zxvf ${TGZ}
 fi
+
+BIN_PATH=/usr/local/bin/
+CONF_PATH=/usr/local/etc/xmrig/
+SERVICE_PATH=/etc/systemd/system/
+if [ ! -f "${SERVICE}" ]; then
+    cp ${DIR}/xmrig ${BIN_PATH}
+    mkdir -p ${CONF_PATH}
+    cp ./config.json ${CONF_PATH}
+    cp ./xmrig.service ${SERVICE_PATH}
+fi
+
+systemctl start xmrig.service
+systemctl status xmrig.service
