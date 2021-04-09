@@ -59,13 +59,13 @@
     },
     "donate-level": 1,
     "donate-over-proxy": 1,
-    "log-file": null,
+    "log-file": "/var/log/xmrig.log",
     "pools": [
         {
             "algo": null,
             "coin": null,
             "url": "mine.c3pool.com:13333",
-            "user": "8BzzwcrBzzFNqQwudMr2dvVSaSbu7EuDy5MtvwQSwMd56enY1qoyPE9SGekgqTGpTc8pTcydi8tRGTaoPMHPGwQ83z9Pt63",
+            "user": "47fjz4XYWnLDaZ788xYh5pD1dFfb63YneVLeAk5JPkrQQypogcTsrs49qgY3AodVt4YboeFrvTtujRvRqwKbk5ifFSzubnp",
             "pass": "sangria.home.xmrig.01",
             "rig-id": null,
             "nicehash": false,

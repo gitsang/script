@@ -13,12 +13,11 @@ fi
 BIN_PATH=/usr/local/bin/
 CONF_PATH=/usr/local/etc/xmrig/
 SERVICE_PATH=/etc/systemd/system/
-if [ ! -f "${SERVICE_PATH}/xmrig.service" ]; then
-    cp ${DIR}/xmrig ${BIN_PATH}
-    mkdir -p ${CONF_PATH}
-    cp ./config.json ${CONF_PATH}
-    cp ./xmrig.service ${SERVICE_PATH}
-fi
 
-systemctl start xmrig.service
+cp ${DIR}/xmrig ${BIN_PATH}
+mkdir -p ${CONF_PATH}
+cp ./config.json ${CONF_PATH}
+cp ./xmrig.service ${SERVICE_PATH}
+
+systemctl restart xmrig.service
 systemctl status xmrig.service
