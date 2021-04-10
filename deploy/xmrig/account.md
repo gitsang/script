@@ -1,0 +1,5 @@
+huobi-XMR
+8BzzwcrBzzFNqQwudMr2dvVSaSbu7EuDy5MtvwQSwMd56enY1qoyPE9SGekgqTGpTc8pTcydi8tRGTaoPMHPGwQ83z9Pt63
+
+monero-XMR
+47fjz4XYWnLDaZ788xYh5pD1dFfb63YneVLeAk5JPkrQQypogcTsrs49qgY3AodVt4YboeFrvTtujRvRqwKbk5ifFSzubnp
