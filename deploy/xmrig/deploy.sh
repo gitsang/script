@@ -16,6 +16,7 @@ download_xmrig() {
     wget https://github.com/C3Pool/xmrig-C3/releases/download/v6.11.0-C3/xmrig-v6.11.0-C3-linux-Static.tar.gz
     tar zxvf xmrig-v6.11.0-C3-linux-Static.tar.gz
     cp ./xmrig ${BIN_PATH}
+    cd -
 }
 
 build_xmrig() {
