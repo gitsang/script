@@ -44,12 +44,12 @@ screen_attach_xmrig() {
 
 screen_kill_xmrig() {
     screen -X -S xmrig quit
-    ps -ef | grep xmrig | awk '{print $2}' | xargs -i -i kill -9 {}
+    ps -ef | grep xmrig | grep -v grep | awk '{print $2}' | xargs -i -i kill -9 {}
 }
 
 help_xmrig() {
     echo "Usage:"
-    echo "    ./xmrig.sh [option]"
+    echo "    $0 [option]"
     echo "option:"
     echo "    -h help"
     echo "    -d download xmrig"
