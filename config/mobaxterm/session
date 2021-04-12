@@ -1,8 +1,10 @@
 #!/bin/bash
 
 SESSION_ID_ALL="
+    cn us eu gg
+    etcd1
     mq1 mq2 
-    ticn tius tigg 
+    ticn tius tigg
     s-sh s-sz s-us
     yms1 yms2 yms3 
     21 22 23 
@@ -11,6 +13,31 @@ SESSION_ID_ALL="
 
 session_check() {
     case ${ID} in
+        "cn")
+            GROUP=dev
+            ROLE=root
+            IP=cn.ylmw.pp.ua
+            ;;
+        "us")
+            GROUP=dev
+            ROLE=root
+            IP=us.ylmw.pp.ua
+            ;;
+        "eu")
+            GROUP=dev
+            ROLE=root
+            IP=eu.ylmw.pp.ua
+            ;;
+        "gg")
+            GROUP=dev
+            ROLE=root
+            IP=gg.ylmw.pp.ua
+            ;;
+        "etcd1")
+            GROUP=sync
+            ROLE=root
+            IP=etcd1.l7i.top
+            ;;
         "mq1")
             GROUP=sync
             ROLE=root
@@ -34,7 +61,7 @@ session_check() {
         "tigg")
             GROUP=sync
             ROLE=root
-            IP=tidb-gg.l7i.top
+            IP=tidb-global.l7i.top
             ;;
         "s-sh")
             GROUP=sang
