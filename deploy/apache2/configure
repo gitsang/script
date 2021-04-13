@@ -26,9 +26,8 @@ config() {
     grep -q -e "Listen ${FRPC_PORT}" /etc/apache2/ports.conf || echo "Listen ${FRPC_PORT}" >> /etc/apache2/ports.conf
 
     # create config
-    CONF_PATH=/etc/apache2/sites-available/
-    CONF_FILE=${CONF_PATH}/${APP}.conf
-    cp ${APP}.conf ${CONF_PATH}
+    CONF_FILE=/etc/apache2/sites-available/${APP}.conf
+    cp ${APP}.example ${CONF_FILE}
     sed -i "s/%DOMAIN%/${DOMAIN}/g"           ${CONF_FILE}
     sed -i "s/%PORT%/${PORT}/g"               ${CONF_FILE}
     sed -i "s/%FRPC_DOMAIN%/${FRPC_DOMAIN}/g" ${CONF_FILE}
