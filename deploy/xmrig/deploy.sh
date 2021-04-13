@@ -67,7 +67,7 @@ help_xmrig() {
     echo "option:"
     echo "    -a auto"
     echo "    -b build_xmrig"
-    echo "    -c config xmrig"
+    echo "    -c configure xmrig"
     echo "    -d download xmrig"
     echo "    -h help"
     echo "    -i install dependance"
@@ -79,10 +79,10 @@ help_xmrig() {
     echo "       kill   screen_kill_xmrig"
     echo ""
     echo "Example:"
-    echo "$0 -i"
-    echo "$0 -d"
-    echo "$0 -c"
-    echo "$0 -r"
+    echo "$0 -i (install dependance, not necessary)"
+    echo "$0 -d (download xmrig bin)"
+    echo "$0 -c (configure xmrig, will cover old config)"
+    echo "$0 -r (run xmrig by systemctl)"
 }
 
 OPT=$1
