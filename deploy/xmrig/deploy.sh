@@ -4,12 +4,19 @@ BIN_PATH=/usr/local/bin/
 CONF_PATH=/usr/local/etc/xmrig/
 SERVICE_PATH=/etc/systemd/system/
 
+install_dependance() {
+    apt install -y cmake automake clang git vim wget curl
+    yum install -y cmake automake clang git vim wget curl
+    pkg install -y cmake automake clang git vim wget curl
+}
+
 download_xmrig() {
     mkdir xmrig-C3-tgz
     cd xmrig-C3-tgz
     wget https://github.com/C3Pool/xmrig-C3/releases/download/v6.11.0-C3/xmrig-v6.11.0-C3-linux-Static.tar.gz
     tar zxvf xmrig-v6.11.0-C3-linux-Static.tar.gz
     cp ./xmrig ${BIN_PATH}
+    cd -
 }
 
 build_xmrig() {
@@ -18,11 +25,11 @@ build_xmrig() {
     mkdir build
     cd build
     cmake .. -DWITH_HWLOC=OFF
-    make -j16
+    make -j8
     cp ./xmrig ${BIN_PATH}
 }
 
-init_xmrig() {
+config_xmrig() {
     mkdir -p ${CONF_PATH}
     cp ./config.json ${CONF_PATH}
     cp ./xmrig.service ${SERVICE_PATH}
@@ -52,8 +59,11 @@ help_xmrig() {
     echo "    $0 [option]"
     echo "option:"
     echo "    -h help"
+    echo ""
+    echo "    -a auto"
+    echo "    -i install dependance"
     echo "    -d download xmrig"
-    echo "    -i init xmrig"
+    echo "    -c config xmrig"
     echo "    -r run xmrig with systemd"
     echo ""
     echo "    -b build_xmrig"
@@ -68,11 +78,20 @@ case $OPT in
     "-h")
         help_xmrig
         ;;
+    "-a")
+        install_dependance
+        download_xmrig
+        config_xmrig
+        run_xmrig
+        ;;
+    "-i")
+        install_dependance
+        ;;
     "-d")
         download_xmrig
         ;;
-    "-i")
-        init_xmrig
+    "-c")
+        config_xmrig
         ;;
     "-r")
         run_xmrig
