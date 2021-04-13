@@ -33,12 +33,18 @@ config_xmrig() {
     mkdir -p ${CONF_PATH}
     cp ./config.json ${CONF_PATH}
     cp ./xmrig.service ${SERVICE_PATH}
+    vi ${CONF_PATH}/config.json
 }
 
 run_xmrig() {
     systemctl daemon-reload
     systemctl restart xmrig.service
     systemctl status xmrig.service
+    tail -f /var/log/xmrig.log
+}
+
+stop_xmrig() {
+    systemctl stop xmrig.service
 }
 
 screen_run_xmrig() {
@@ -57,20 +63,26 @@ screen_kill_xmrig() {
 help_xmrig() {
     echo "Usage:"
     echo "    $0 [option]"
+    echo ""
     echo "option:"
-    echo "    -h help"
-    echo ""
     echo "    -a auto"
-    echo "    -i install dependance"
-    echo "    -d download xmrig"
-    echo "    -c config xmrig"
-    echo "    -r run xmrig with systemd"
-    echo ""
     echo "    -b build_xmrig"
+    echo "    -c config xmrig"
+    echo "    -d download xmrig"
+    echo "    -h help"
+    echo "    -i install dependance"
+    echo "    -k stop xmrig"
+    echo "    -r run xmrig with systemd"
     echo "    -s [opt]"
     echo "       run    screen_run_xmrig"
     echo "       attach screen_attach_xmrig"
     echo "       kill   screen_kill_xmrig"
+    echo ""
+    echo "Example:"
+    echo "$0 -i"
+    echo "$0 -d"
+    echo "$0 -c"
+    echo "$0 -r"
 }
 
 OPT=$1
@@ -95,6 +107,9 @@ case $OPT in
         ;;
     "-r")
         run_xmrig
+        ;;
+    "-k")
+        stop_xmrig
         ;;
     "-b")
         build_xmrig
