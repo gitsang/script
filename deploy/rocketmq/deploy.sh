@@ -172,13 +172,13 @@ rocketmq_run() {
     init_namesrv
     run_namesrv
     
-    #NAMESRV_NAME=namesrv-b
-    #NAMESRV_PORT=29876
-    #init_namesrv
-    #run_namesrv
+    NAMESRV_NAME=namesrv-b
+    NAMESRV_PORT=29876
+    init_namesrv
+    run_namesrv
 
     BROKER_NAME=broker-a
-    BROKER_ID=10
+    BROKER_ID=11
     BROKER_PORT=10010
     CLUSTER_NAME=DefaultCluster
     BROKER_FLUSH_TYPE=ASYNC_FLUSH
@@ -189,41 +189,41 @@ rocketmq_run() {
     init_broker
     run_broker
     
-    #BROKER_NAME=broker-a-s
-    #BROKER_ID=11
-    #BROKER_PORT=10020
-    #CLUSTER_NAME=DefaultCluster
-    #BROKER_FLUSH_TYPE=ASYNC_FLUSH
-    #BROKER_ROLE=SLAVE
-    #NAMESRV_ADDR="10.200.112.67:19876, 10.200.112.67:29876"
-    #BROKER_IP1=10.200.112.67
-    #ACL_ENABLE=false
-    #init_broker
-    #run_broker
-                
-    #BROKER_NAME=broker-b
-    #BROKER_ID=20
-    #BROKER_PORT=20010
-    #CLUSTER_NAME=DefaultCluster
-    #BROKER_FLUSH_TYPE=ASYNC_FLUSH
-    #BROKER_ROLE=ASYNC_MASTER
-    #NAMESRV_ADDR="10.200.112.67:19876, 10.200.112.67:29876"
-    #BROKER_IP1=10.200.112.67
-    #ACL_ENABLE=false
-    #init_broker
-    #run_broker
+    BROKER_NAME=broker-a-s
+    BROKER_ID=12
+    BROKER_PORT=10020
+    CLUSTER_NAME=DefaultCluster
+    BROKER_FLUSH_TYPE=ASYNC_FLUSH
+    BROKER_ROLE=SLAVE
+    NAMESRV_ADDR="10.200.112.67:19876, 10.200.112.67:29876"
+    BROKER_IP1=10.200.112.67
+    ACL_ENABLE=false
+    init_broker
+    run_broker
+               
+    BROKER_NAME=broker-b
+    BROKER_ID=21
+    BROKER_PORT=20010
+    CLUSTER_NAME=DefaultCluster
+    BROKER_FLUSH_TYPE=ASYNC_FLUSH
+    BROKER_ROLE=ASYNC_MASTER
+    NAMESRV_ADDR="10.200.112.67:19876, 10.200.112.67:29876"
+    BROKER_IP1=10.200.112.67
+    ACL_ENABLE=false
+    init_broker
+    run_broker
     
-    #BROKER_NAME=broker-b-s
-    #BROKER_ID=21
-    #BROKER_PORT=20020
-    #CLUSTER_NAME=DefaultCluster
-    #BROKER_FLUSH_TYPE=ASYNC_FLUSH
-    #BROKER_ROLE=SLAVE
-    #NAMESRV_ADDR="10.200.112.67:19876, 10.200.112.67:29876"
-    #BROKER_IP1=10.200.112.67
-    #ACL_ENABLE=false
-    #init_broker
-    #run_broker
+    BROKER_NAME=broker-b-s
+    BROKER_ID=22
+    BROKER_PORT=20020
+    CLUSTER_NAME=DefaultCluster
+    BROKER_FLUSH_TYPE=ASYNC_FLUSH
+    BROKER_ROLE=SLAVE
+    NAMESRV_ADDR="10.200.112.67:19876, 10.200.112.67:29876"
+    BROKER_IP1=10.200.112.67
+    ACL_ENABLE=false
+    init_broker
+    run_broker
 
     CONSOLE_PORT=8080
     CONSOLE_NAMESRV="10.200.112.67:19876; 10.200.112.67:29876"
@@ -251,19 +251,33 @@ rocketmq_status() {
 }
 
 case $1 in 
-    "build")
+    "-b");&
+    "--build")
         rocketmq_build ;;
-    "kill") 
-        rocketmq_kill ;;
-    "clean") 
+    "-c");&
+    "--clean") 
         rocketmq_clean ;;
-    "run") 
-        rocketmq_run ;;
-    "status") 
-        rocketmq_status ;;
-    "console")
+    "--console")
         run_console ;;
+    "-k");&
+    "--kill") 
+        rocketmq_kill ;;
+    "-r");&
+    "--run") 
+        rocketmq_run ;;
+    "-s");&
+    "--status") 
+        rocketmq_status ;;
     *) 
-        echo "usage $0 build | kill | clean | run | status" ;;
+        echo "usage $0 [option]"
+        echo "option:"
+        echo ""
+        echo "    -b --build"
+        echo "    -c --clean"
+        echo "       --console"
+        echo "    -k --kill"
+        echo "    -r --run"
+        echo "    -s --status"
+        ;;
 esac
 
