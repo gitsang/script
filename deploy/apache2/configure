@@ -1,11 +1,24 @@
 #!/bin/bash
 
+#===========================================================
+# config
+#===========================================================
+
+# for local/outer host
 DOMAIN=${DOMAIN:-home.sang.pp.ua}
 PORT=${PORT:-80}
+
+# for inner server
 FRPC_DOMAIN=${FRPC_DOMAIN:-home.frp-sh.sang.pp.ua}
 FRPC_PORT=${FRPC_PORT:-8080}
+
+# for frps
 FRPS_DOMAIN=${FRPS_DOMAIN:-frp-sh.sang.pp.ua}
-FRPS_PORT=${FRPS_PORT:-7000}
+FRPS_PORT=${FRPS_PORT:-8080}
+
+#===========================================================
+# function
+#===========================================================
 
 config() {
     APP=$1
@@ -20,6 +33,9 @@ config() {
     echo "PORT=${PORT}"
     echo "FRPC_DOMAIN=${FRPC_DOMAIN}"
     echo "FRPC_PORT=${FRPC_PORT}"
+    echo "FRPS_DOMAIN=${FRPS_DOMAIN}"
+    echo "FRPS_PORT=${FRPS_PORT}"
+    echo ""
 
     # add listen ports
     grep -q -e "Listen ${PORT}"      /etc/apache2/ports.conf || echo "Listen ${PORT}"      >> /etc/apache2/ports.conf
@@ -32,6 +48,8 @@ config() {
     sed -i "s/%PORT%/${PORT}/g"               ${CONF_FILE}
     sed -i "s/%FRPC_DOMAIN%/${FRPC_DOMAIN}/g" ${CONF_FILE}
     sed -i "s/%FRPC_PORT%/${FRPC_PORT}/g"     ${CONF_FILE}
+    sed -i "s/%FRPS_DOMAIN%/${FRPS_DOMAIN}/g" ${CONF_FILE}
+    sed -i "s/%FRPS_PORT%/${FRPS_PORT}/g"     ${CONF_FILE}
 
     # configure to apache2
     a2ensite ${APP}
@@ -47,10 +65,11 @@ disable() {
     systemctl restart apache2
 }
 
+#===========================================================
+# option
+#===========================================================
+
 case $1 in
-    "clean")
-        rm ./*.conf -f
-        ;;
     "disable")
         disable $2
         ;;
