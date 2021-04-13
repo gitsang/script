@@ -1,8 +1,0 @@
-<VirtualHost *:%PORT%>
-    ServerName %DOMAIN%
-    ServerAlias blog.%DOMAIN%
-    DirectoryIndex index.html index.php
-    DocumentRoot /var/www/blog
-    ErrorDocument 404 /404.html
-</VirtualHost>
-

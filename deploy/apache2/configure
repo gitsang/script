@@ -1,27 +1,40 @@
 #!/bin/bash
 
-DOMAIN=${DOMAIN:-us.sang.pp.ua}
-FRP_DOMAIN=${FRP_DOMAIN:-frp-us.sang.pp.ua}
-PORT=${APACHE_PORT:-80}
+DOMAIN=${DOMAIN:-home.sang.pp.ua}
+PORT=${PORT:-80}
+FRPC_DOMAIN=${FRPC_DOMAIN:-home.frp-sh.sang.pp.ua}
+FRPC_PORT=${FRPC_PORT:-8080}
+FRPS_DOMAIN=${FRPS_DOMAIN:-frp-sh.sang.pp.ua}
+FRPS_PORT=${FRPS_PORT:-7000}
 
 config() {
     APP=$1
+
+    # check config
     if [ ! -f "${APP}.example" ]; then
         echo "unknown app, example file unexist"
         exit
     fi
-
+    echo "APP=${APP}"
     echo "DOMAIN=${DOMAIN}"
-    echo "FRP_DOMAIN=${FRP_DOMAIN}"
     echo "PORT=${PORT}"
-    echo ""
+    echo "FRPC_DOMAIN=${FRPC_DOMAIN}"
+    echo "FRPC_PORT=${FRPC_PORT}"
 
-    grep -q -e "Listen ${PORT}" /etc/apache2/ports.conf || echo "Listen ${PORT}" >> /etc/apache2/ports.conf
-    cp ${APP}.example ${APP}.conf
-    sed -i "s/%PORT%/${PORT}/g"             ${APP}.conf
-    sed -i "s/%DOMAIN%/${DOMAIN}/g"         ${APP}.conf
-    sed -i "s/%FRP_DOMAIN%/${FRP_DOMAIN}/g" ${APP}.conf
-    cp ${APP}.conf /etc/apache2/sites-available/
+    # add listen ports
+    grep -q -e "Listen ${PORT}"      /etc/apache2/ports.conf || echo "Listen ${PORT}"      >> /etc/apache2/ports.conf
+    grep -q -e "Listen ${FRPC_PORT}" /etc/apache2/ports.conf || echo "Listen ${FRPC_PORT}" >> /etc/apache2/ports.conf
+
+    # create config
+    CONF_PATH=/etc/apache2/sites-available/
+    CONF_FILE=${CONF_PATH}/${APP}.conf
+    cp ${APP}.conf ${CONF_PATH}
+    sed -i "s/%DOMAIN%/${DOMAIN}/g"           ${CONF_FILE}
+    sed -i "s/%PORT%/${PORT}/g"               ${CONF_FILE}
+    sed -i "s/%FRPC_DOMAIN%/${FRPC_DOMAIN}/g" ${CONF_FILE}
+    sed -i "s/%FRPC_PORT%/${FRPC_PORT}/g"     ${CONF_FILE}
+
+    # configure to apache2
     a2ensite ${APP}
     a2enmod proxy_http
     apache2ctl configtest
@@ -35,7 +48,7 @@ disable() {
     systemctl restart apache2
 }
 
-case $1 in 
+case $1 in
     "clean")
         rm ./*.conf -f
         ;;
