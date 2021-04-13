@@ -81,9 +81,10 @@ init_namesrv() {
 }
 
 init_broker() {
-    echo "init_broker ${BROKER_NAME}"
-    DATA_PATH=data/${BROKER_NAME}
-    CONF_PATH=data/${BROKER_NAME}/${BROKER_NAME}.properties
+    echo "init_broker ${BROKER_NAME}-${BROKER_ROLE}"
+    DATA_PATH=data/${BROKER_NAME}-${BROKER_ROLE}
+    CONF_PATH=${DATA_PATH}/${BROKER_NAME}-${BROKER_ROLE}.properties
+
     rm -fr ${DATA_PATH}
     mkdir -p ${DATA_PATH}
 
@@ -115,10 +116,11 @@ run_namesrv() {
 }
 
 run_broker() {
-    echo "run_broker ${BROKER_NAME}"
-    DATA_PATH=data/${BROKER_NAME}
-    CONF_PATH=data/${BROKER_NAME}/${BROKER_NAME}.properties
-    nohup sh rocketmq/bin/mqbroker -c ${CONF_PATH} > ${DATA_PATH}/${BROKER_NAME}.log 2>&1 &
+    echo "run_broker ${BROKER_NAME}-${BROKER_ROLE}"
+    DATA_PATH=data/${BROKER_NAME}-${BROKER_ROLE}
+    CONF_PATH=${DATA_PATH}/${BROKER_NAME}-${BROKER_ROLE}.properties
+    LOG_PATH=${DATA_PATH}/${BROKER_NAME}-${BROKER_ROLE}.log
+    nohup sh rocketmq/bin/mqbroker -c ${CONF_PATH} > ${LOG_PATH} 2>&1 &
 }
 
 run_console() {
@@ -172,61 +174,61 @@ rocketmq_run() {
     init_namesrv
     run_namesrv
     
-    NAMESRV_NAME=namesrv-b
-    NAMESRV_PORT=29876
-    init_namesrv
-    run_namesrv
+    #NAMESRV_NAME=namesrv-b
+    #NAMESRV_PORT=29876
+    #init_namesrv
+    #run_namesrv
 
     BROKER_NAME=broker-a
-    BROKER_ID=11
+    BROKER_ID=0
     BROKER_PORT=10010
     CLUSTER_NAME=DefaultCluster
     BROKER_FLUSH_TYPE=ASYNC_FLUSH
     BROKER_ROLE=ASYNC_MASTER
-    NAMESRV_ADDR="10.200.112.67:19876, 10.200.112.67:29876"
+    NAMESRV_ADDR="10.200.112.67:19876"
     BROKER_IP1=10.200.112.67
     ACL_ENABLE=false
     init_broker
     run_broker
     
-    BROKER_NAME=broker-a-s
-    BROKER_ID=12
+    BROKER_NAME=broker-a
+    BROKER_ID=1
     BROKER_PORT=10020
     CLUSTER_NAME=DefaultCluster
     BROKER_FLUSH_TYPE=ASYNC_FLUSH
     BROKER_ROLE=SLAVE
-    NAMESRV_ADDR="10.200.112.67:19876, 10.200.112.67:29876"
+    NAMESRV_ADDR="10.200.112.67:19876"
     BROKER_IP1=10.200.112.67
     ACL_ENABLE=false
     init_broker
     run_broker
                
     BROKER_NAME=broker-b
-    BROKER_ID=21
+    BROKER_ID=0
     BROKER_PORT=20010
     CLUSTER_NAME=DefaultCluster
     BROKER_FLUSH_TYPE=ASYNC_FLUSH
     BROKER_ROLE=ASYNC_MASTER
-    NAMESRV_ADDR="10.200.112.67:19876, 10.200.112.67:29876"
+    NAMESRV_ADDR="10.200.112.67:19876"
     BROKER_IP1=10.200.112.67
     ACL_ENABLE=false
     init_broker
     run_broker
     
-    BROKER_NAME=broker-b-s
-    BROKER_ID=22
+    BROKER_NAME=broker-b
+    BROKER_ID=1
     BROKER_PORT=20020
     CLUSTER_NAME=DefaultCluster
     BROKER_FLUSH_TYPE=ASYNC_FLUSH
     BROKER_ROLE=SLAVE
-    NAMESRV_ADDR="10.200.112.67:19876, 10.200.112.67:29876"
+    NAMESRV_ADDR="10.200.112.67:19876"
     BROKER_IP1=10.200.112.67
     ACL_ENABLE=false
     init_broker
     run_broker
 
     CONSOLE_PORT=8080
-    CONSOLE_NAMESRV="10.200.112.67:19876; 10.200.112.67:29876"
+    CONSOLE_NAMESRV="10.200.112.67:19876"
     run_console
 }
 

@@ -1,6 +1,6 @@
 
 ADMIN=./rocketmq/bin/mqadmin
-NAMESRV_ADDR=localhost:9876
+NAMESRV_ADDR=localhost:19876
 CLUSTER_NAME=DefaultCluster
 
 getAccessConfigSubCommand() {
