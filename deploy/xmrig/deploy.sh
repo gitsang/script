@@ -1,8 +1,8 @@
 #!/bin/bash
 
-BIN_PATH=/usr/local/bin/
-CONF_PATH=/usr/local/etc/xmrig/
-SERVICE_PATH=/etc/systemd/system/
+BIN_PATH=/usr/local/bin
+CONF_PATH=/usr/local/etc/xmrig
+SERVICE_PATH=/etc/systemd/system
 
 install_dependance() {
     apt install -y cmake automake clang git vim wget curl
