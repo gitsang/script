@@ -233,23 +233,65 @@ rocketmq_run() {
 }
 
 rocketmq_kill() {
-    kill_by_key namesrv-a
-    kill_by_key namesrv-b
-    kill_by_key broker-a
-    kill_by_key broker-a-s
-    kill_by_key broker-b
-    kill_by_key broker-b-s
-    kill_by_key console
+    KEY=namesrv-a
+    kill_by_key ${KEY}
+    
+    KEY=namesrv-b
+    kill_by_key ${KEY}
+
+    BROKER_NAME=broker-a
+    BROKER_ROLE=ASYNC_MASTER
+    KEY=${BROKER_NAME}-${BROKER_ROLE}
+    kill_by_key ${KEY}
+
+    BROKER_NAME=broker-a
+    BROKER_ROLE=SLAVE
+    KEY=${BROKER_NAME}-${BROKER_ROLE}
+    kill_by_key ${KEY}
+    
+    BROKER_NAME=broker-b
+    BROKER_ROLE=ASYNC_MASTER
+    KEY=${BROKER_NAME}-${BROKER_ROLE}
+    kill_by_key ${KEY}
+
+    BROKER_NAME=broker-b
+    BROKER_ROLE=SLAVE
+    KEY=${BROKER_NAME}-${BROKER_ROLE}
+    kill_by_key ${KEY}
+
+    KEY=console
+    kill_by_key ${KEY}
 }
 
 rocketmq_status() {
-    status_by_key namesrv-a
-    status_by_key namesrv-b
-    status_by_key broker-a
-    status_by_key broker-a-s
-    status_by_key broker-b
-    status_by_key broker-b-s
-    status_by_key console
+    KEY=namesrv-a
+    status_by_key ${KEY}
+    
+    KEY=namesrv-b
+    status_by_key ${KEY}
+
+    BROKER_NAME=broker-a
+    BROKER_ROLE=ASYNC_MASTER
+    KEY=${BROKER_NAME}-${BROKER_ROLE}
+    status_by_key ${KEY}
+
+    BROKER_NAME=broker-a
+    BROKER_ROLE=SLAVE
+    KEY=${BROKER_NAME}-${BROKER_ROLE}
+    status_by_key ${KEY}
+    
+    BROKER_NAME=broker-b
+    BROKER_ROLE=ASYNC_MASTER
+    KEY=${BROKER_NAME}-${BROKER_ROLE}
+    status_by_key ${KEY}
+
+    BROKER_NAME=broker-b
+    BROKER_ROLE=SLAVE
+    KEY=${BROKER_NAME}-${BROKER_ROLE}
+    status_by_key ${KEY}
+
+    KEY=console
+    status_by_key ${KEY}
 }
 
 case $1 in 
