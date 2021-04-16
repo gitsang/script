@@ -47,6 +47,10 @@ stop_xmrig() {
     systemctl stop xmrig.service
 }
 
+log_xmrig() {
+    tail -f /var/log/xmrig.log
+}
+
 screen_run_xmrig() {
     screen -R xmrig ${BIN_PATH}/xmrig -c ${CONF_PATH}/config.json
 }
@@ -72,6 +76,7 @@ help_xmrig() {
     echo "    -h help"
     echo "    -i install dependance"
     echo "    -k stop xmrig"
+    echo "    -l log xmrig"
     echo "    -r run xmrig with systemd"
     echo "    -s [opt]"
     echo "       run    screen_run_xmrig"
@@ -107,6 +112,9 @@ case $OPT in
         ;;
     "-r")
         run_xmrig
+        ;;
+    "-l")
+        log_xmrig
         ;;
     "-k")
         stop_xmrig
