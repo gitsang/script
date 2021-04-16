@@ -6,3 +6,11 @@
     ProxyPassReverse / http://localhost:8888/
 </VirtualHost>
 
+<VirtualHost *:%FRPC_PORT%>
+    ServerName %FRPC_DOMAIN%
+    ServerAlias aria2.%FRPC_DOMAIN%
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:8888/
+    ProxyPassReverse / http://localhost:8888/
+</VirtualHost>
+

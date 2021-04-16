@@ -5,3 +5,10 @@
     DocumentRoot /var/www/h5ai
 </VirtualHost>
 
+<VirtualHost *:%FRPC_PORT%>
+    ServerName %FRPC_DOMAIN%
+    ServerAlias h5ai.%FRPC_DOMAIN%
+    DirectoryIndex index.html index.php /_h5ai/public/index.php
+    DocumentRoot /var/www/h5ai
+</VirtualHost>
+

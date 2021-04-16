@@ -5,3 +5,10 @@
     DocumentRoot /var/www/html
 </VirtualHost>
 
+<VirtualHost *:%FRPC_PORT%>
+    ServerName %FRPC_DOMAIN%
+    ServerAlias www.%FRPC_DOMAIN%
+    DirectoryIndex index.html index.php
+    DocumentRoot /var/www/html
+</VirtualHost>
+
