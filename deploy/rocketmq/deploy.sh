@@ -90,8 +90,8 @@ init_broker() {
 
     echo > ${CONF_PATH}
     echo "deleteWhen         = 04"                   >> ${CONF_PATH}
-    echo "fileReservedTime   = 48"                   >> ${CONF_PATH} 
-    echo "brokerClusterName  = ${CLUSTER_NAME}"      >> ${CONF_PATH} 
+    echo "fileReservedTime   = 48"                   >> ${CONF_PATH}
+    echo "brokerClusterName  = ${CLUSTER_NAME}"      >> ${CONF_PATH}
     echo "brokerName         = ${BROKER_NAME}"       >> ${CONF_PATH}
     echo "brokerId           = ${BROKER_ID}"         >> ${CONF_PATH}
     echo "flushDiskType      = ${BROKER_FLUSH_TYPE}" >> ${CONF_PATH}
@@ -166,99 +166,121 @@ rocketmq_clean() {
     mkdir -p data
 }
 
-rocketmq_run() {
-    init_running_memory
-
+rocketmq_run_namesrv_a() {
     NAMESRV_NAME=namesrv-a
     NAMESRV_PORT=19876
     init_namesrv
     run_namesrv
-    
-    #NAMESRV_NAME=namesrv-b
-    #NAMESRV_PORT=29876
-    #init_namesrv
-    #run_namesrv
+}
 
+rocketmq_run_namesrv_b() {
+    NAMESRV_NAME=namesrv-b
+    NAMESRV_PORT=29876
+    init_namesrv
+    run_namesrv
+}
+
+rocketmq_run_broker_a_master() {
     BROKER_NAME=broker-a
     BROKER_ID=0
     BROKER_PORT=10010
     CLUSTER_NAME=DefaultCluster
     BROKER_FLUSH_TYPE=ASYNC_FLUSH
     BROKER_ROLE=ASYNC_MASTER
-    NAMESRV_ADDR="10.200.112.67:19876"
+    NAMESRV_ADDR="10.200.112.67:19876;10.200.112.67:29876"
     BROKER_IP1=10.200.112.67
     ACL_ENABLE=false
     init_broker
     run_broker
-    
+}
+
+rocketmq_run_broker_a_slave() {
     BROKER_NAME=broker-a
     BROKER_ID=1
     BROKER_PORT=10020
     CLUSTER_NAME=DefaultCluster
     BROKER_FLUSH_TYPE=ASYNC_FLUSH
     BROKER_ROLE=SLAVE
-    NAMESRV_ADDR="10.200.112.67:19876"
+    NAMESRV_ADDR="10.200.112.67:19876;10.200.112.67:29876"
     BROKER_IP1=10.200.112.67
     ACL_ENABLE=false
     init_broker
     run_broker
-               
+}
+
+rocketmq_run_broker_b_master() {
     BROKER_NAME=broker-b
     BROKER_ID=0
     BROKER_PORT=20010
     CLUSTER_NAME=DefaultCluster
     BROKER_FLUSH_TYPE=ASYNC_FLUSH
     BROKER_ROLE=ASYNC_MASTER
-    NAMESRV_ADDR="10.200.112.67:19876"
+    NAMESRV_ADDR="10.200.112.67:19876;10.200.112.67:29876"
     BROKER_IP1=10.200.112.67
     ACL_ENABLE=false
     init_broker
     run_broker
-    
+}
+
+rocketmq_run_broker_b_slave() {
     BROKER_NAME=broker-b
     BROKER_ID=1
     BROKER_PORT=20020
     CLUSTER_NAME=DefaultCluster
     BROKER_FLUSH_TYPE=ASYNC_FLUSH
     BROKER_ROLE=SLAVE
-    NAMESRV_ADDR="10.200.112.67:19876"
+    NAMESRV_ADDR="10.200.112.67:19876;10.200.112.67:29876"
     BROKER_IP1=10.200.112.67
     ACL_ENABLE=false
     init_broker
     run_broker
+}
 
+rocketmq_run_console() {
     CONSOLE_PORT=8080
-    CONSOLE_NAMESRV="10.200.112.67:19876"
+    CONSOLE_NAMESRV="10.200.112.67:19876;10.200.112.67:29876"
     run_console
 }
 
-rocketmq_kill() {
+rocketmq_kill_namesrv_a() {
     KEY=namesrv-a
     kill_by_key ${KEY}
-    
+}
+
+rocketmq_kill_namesrv_b() {
     KEY=namesrv-b
     kill_by_key ${KEY}
+}
 
+rocketmq_kill_broker_a_master() {
     BROKER_NAME=broker-a
     BROKER_ROLE=ASYNC_MASTER
     KEY=${BROKER_NAME}-${BROKER_ROLE}
     kill_by_key ${KEY}
+}
 
+rocketmq_kill_broker_a_slave() {
     BROKER_NAME=broker-a
     BROKER_ROLE=SLAVE
     KEY=${BROKER_NAME}-${BROKER_ROLE}
     kill_by_key ${KEY}
-    
+}
+
+rocketmq_kill_broker_b_master() {
     BROKER_NAME=broker-b
     BROKER_ROLE=ASYNC_MASTER
     KEY=${BROKER_NAME}-${BROKER_ROLE}
     kill_by_key ${KEY}
+}
 
+rocketmq_kill_broker_b_slave() {
     BROKER_NAME=broker-b
     BROKER_ROLE=SLAVE
     KEY=${BROKER_NAME}-${BROKER_ROLE}
     kill_by_key ${KEY}
+}
 
+rocketmq_kill_console() {
     KEY=console
     kill_by_key ${KEY}
 }
@@ -266,7 +288,7 @@ rocketmq_kill() {
 rocketmq_status() {
     KEY=namesrv-a
     status_by_key ${KEY}
-    
+
     KEY=namesrv-b
     status_by_key ${KEY}
 
@@ -279,7 +301,7 @@ rocketmq_status() {
     BROKER_ROLE=SLAVE
     KEY=${BROKER_NAME}-${BROKER_ROLE}
     status_by_key ${KEY}
-    
+
     BROKER_NAME=broker-b
     BROKER_ROLE=ASYNC_MASTER
     KEY=${BROKER_NAME}-${BROKER_ROLE}
@@ -294,33 +316,117 @@ rocketmq_status() {
     status_by_key ${KEY}
 }
 
-case $1 in 
+case $1 in
     "-b");&
     "--build")
         rocketmq_build ;;
     "-c");&
-    "--clean") 
+    "--clean")
         rocketmq_clean ;;
-    "--console")
-        run_console ;;
     "-k");&
-    "--kill") 
-        rocketmq_kill ;;
+    "--kill")
+        case $2 in
+            "namesrv-a"|"nsa")
+                rocketmq_kill_namesrv_a
+                ;;
+            "namesrv-b"|"nsb")
+                rocketmq_kill_namesrv_b
+                ;;
+            "broker-a-master"|"am")
+                rocketmq_kill_broker_a_master
+                ;;
+            "broker-a-slave"|"as")
+                rocketmq_kill_broker_a_slave
+                ;;
+            "broker-b-master"|"bm")
+                rocketmq_kill_broker_b_master
+                ;;
+            "broker-b-slave"|"bs")
+                rocketmq_kill_broker_b_slave
+                ;;
+            "console"|"c")
+                rocketmq_kill_console
+                ;;
+            "all"|"a")
+                rocketmq_kill_namesrv_a
+                rocketmq_kill_namesrv_b
+                rocketmq_kill_broker_a_master
+                rocketmq_kill_broker_a_slave
+                rocketmq_kill_broker_b_master
+                rocketmq_kill_broker_b_slave
+                ;;
+            *)
+                echo "usage: $0 --kill/-k [service]"
+                echo "service:"
+                echo "    all             | a"
+                echo "    namesrv-a       | nsa"
+                echo "    namesrv-b       | nsb"
+                echo "    broker-a-master | bam"
+                echo "    broker-a-slave  | bas"
+                echo "    broker-b-master | bbm"
+                echo "    broker-b-slave  | bbs"
+                echo "    console         | c"
+                ;;
+        esac
+        ;;
     "-r");&
-    "--run") 
-        rocketmq_run ;;
+    "--run")
+        case $2 in
+            "namesrv-a"|"nsa")
+                rocketmq_run_namesrv_a
+                ;;
+            "namesrv-b"|"nsb")
+                rocketmq_run_namesrv_b
+                ;;
+            "broker-a-master"|"bam")
+                rocketmq_run_broker_a_master
+                ;;
+            "broker-a-slave"|"bas")
+                rocketmq_run_broker_a_slave
+                ;;
+            "broker-b-master"|"bbm")
+                rocketmq_run_broker_b_master
+                ;;
+            "broker-b-slave"|"bbs")
+                rocketmq_run_broker_b_slave
+                ;;
+            "console"|"c")
+                rocketmq_run_console
+                ;;
+            "all"|"a")
+                rocketmq_run_namesrv_a
+                rocketmq_run_namesrv_b
+                rocketmq_run_broker_a_master
+                rocketmq_run_broker_a_slave
+                rocketmq_run_broker_b_master
+                rocketmq_run_broker_b_slave
+                rocketmq_run_console
+                ;;
+            *)
+                echo "usage: $0 --run/-r [service]"
+                echo "service:"
+                echo "    all             | a"
+                echo "    namesrv-a       | nsa"
+                echo "    namesrv-b       | nsb"
+                echo "    broker-a-master | bam"
+                echo "    broker-a-slave  | bas"
+                echo "    broker-b-master | bbm"
+                echo "    broker-b-slave  | bbs"
+                echo "    console         | c"
+                ;;
+        esac
+        ;;
     "-s");&
-    "--status") 
+    "--status")
         rocketmq_status ;;
-    *) 
+    *)
         echo "usage $0 [option]"
         echo "option:"
         echo ""
         echo "    -b --build"
         echo "    -c --clean"
-        echo "       --console"
-        echo "    -k --kill"
-        echo "    -r --run"
+        echo "    -k --kill [service]"
+        echo "    -r --run [service]"
         echo "    -s --status"
         ;;
 esac
