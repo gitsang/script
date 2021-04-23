@@ -66,13 +66,34 @@ download_console() {
 
 init_running_memory() {
     echo "init_running_memory"
-    sed -i '/-server/{ s/Xms.g/Xms1g/g; s/Xmx.g/Xmx1g/g; s/Xmn.g/Xmn1g/g;}' rocketmq/bin/runbroker.sh
-    sed -i '/-server/{ s/Xms.g/Xms1g/g; s/Xmx.g/Xmx1g/g; s/Xmn.g/Xmn1g/g;}' rocketmq/bin/runserver.sh
+    sed -i '/Xms/cJAVA_OPT="${JAVA_OPT} -server -Xms512m -Xmx512m -Xmn256m -XX:PermSize=32m -XX:MaxPermSize=64m"' rocketmq/bin/runbroker.sh
+    sed -i '/Xms/cJAVA_OPT="${JAVA_OPT} -server -Xms512m -Xmx512m -Xmn256m -XX:PermSize=32m -XX:MaxPermSize=64m"' rocketmq/bin/runserver.sh
+}
+
+init_logback() {
+    echo "init_logback"
+    if [ ! -f "rocketmq/conf/logback_broker.bak" ]; then
+        cp rocketmq/conf/logback_broker.xml rocketmq/conf/logback_broker.bak
+    fi
+    cp rocketmq/conf/logback_broker.bak rocketmq/conf/logback_broker.xml
+    sed -i "s/\${user.home}/data/" rocketmq/conf/logback_broker.xml
+
+    if [ ! -f "rocketmq/conf/logback_namesrv.bak" ]; then
+        cp rocketmq/conf/logback_namesrv.xml rocketmq/conf/logback_namesrv.bak
+    fi
+    cp rocketmq/conf/logback_namesrv.bak rocketmq/conf/logback_namesrv.xml
+    sed -i "s/\${user.home}/data/" rocketmq/conf/logback_namesrv.xml
+
+    if [ ! -f "rocketmq/conf/logback_tools.bak" ]; then
+        cp rocketmq/conf/logback_tools.xml rocketmq/conf/logback_tools.bak
+    fi
+    cp rocketmq/conf/logback_namesrv.bak rocketmq/conf/logback_namesrv.xml
+    sed -i "s/\${user.home}/data/" rocketmq/conf/logback_namesrv.xml
 }
 
 init_namesrv() {
     echo "init_namesrv ${NAMESRV_NAME}"
-    DATA_PATH=data/${NAMESRV_NAME}
+    DATA_PATH=`pwd`/data/${NAMESRV_NAME}
     CONF_PATH=data/${NAMESRV_NAME}/${NAMESRV_NAME}.properties
     rm -fr ${DATA_PATH}
     mkdir -p ${DATA_PATH}
@@ -82,7 +103,7 @@ init_namesrv() {
 
 init_broker() {
     echo "init_broker ${BROKER_NAME}-${BROKER_ROLE}"
-    DATA_PATH=data/${BROKER_NAME}-${BROKER_ROLE}
+    DATA_PATH=`pwd`/data/${BROKER_NAME}-${BROKER_ROLE}
     CONF_PATH=${DATA_PATH}/${BROKER_NAME}-${BROKER_ROLE}.properties
 
     rm -fr ${DATA_PATH}
@@ -166,21 +187,31 @@ rocketmq_clean() {
     mkdir -p data
 }
 
-rocketmq_run_namesrv_a() {
+rocketmq_init_namesrv_a() {
     NAMESRV_NAME=namesrv-a
     NAMESRV_PORT=19876
     init_namesrv
+}
+
+rocketmq_run_namesrv_a() {
+    NAMESRV_NAME=namesrv-a
+    NAMESRV_PORT=19876
     run_namesrv
+}
+
+rocketmq_init_namesrv_b() {
+    NAMESRV_NAME=namesrv-b
+    NAMESRV_PORT=29876
+    init_namesrv
 }
 
 rocketmq_run_namesrv_b() {
     NAMESRV_NAME=namesrv-b
     NAMESRV_PORT=29876
-    init_namesrv
     run_namesrv
 }
 
-rocketmq_run_broker_a_master() {
+rocketmq_init_broker_a_master() {
     BROKER_NAME=broker-a
     BROKER_ID=0
     BROKER_PORT=10010
@@ -191,10 +222,15 @@ rocketmq_run_broker_a_master() {
     BROKER_IP1=10.200.112.67
     ACL_ENABLE=false
     init_broker
+}
+
+rocketmq_run_broker_a_master() {
+    BROKER_NAME=broker-a
+    BROKER_ROLE=ASYNC_MASTER
     run_broker
 }
 
-rocketmq_run_broker_a_slave() {
+rocketmq_init_broker_a_slave() {
     BROKER_NAME=broker-a
     BROKER_ID=1
     BROKER_PORT=10020
@@ -205,10 +241,15 @@ rocketmq_run_broker_a_slave() {
     BROKER_IP1=10.200.112.67
     ACL_ENABLE=false
     init_broker
+}
+
+rocketmq_run_broker_a_slave() {
+    BROKER_NAME=broker-a
+    BROKER_ROLE=SLAVE
     run_broker
 }
 
-rocketmq_run_broker_b_master() {
+rocketmq_init_broker_b_master() {
     BROKER_NAME=broker-b
     BROKER_ID=0
     BROKER_PORT=20010
@@ -219,10 +260,15 @@ rocketmq_run_broker_b_master() {
     BROKER_IP1=10.200.112.67
     ACL_ENABLE=false
     init_broker
+}
+
+rocketmq_run_broker_b_master() {
+    BROKER_NAME=broker-b
+    BROKER_ROLE=ASYNC_MASTER
     run_broker
 }
 
-rocketmq_run_broker_b_slave() {
+rocketmq_init_broker_b_slave() {
     BROKER_NAME=broker-b
     BROKER_ID=1
     BROKER_PORT=20020
@@ -233,6 +279,11 @@ rocketmq_run_broker_b_slave() {
     BROKER_IP1=10.200.112.67
     ACL_ENABLE=false
     init_broker
+}
+
+rocketmq_run_broker_b_slave() {
+    BROKER_NAME=broker-b
+    BROKER_ROLE=SLAVE
     run_broker
 }
 
@@ -323,6 +374,50 @@ case $1 in
     "-c");&
     "--clean")
         rocketmq_clean ;;
+    "-i");&
+    "--init")
+        case $2 in
+            "namesrv-a"|"nsa")
+                rocketmq_init_namesrv_a
+                ;;
+            "namesrv-b"|"nsb")
+                rocketmq_init_namesrv_b
+                ;;
+            "broker-a-master"|"bam")
+                rocketmq_init_broker_a_master
+                ;;
+            "broker-a-slave"|"bas")
+                rocketmq_init_broker_a_slave
+                ;;
+            "broker-b-master"|"bbm")
+                rocketmq_init_broker_b_master
+                ;;
+            "broker-b-slave"|"bbs")
+                rocketmq_init_broker_b_slave
+                ;;
+            "all"|"a")
+                init_running_memory
+                init_logback
+                rocketmq_init_namesrv_a
+                rocketmq_init_namesrv_b
+                rocketmq_init_broker_a_master
+                rocketmq_init_broker_a_slave
+                rocketmq_init_broker_b_master
+                rocketmq_init_broker_b_slave
+                ;;
+            *)
+                echo "usage: $0 --init/-i [service]"
+                echo "service:"
+                echo "    all             | a"
+                echo "    namesrv-a       | nsa"
+                echo "    namesrv-b       | nsb"
+                echo "    broker-a-master | bam"
+                echo "    broker-a-slave  | bas"
+                echo "    broker-b-master | bbm"
+                echo "    broker-b-slave  | bbs"
+                ;;
+        esac
+        ;;
     "-k");&
     "--kill")
         case $2 in
@@ -332,16 +427,16 @@ case $1 in
             "namesrv-b"|"nsb")
                 rocketmq_kill_namesrv_b
                 ;;
-            "broker-a-master"|"am")
+            "broker-a-master"|"bam")
                 rocketmq_kill_broker_a_master
                 ;;
-            "broker-a-slave"|"as")
+            "broker-a-slave"|"bas")
                 rocketmq_kill_broker_a_slave
                 ;;
-            "broker-b-master"|"bm")
+            "broker-b-master"|"bbm")
                 rocketmq_kill_broker_b_master
                 ;;
-            "broker-b-slave"|"bs")
+            "broker-b-slave"|"bbs")
                 rocketmq_kill_broker_b_slave
                 ;;
             "console"|"c")
@@ -400,7 +495,6 @@ case $1 in
                 rocketmq_run_broker_a_slave
                 rocketmq_run_broker_b_master
                 rocketmq_run_broker_b_slave
-                rocketmq_run_console
                 ;;
             *)
                 echo "usage: $0 --run/-r [service]"
@@ -425,6 +519,7 @@ case $1 in
         echo ""
         echo "    -b --build"
         echo "    -c --clean"
+        echo "    -i --init [service]"
         echo "    -k --kill [service]"
         echo "    -r --run [service]"
         echo "    -s --status"
