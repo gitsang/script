@@ -153,6 +153,10 @@ call plug#begin()
     Plug 'plasticboy/vim-markdown', { 'for': ['markdown'] }
         let g:vim_markdown_folding_disabled=1
 
+    "Plug 'junegunn/vim-easy-align', { 'for': ['markdown'] }
+        "xmap F <Plug>(EasyAlign)*
+        "nmap F <Plug>(EasyAlign)*
+
     Plug 'dhruvasagar/vim-table-mode', { 'for': ['markdown'] }
         let g:table_mode_corner = '|'
         let g:table_mode_border = 0
@@ -251,6 +255,8 @@ call plug#begin()
     autocmd FileType go nmap gr :GoReferrers<cr>
     autocmd FileType go nmap gcr :GoCallers<cr>
     autocmd FileType go nmap gce :GoCallees<cr>
+    autocmd FileType go nmap gf :GoImports<cr>
+    autocmd FileType go nmap F :GoImports<cr>
 
     "--------------------
     " YouCompleteMe
