@@ -1,33 +1,55 @@
 version: '2'
 services:
-
-  namesrv:
-    image: apacherocketmq/rocketmq:4.7.1
-    container_name: rmqnamesrv
+  rocketmq-namesrv-a:
+    image: apacherocketmq/rocketmq:ROCKETMQ_VERSION
+    container_name: rocketmq-namesrv-a
     ports:
-      - 9876:9876
+      - 19876:9876
+    volumes:
+      - ./data/namesrv-a/namesrv-a.conf:/opt/rocketmq-ROCKETMQ_VERSION/conf/namesrv.conf
+      - ./data/namesrv-a/logs:/home/rocketmq/logs
+    command: sh mqnamesrv
+  
+  rocketmq-namesrv-b:
+    image: apacherocketmq/rocketmq:ROCKETMQ_VERSION
+    container_name: rocketmq-namesrv-b
+    ports:
+      - 29876:9876
     volumes:
       - ./data/namesrv/logs:/home/rocketmq/logs
-    environment:
-      - TZ=Asia/Shanghai
-      - JAVA_OPTS=-XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=128m -Xms1024m -Xmx1024m -Xmn256m -Xss256k -XX:SurvivorRatio=8 -XX:+UseConcMarkSweepGC
     command: sh mqnamesrv
 
   broker:
-    image: apacherocketmq/rocketmq:4.7.1
+    image: apacherocketmq/rocketmq:ROCKETMQ_VERSION
     container_name: rmqbroker
+    links:
+      - namesrv
     ports:
       - 10909:10909
       - 10911:10911
       - 10912:10912
+    environment:
+      - NAMESRV_ADDR=namesrv:9876
     volumes:
       - ./data/broker/logs:/home/rocketmq/logs
       - ./data/broker/store:/home/rocketmq/store
-      - ./data/broker/conf/broker.conf:/home/rocketmq/rocketmq-4.7.1/conf/broker.conf
-    environment:
-      - TZ=Asia/Shanghai
-      - JAVA_OPTS=-XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=128m -Xms1024m -Xmx1024m -Xmn256m -Xss256k -XX:SurvivorRatio=8 -XX:+UseConcMarkSweepGC
-    command: sh mqbroker -n namesrv:9876 -c ../conf/broker.conf
-    depends_on:
-      - namesrv
+      - ./data/broker/conf/broker.conf:/opt/rocketmq-ROCKETMQ_VERSION/conf/broker.conf
+    command: sh mqbroker -c /opt/rocketmq-ROCKETMQ_VERSION/conf/broker.conf
 
+  #Service for another broker -- broker1
+  broker1:
+    image: apacherocketmq/rocketmq:ROCKETMQ_VERSION
+    container_name: rmqbroker-b
+    links:
+      - namesrv
+    ports:
+      - 10929:10909
+      - 10931:10911
+      - 10932:10912
+    environment:
+      - NAMESRV_ADDR=namesrv:9876
+    volumes:
+      - ./data1/broker/logs:/home/rocketmq/logs
+      - ./data1/broker/store:/home/rocketmq/store
+      - ./data1/broker/conf/broker.conf:/opt/rocketmq-ROCKETMQ_VERSION/conf/broker.conf
+    command: sh mqbroker -c /opt/rocketmq-ROCKETMQ_VERSION/conf/broker.conf
