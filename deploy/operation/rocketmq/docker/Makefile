@@ -23,12 +23,7 @@ docker: rocketmq
 		-t ${DOCKER_IMG}
 	docker push ${DOCKER_IMG}
 
-docker-compose-up:
-	echo "do nothing"
+run:
+	chown -R 3000:3000 data
+	docker-compose up -d
 
-test:
-	docker run -d \
-		--name rocketmq-namesrv-test-${ROCKETMQ_VERSION} \
-		-p 9877:9876 \
-		127.0.0.1:5000/rocketmq:${ROCKETMQ_VERSION} \
-		sh mqnamesrv

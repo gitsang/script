@@ -8,11 +8,11 @@ services:
     ports:
       - 19876:19876
     environment:
-      - JAVA_OPTS=-Xms512m -Xmx512mm -Xmn256m
+      - JAVA_OPTS=-Xms512m -Xmx512m -Xmn256m
     volumes:
       - ./data/namesrv-a/namesrv.conf:/opt/rocketmq-4.7.1/conf/namesrv.conf
       - ./data/namesrv-a/logs:/home/rocketmq/logs
-    command: sh mqnamesrv
+    command: sh mqnamesrv -c /opt/rocketmq-4.7.1/conf/namesrv.conf
 
   # namesrv-b
   rocketmq-namesrv-b:
@@ -21,25 +21,23 @@ services:
     ports:
       - 29876:29876
     environment:
-      - JAVA_OPTS=-Xms512m -Xmx512mm -Xmn256m
+      - JAVA_OPTS=-Xms512m -Xmx512m -Xmn256m
     volumes:
       - ./data/namesrv-b/namesrv.conf:/opt/rocketmq-4.7.1/conf/namesrv.conf
       - ./data/namesrv-b/logs:/home/rocketmq/logs
-    command: sh mqnamesrv
+    command: sh mqnamesrv -c /opt/rocketmq-4.7.1/conf/namesrv.conf
 
   # broker-a-master
   rocketmq-broker-a-master:
     image: hub.l7i.top:5000/rocketmq:4.7.1
     container_name: rocketmq-broker-a-master
-    links:
-      - rocketmq-namesrv-a
-      - rocketmq-namesrv-b
     ports:
+      - 10008:10008
       - 10010:10010
       - 10011:10011
     environment:
-      - NAMESRV_ADDR=rocketmq-namesrv-a:9876;rocketmq-namesrv-b:9876
-      - JAVA_OPTS=-Xms512m -Xmx512mm -Xmn256m
+      - NAMESRV_ADDR=10.200.112.67:19876;10.200.112.67:29876
+      - JAVA_OPTS=-Xms512m -Xmx512m -Xmn256m
     volumes:
       - ./data/broker-a-master/logs:/home/rocketmq/logs
       - ./data/broker-a-master/store:/home/rocketmq/store
@@ -50,15 +48,13 @@ services:
   rocketmq-broker-a-slave:
     image: hub.l7i.top:5000/rocketmq:4.7.1
     container_name: rocketmq-broker-a-slave
-    links:
-      - rocketmq-namesrv-a
-      - rocketmq-namesrv-b
     ports:
+      - 10018:10018
       - 10020:10020
       - 10021:10021
     environment:
-      - NAMESRV_ADDR=rocketmq-namesrv-a:9876;rocketmq-namesrv-b:9876
-      - JAVA_OPTS=-Xms512m -Xmx512mm -Xmn256m
+      - NAMESRV_ADDR=10.200.112.67:19876;10.200.112.67:29876
+      - JAVA_OPTS=-Xms512m -Xmx512m -Xmn256m
     volumes:
       - ./data/broker-a-slave/logs:/home/rocketmq/logs
       - ./data/broker-a-slave/store:/home/rocketmq/store
@@ -69,15 +65,13 @@ services:
   rocketmq-broker-b-master:
     image: hub.l7i.top:5000/rocketmq:4.7.1
     container_name: rocketmq-broker-b-master
-    links:
-      - rocketmq-namesrv-a
-      - rocketmq-namesrv-b
     ports:
+      - 20008:20008
       - 20010:20010
       - 20011:20011
     environment:
-      - NAMESRV_ADDR=rocketmq-namesrv-a:9876;rocketmq-namesrv-b:9876
-      - JAVA_OPTS=-Xms512m -Xmx512mm -Xmn256m
+      - NAMESRV_ADDR=10.200.112.67:19876;10.200.112.67:29876
+      - JAVA_OPTS=-Xms512m -Xmx512m -Xmn256m
     volumes:
       - ./data/broker-b-master/logs:/home/rocketmq/logs
       - ./data/broker-b-master/store:/home/rocketmq/store
@@ -88,15 +82,13 @@ services:
   rocketmq-broker-b-slave:
     image: hub.l7i.top:5000/rocketmq:4.7.1
     container_name: rocketmq-broker-b-slave
-    links:
-      - rocketmq-namesrv-a
-      - rocketmq-namesrv-b
     ports:
+      - 20018:20018
       - 20020:20020
       - 20021:20021
     environment:
-      - NAMESRV_ADDR=rocketmq-namesrv-a:9876;rocketmq-namesrv-b:9876
-      - JAVA_OPTS=-Xms512m -Xmx512mm -Xmn256m
+      - NAMESRV_ADDR=10.200.112.67:19876;10.200.112.67:29876
+      - JAVA_OPTS=-Xms512m -Xmx512m -Xmn256m
     volumes:
       - ./data/broker-b-slave/logs:/home/rocketmq/logs
       - ./data/broker-b-slave/store:/home/rocketmq/store
