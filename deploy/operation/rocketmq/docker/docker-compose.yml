@@ -1,55 +1,104 @@
 version: '2'
 services:
+
+  # namesrv-a
   rocketmq-namesrv-a:
-    image: apacherocketmq/rocketmq:ROCKETMQ_VERSION
+    image: hub.l7i.top:5000/rocketmq:4.7.1
     container_name: rocketmq-namesrv-a
     ports:
-      - 19876:9876
+      - 19876:19876
+    environment:
+      - JAVA_OPTS=-Xms512m -Xmx512mm -Xmn256m
     volumes:
-      - ./data/namesrv-a/namesrv-a.conf:/opt/rocketmq-ROCKETMQ_VERSION/conf/namesrv.conf
+      - ./data/namesrv-a/namesrv.conf:/opt/rocketmq-4.7.1/conf/namesrv.conf
       - ./data/namesrv-a/logs:/home/rocketmq/logs
     command: sh mqnamesrv
-  
+
+  # namesrv-b
   rocketmq-namesrv-b:
-    image: apacherocketmq/rocketmq:ROCKETMQ_VERSION
+    image: hub.l7i.top:5000/rocketmq:4.7.1
     container_name: rocketmq-namesrv-b
     ports:
-      - 29876:9876
+      - 29876:29876
+    environment:
+      - JAVA_OPTS=-Xms512m -Xmx512mm -Xmn256m
     volumes:
-      - ./data/namesrv/logs:/home/rocketmq/logs
+      - ./data/namesrv-b/namesrv.conf:/opt/rocketmq-4.7.1/conf/namesrv.conf
+      - ./data/namesrv-b/logs:/home/rocketmq/logs
     command: sh mqnamesrv
 
-  broker:
-    image: apacherocketmq/rocketmq:ROCKETMQ_VERSION
-    container_name: rmqbroker
+  # broker-a-master
+  rocketmq-broker-a-master:
+    image: hub.l7i.top:5000/rocketmq:4.7.1
+    container_name: rocketmq-broker-a-master
     links:
-      - namesrv
+      - rocketmq-namesrv-a
+      - rocketmq-namesrv-b
     ports:
-      - 10909:10909
-      - 10911:10911
-      - 10912:10912
+      - 10010:10010
+      - 10011:10011
     environment:
-      - NAMESRV_ADDR=namesrv:9876
+      - NAMESRV_ADDR=rocketmq-namesrv-a:9876;rocketmq-namesrv-b:9876
+      - JAVA_OPTS=-Xms512m -Xmx512mm -Xmn256m
     volumes:
-      - ./data/broker/logs:/home/rocketmq/logs
-      - ./data/broker/store:/home/rocketmq/store
-      - ./data/broker/conf/broker.conf:/opt/rocketmq-ROCKETMQ_VERSION/conf/broker.conf
-    command: sh mqbroker -c /opt/rocketmq-ROCKETMQ_VERSION/conf/broker.conf
+      - ./data/broker-a-master/logs:/home/rocketmq/logs
+      - ./data/broker-a-master/store:/home/rocketmq/store
+      - ./data/broker-a-master/broker.conf:/opt/rocketmq-4.7.1/conf/broker.conf
+    command: sh mqbroker -c /opt/rocketmq-4.7.1/conf/broker.conf
 
-  #Service for another broker -- broker1
-  broker1:
-    image: apacherocketmq/rocketmq:ROCKETMQ_VERSION
-    container_name: rmqbroker-b
+  # broker-a-slave
+  rocketmq-broker-a-slave:
+    image: hub.l7i.top:5000/rocketmq:4.7.1
+    container_name: rocketmq-broker-a-slave
     links:
-      - namesrv
+      - rocketmq-namesrv-a
+      - rocketmq-namesrv-b
     ports:
-      - 10929:10909
-      - 10931:10911
-      - 10932:10912
+      - 10020:10020
+      - 10021:10021
     environment:
-      - NAMESRV_ADDR=namesrv:9876
+      - NAMESRV_ADDR=rocketmq-namesrv-a:9876;rocketmq-namesrv-b:9876
+      - JAVA_OPTS=-Xms512m -Xmx512mm -Xmn256m
     volumes:
-      - ./data1/broker/logs:/home/rocketmq/logs
-      - ./data1/broker/store:/home/rocketmq/store
-      - ./data1/broker/conf/broker.conf:/opt/rocketmq-ROCKETMQ_VERSION/conf/broker.conf
-    command: sh mqbroker -c /opt/rocketmq-ROCKETMQ_VERSION/conf/broker.conf
+      - ./data/broker-a-slave/logs:/home/rocketmq/logs
+      - ./data/broker-a-slave/store:/home/rocketmq/store
+      - ./data/broker-a-slave/broker.conf:/opt/rocketmq-4.7.1/conf/broker.conf
+    command: sh mqbroker -c /opt/rocketmq-4.7.1/conf/broker.conf
+
+  # broker-b-master
+  rocketmq-broker-b-master:
+    image: hub.l7i.top:5000/rocketmq:4.7.1
+    container_name: rocketmq-broker-b-master
+    links:
+      - rocketmq-namesrv-a
+      - rocketmq-namesrv-b
+    ports:
+      - 20010:20010
+      - 20011:20011
+    environment:
+      - NAMESRV_ADDR=rocketmq-namesrv-a:9876;rocketmq-namesrv-b:9876
+      - JAVA_OPTS=-Xms512m -Xmx512mm -Xmn256m
+    volumes:
+      - ./data/broker-b-master/logs:/home/rocketmq/logs
+      - ./data/broker-b-master/store:/home/rocketmq/store
+      - ./data/broker-b-master/broker.conf:/opt/rocketmq-4.7.1/conf/broker.conf
+    command: sh mqbroker -c /opt/rocketmq-4.7.1/conf/broker.conf
+
+  # broker-b-slave
+  rocketmq-broker-b-slave:
+    image: hub.l7i.top:5000/rocketmq:4.7.1
+    container_name: rocketmq-broker-b-slave
+    links:
+      - rocketmq-namesrv-a
+      - rocketmq-namesrv-b
+    ports:
+      - 20020:20020
+      - 20021:20021
+    environment:
+      - NAMESRV_ADDR=rocketmq-namesrv-a:9876;rocketmq-namesrv-b:9876
+      - JAVA_OPTS=-Xms512m -Xmx512mm -Xmn256m
+    volumes:
+      - ./data/broker-b-slave/logs:/home/rocketmq/logs
+      - ./data/broker-b-slave/store:/home/rocketmq/store
+      - ./data/broker-b-slave/broker.conf:/opt/rocketmq-4.7.1/conf/broker.conf
+    command: sh mqbroker -c /opt/rocketmq-4.7.1/conf/broker.conf
