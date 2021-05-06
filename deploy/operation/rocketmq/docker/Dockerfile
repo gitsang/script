@@ -7,8 +7,8 @@ ENV ROCKETMQ_TARGET rocketmq-${ROCKETMQ_VERSION}
 ENV ROCKETMQ_HOME /home/rocketmq/rocketmq-${ROCKETMQ_VERSION}
 
 # install depandancy
-RUN yum install -y unzip gettext nmap-ncat openssl telnet gnupg
 RUN yum install -y java-1.8.0-openjdk-devel.x86_64
+RUN yum install -y unzip gettext nmap-ncat openssl telnet, which gnupg
 RUN yum clean all -y
 
 # copy target file

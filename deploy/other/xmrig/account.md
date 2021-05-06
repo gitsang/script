@@ -3,3 +3,6 @@ huobi-XMR
 
 monero-XMR
 47fjz4XYWnLDaZ788xYh5pD1dFfb63YneVLeAk5JPkrQQypogcTsrs49qgY3AodVt4YboeFrvTtujRvRqwKbk5ifFSzubnp
+
+binance-XMR
+843r88ngevfdyXXJNDcSrjDNouNwB9SBA6qQpXg6JrGfRdTVpGaacbGGCoftCrWLp5BGJQFj7idGtXYCK9zqPgYcRBRDHY8
