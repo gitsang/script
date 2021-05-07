@@ -1,18 +1,4 @@
 
-DOMAIN=local.sang.pp.ua
-
-apache2() {
-    grep -q -e "Listen 80" /etc/apache2/ports.conf || echo "Listen 80" >> /etc/apache2/ports.conf
-
-    cp filerun.apache2.conf.template filerun.apache2.conf
-    sed -i "s/%DOMAIN%/${DOMAIN}/g" filerun.apache2.conf
-    cp filerun.apache2.conf /etc/apache2/sites-available/filerun.conf
-
-    a2ensite filerun
-    apache2ctl configtest
-    systemctl restart apache2
-}
-
 filerun() {
     rm -fr /var/www/filerun/
     mkdir -p /var/www/filerun/
@@ -55,6 +41,12 @@ install_php() {
 
     # config
     cp filerun.ini /etc/php/${PHP_VERSION}/apache2/conf.d/filerun.ini
+}
+
+apache2() {
+    cd ../apache2
+    ./configure filerun
+    cd -
 }
 
 plugin() {

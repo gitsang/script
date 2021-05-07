@@ -1,7 +1,24 @@
+#!/bin/bash
 
-DOMAIN=${DOMAIN:-us.sang.pp.ua}
-FRP_DOMAIN=${FRP_DOMAIN:-frp-us.sang.pp.ua}
-APACHE_PORT=${APACHE_PORT:-80}
+#===========================================================
+# config
+#===========================================================
+
+# for local/outer host
+DOMAIN=${DOMAIN:-home.sang.pp.ua}
+PORT=${PORT:-80}
+
+# for inner server
+FRPC_DOMAIN=${FRPC_DOMAIN:-home.frp-sh.sang.pp.ua}
+FRPC_PORT=${FRPC_PORT:-8080}
+
+# for frps
+FRPS_DOMAIN=${FRPS_DOMAIN:-frp-sh.sang.pp.ua}
+FRPS_PORT=${FRPS_PORT:-8080}
+
+#===========================================================
+# function
+#===========================================================
 
 deploy_init() {
     cd init
@@ -12,10 +29,22 @@ deploy_init() {
 
 deploy_h5ai() {
     cd h5ai
-    ./deploy h5ai
-    ./deploy apache2
+    ./deploy.sh h5ai
+    ./deploy.sh apache2
     cd -
 }
+
+deploy_filerun() {
+    cd filerun
+    ./deploy.sh filerun
+    ./deploy.sh apache2
+    ./deploy.sh plugin
+    cd -
+}
+
+#===========================================================
+# option
+#===========================================================
 
 case $1 in
     # basic
@@ -57,13 +86,16 @@ case $1 in
 
     # help
     *)
-        if [ "${DOMAIN}" == "" ]; then
-            echo "set up DOMAIN before using this script"
-            echo "using \`export DOMAIN={your domain}\` to set"
-        fi
-        echo "DOMAIN" ${DOMAIN}
-        echo "usage: $0 option"
-        echo "option:"
+	echo DOMAIN=${DOMAIN}
+	echo PORT=${PORT}
+	echo FRPC_DOMAIN=${FRPC_DOMAIN}
+	echo FRPC_PORT=${FRPC_PORT}
+	echo FRPS_DOMAIN=${FRPS_DOMAIN}
+	echo FRPS_PORT=${FRPS_PORT}
+	echo ""
+        echo "usage: $0 service"
+        echo "services:"
         echo "    h5ai"
+        echo "    filerun"
         ;;
 esac
