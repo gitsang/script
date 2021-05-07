@@ -8,7 +8,7 @@ filerun() {
     chown -R www-data:www-data /var/www/filerun/
 }
 
-database() {
+install_database() {
     # install
     apt install -y mysql-server
 
@@ -62,9 +62,10 @@ plugin() {
 case $1 in
     "filerun")
         filerun
-        database
-        install_php
         cat README.md
+        ;;
+    "database")
+        install_database
         ;;
     "php")
         install_php
@@ -76,7 +77,7 @@ case $1 in
         plugin
         ;;
     *)
-        echo "usage $0 [filerun | apache2 | plugin]"
+        echo "usage $0 [filerun | database | php | apache2 | plugin]"
         cat README.md
         ;;
 esac
