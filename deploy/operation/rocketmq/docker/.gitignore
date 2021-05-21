@@ -1,3 +1,2 @@
-rocketmq-*
-logs
-store
+rocketmq-all-*
+data
