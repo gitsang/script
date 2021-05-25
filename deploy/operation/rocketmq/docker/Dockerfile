@@ -1,7 +1,7 @@
 FROM hub.l7i.top:5000/java:8u241
 
 ARG ROCKETMQ_VERSION
-ENV ROCKETMQ_PKG rocketmq-all-${ROCKETMQ_VERSION}-bin-release
+ENV ROCKETMQ_PKG pkg/rocketmq-all-${ROCKETMQ_VERSION}-bin-release
 ENV ROCKETMQ_HOME /usr/local/rocketmq/rocketmq-${ROCKETMQ_VERSION}
 ENV PATH ${PATH}:${ROCKETMQ_HOME}/bin
 

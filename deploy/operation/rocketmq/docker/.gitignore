@@ -1,2 +1,3 @@
-rocketmq-all-*
-data
+/data
+/pkg
+/src

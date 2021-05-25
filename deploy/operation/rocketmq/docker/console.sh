@@ -1,4 +1,4 @@
-
+#!/bin/bash
 
 docker rm -f rocketmq-console
 docker run -d \
@@ -7,6 +7,4 @@ docker run -d \
     -e "JAVA_OPTS=-Drocketmq.namesrv.addr=cn.ymw.pp.ua:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false" \
     -p 8080:8080 \
     apacherocketmq/rocketmq-console:2.0.0
-
-#styletang/rocketmq-console-ng:1.0.0
 

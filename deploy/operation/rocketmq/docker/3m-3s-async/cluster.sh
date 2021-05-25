@@ -69,7 +69,7 @@ data_clean() {
 }
 
 deploy_namesrv() {
-    NAMESRV_NAME=namesrv-${1}
+    NAMESRV_NAME=rocketmq-namesrv-${1}
     echo "deploy ${NAMESRV_NAME}"
 
     docker stop ${NAMESRV_NAME}
@@ -86,7 +86,7 @@ deploy_namesrv() {
 }
 
 deploy_broker_master() {
-    BROKER_NAME=broker-${1}-master
+    BROKER_NAME=rocketmq-broker-${1}-master
     echo "deploy ${BROKER_NAME}"
 
     docker stop ${BROKER_NAME}
@@ -113,7 +113,7 @@ deploy_broker_master() {
 }
 
 deploy_broker_slave() {
-    BROKER_NAME=broker-${1}-slave
+    BROKER_NAME=rocketmq-broker-${1}-slave
     echo "deploy ${BROKER_NAME}"
 
     docker stop ${BROKER_NAME}

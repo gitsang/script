@@ -9,7 +9,7 @@ NAMESRV_ADDR="10.120.24.130:9876;10.120.26.60:9876;10.120.25.163:9876"
 DLEDGER_PEERS="n0-10.120.24.130:40911;n1-10.120.26.60:40912;n2-10.120.25.163:40913"
 
 configure_dledger() {
-    DLEDGER_NAME=raft-node-0${1}
+    DLEDGER_NAME=rocketmq-raft-node-0${1}
     DATA_PATH=`pwd`/data/${DLEDGER_NAME}
     CONF_PATH=${DATA_PATH}/broker.properties
     if [ $1 -eq 0 ]; then
@@ -40,7 +40,7 @@ configure_dledger() {
 }
 
 deploy_namesrv() {
-    NAMESRV_NAME=namesrv-${1}
+    NAMESRV_NAME=rocketmq-namesrv-${1}
     echo "deploy ${NAMESRV_NAME}"
 
     docker stop ${NAMESRV_NAME}
@@ -57,7 +57,7 @@ deploy_namesrv() {
 }
 
 deploy_broker_dledger() {
-    DLEDGER_NAME=raft-node-0${1}
+    DLEDGER_NAME=rocketmq-raft-node-0${1}
     if [ $1 -eq 0 ]; then
         EXPOSE_PORT1=30911
         EXPOSE_PORT2=30909
