@@ -1,10 +1,12 @@
 .PHONY: default rocketmq docker
 
 SERVICE_NAME=rocketmq
-DOCKER_REPO=rocketmq
+DOCKER_REPO=hub.l7i.top:5000
 ROCKETMQ_VERSION=4.7.1
-DOCKER_IMG=${DOCKER_REPO}/${SERVICE_NAME}:${ROCKETMQ_VERSION}
-ROCKETMQ_TARGET_DIR=../distribution/target/rocketmq-${ROCKETMQ_VERSION}/rocketmq-${ROCKETMQ_VERSION}
+DOCKER_IMG=$(DOCKER_REPO)/$(SERVICE_NAME):$(ROCKETMQ_VERSION)
+ROCKETMQ_TARGET_DIR=distribution/target/rocketmq-$(ROCKETMQ_VERSION)/rocketmq-$(ROCKETMQ_VERSION)
+ROCKETMQ_BIN_RELEASE=rocketmq-all-$(ROCKETMQ_VERSION)-bin-release
+DOWNLOAD_URL=http://file.ymw.pp.ua/package/rocketmq/rocketmq-all-$(ROCKETMQ_VERSION)-bin-release.zip
 
 default: help
 
@@ -13,29 +15,41 @@ help:
 	#
 	# Options:
 	#   rocketmq  mvn install
-	#   docker    make docker and push to repository
-	#   run       run docker with docker-compose (default: 2n-2m-2s)
-	#   stop      stop docker with docker-compose (default: 2n-2m-2s)
+	#   download  download rocketmq bin release pkg
+	#   docker    make docker and push to repository (need `make download` or `make rocketmq` first)
 
 rocketmq:
-	cd .. && mvn -Prelease-all -DskipTests clean install -U && cd -
-	rm -fr rocketmq-${ROCKETMQ_VERSION}
-	mv ${ROCKETMQ_TARGET_DIR} .
 
-docker: rocketmq
+	mkdir -p pkg
+
+	@if [ ! -d "src" ]; then \
+		git clone https://github.com/apache/rocketmq.git src; \
+	fi
+	cd src && \
+		git checkout release-$(ROCKETMQ_VERSION) && \
+		mvn -Prelease-all -DskipTests clean install -U && \
+	cd -
+
+	rm -fr pkg/$(ROCKETMQ_BIN_RELEASE)
+	mv src/$(ROCKETMQ_TARGET_DIR) pkg/$(ROCKETMQ_BIN_RELEASE)
+
+download:
+
+	mkdir -p pkg
+
+	@if [ ! -f "pkg/$(ROCKETMQ_BIN_RELEASE).zip" ]; then \
+		wget $(DOWNLOAD_URL) -O pkg/$(ROCKETMQ_BIN_RELEASE).zip; \
+	fi
+
+	rm -fr pkg/$(ROCKETMQ_BIN_RELEASE)
+	unzip pkg/$(ROCKETMQ_BIN_RELEASE).zip -d pkg/$(ROCKETMQ_BIN_RELEASE)
+
+docker:
+
 	docker build . \
 		--no-cache \
-		--build-arg version=${ROCKETMQ_VERSION} \
-		--build-arg "HTTP_PROXY=http://127.0.0.1:1081/" \
-    	--build-arg "HTTPS_PROXY=http://127.0.0.1:1081/" \
-    	--build-arg "NO_PROXY=localhost,127.0.0.1" \
-		-t ${DOCKER_IMG}
-	docker push ${DOCKER_IMG}
+		--build-arg ROCKETMQ_VERSION=$(ROCKETMQ_VERSION) \
+		-t $(DOCKER_IMG)
 
-run:
-	chown -R 3000:3000 docker-compose/data
-	docker-compose -f docker-compose/single-2n-2m-2s.yml up -d
-
-stop:
-	docker-compose -f docker-compose/single-2n-2m-2s.yml down
+	docker push $(DOCKER_IMG)
 

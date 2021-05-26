@@ -11,10 +11,11 @@ install_dependance() {
 }
 
 download_xmrig() {
-    mkdir xmrig-C3-tgz
+    rm -fr xmrig-C3-tgz
+    mkdir -p xmrig-C3-tgz
     cd xmrig-C3-tgz
-    wget https://github.com/C3Pool/xmrig-C3/releases/download/v6.11.0-C3/xmrig-v6.11.0-C3-linux-Static.tar.gz
-    tar zxvf xmrig-v6.11.0-C3-linux-Static.tar.gz
+    wget https://github.com/C3Pool/xmrig-C3/releases/download/v6.12.1-C3/xmrig-v6.12.1-C3-linux-Static.tar.gz
+    tar zxvf *.tar.gz
     cp ./xmrig ${BIN_PATH}
     cd -
 }
