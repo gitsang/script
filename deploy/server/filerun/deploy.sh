@@ -55,7 +55,7 @@ plugin() {
     docker pull onlyoffice/documentserver
     docker run --name onlyoffice \
         --restart=always \
-        -p 10080:80 -p 10443:443 \
+        -p 2080:80 -p 2443:443 \
         -d onlyoffice/documentserver
 }
 
