@@ -1,7 +1,7 @@
 v2ray() {
     set -e
     if [ ! -f "v2ray-linux-64.zip" ]; then
-        wget https://github.com/v2fly/v2ray-core/releases/download/v4.31.0/v2ray-linux-64.zip
+        wget https://github.com/v2fly/v2ray-core/releases/download/v4.39.2/v2ray-linux-64.zip
     fi
     if [ ! -f "install-release.sh" ]; then
         wget https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh
