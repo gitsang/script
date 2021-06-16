@@ -10,11 +10,11 @@ h5ai() {
     mkdir -p /share
     ln -s /share /var/www/h5ai/share
     # h5ai
-    if [ ! -f "h5ai-0.29.2.zip" ]; then
-    	wget https://release.larsjung.de/h5ai/h5ai-0.29.2.zip
+    if [ ! -f "h5ai-0.30.0.zip" ]; then
+	wget https://release.larsjung.de/h5ai/h5ai-0.30.0.zip
     fi
     if [ ! -d "/var/www/h5ai/_h5ai" ]; then
-    	unzip h5ai-0.29.2.zip -d /var/www/h5ai/
+    	unzip h5ai-0.30.0.zip -d /var/www/h5ai/
     	chmod 0777 -R /var/www/h5ai/_h5ai
     fi
     # config
