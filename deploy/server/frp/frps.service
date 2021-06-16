@@ -1,5 +1,5 @@
 [Unit]
-Description=Frp Server Service
+Description=Frp Server
 After=network.target
 
 [Service]
