@@ -1,19 +1,9 @@
 
 case $1 in
-    "center")
-        rm -fr /var/www/center
-        cp -r html-center/ /var/www/center
-        echo "deploy center success"
-        ;;
-    "sh")
+    "cn")
         rm -fr /var/www/html
-        cp -r html-sh/ /var/www/html
-        echo "deploy shanghai success"
-        ;;
-    "sz")
-        rm -fr /var/www/html
-        cp -r html-sz/ /var/www/html
-        echo "deploy shenzhen success"
+        cp -r html-cn/ /var/www/html
+        echo "deploy cn success"
         ;;
     "us")
         rm -fr /var/www/html
