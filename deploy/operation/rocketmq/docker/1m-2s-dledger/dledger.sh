@@ -52,7 +52,7 @@ deploy_namesrv() {
         -p 9876:9876 \
         -v `pwd`/data/${NAMESRV_NAME}/logs:${ROCKETMQ_HOME}/logs/ \
         -e "JAVA_OPT_EXT=-server ${MEM_OPT}" \
-        hub.l7i.top:5000/rocketmq:${ROCKETMQ_VERSION} \
+        registry.cn-shanghai.aliyuncs.com/sangria/rocketmq:${ROCKETMQ_VERSION} \
         sh mqnamesrv
 }
 
@@ -83,7 +83,7 @@ deploy_broker_dledger() {
         -v `pwd`/data/${DLEDGER_NAME}/logs:${ROCKEMQ_HOME}/logs/ \
         -v `pwd`/data/${DLEDGER_NAME}/broker.properties:${ROCKETMQ_HOME}/conf/broker.properties \
         -e "JAVA_OPT_EXT=-server ${MEM_OPT}" \
-        hub.l7i.top:5000/rocketmq:${ROCKETMQ_VERSION} \
+        registry.cn-shanghai.aliyuncs.com/sangria/rocketmq:${ROCKETMQ_VERSION} \
         sh mqbroker -c ${ROCKETMQ_HOME}/conf/broker.properties
 }
 
