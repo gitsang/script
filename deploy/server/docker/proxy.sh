@@ -10,7 +10,7 @@ Environment="NO_PROXY=localhost,127.0.0.1,.example.com"
 EOF
 
 # docker runtime proxy
-mkdir ~/.docker
+mkdir -p ~/.docker
 tee ~/.docker/config.json <<-'EOF'
 {
   "proxies": {
