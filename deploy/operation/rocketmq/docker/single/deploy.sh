@@ -3,13 +3,14 @@
 # Config =======================================================================
 
 # RocketMQ Runtime Config
-ROCKETMQ_VERSION=4.7.1
+ROCKETMQ_VERSION=4.9.0
+DOCKER_IMAGE=gitsang/rocketmq:${ROCKETMQ_VERSION}
 ROCKETMQ_HOME=/usr/local/rocketmq/rocketmq-${ROCKETMQ_VERSION}
 MEM_OPT="-Xms1g -Xmx2g -Xmn1g"
 
 # Global Config
-NAMESRV_ADDR=10.200.112.67:9876
-BROKER_IP=10.200.112.67
+NAMESRV_ADDR=127.0.0.1:9876
+BROKER_IP=127.0.0.1
     
 # Broker Config
 BROKER_CLUSTER=DefaultCluster
@@ -60,13 +61,13 @@ deploy_namesrv() {
     docker stop ${NAMESRV_NAME}
     docker rm ${NAMESRV_NAME}
 
-    docker run -d \
+    docker run -dit \
         --name ${NAMESRV_NAME} \
         --restart always \
         -p 9876:9876 \
         -v `pwd`/data/${NAMESRV_NAME}/logs:${ROCKETMQ_HOME}/logs/ \
         -e "JAVA_OPT_EXT=-server ${MEM_OPT}" \
-        registry.cn-shanghai.aliyuncs.com/sangria/rocketmq:${ROCKETMQ_VERSION} \
+        ${DOCKER_IMAGE} \
         sh mqnamesrv
 }
 
@@ -85,7 +86,7 @@ deploy_broker() {
         -v ${BROKER_DATA_PATH}/logs:${ROCKETMQ_HOME}/logs/ \
         -v ${BROKER_DATA_PATH}/broker.properties:${ROCKETMQ_HOME}/conf/broker.properties \
         -e "JAVA_OPT_EXT=-server ${MEM_OPT}" \
-        registry.cn-shanghai.aliyuncs.com/sangria/rocketmq:${ROCKETMQ_VERSION} \
+        ${DOCKER_IMAGE} \
         sh mqbroker -c ${ROCKETMQ_HOME}/conf/broker.properties
 }
 

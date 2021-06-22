@@ -1,7 +1,7 @@
 .PHONY: default help rocketmq docker
 
 SERVICE_NAME=rocketmq
-DOCKER_REPO=registry.cn-shanghai.aliyuncs.com/sangria
+DOCKER_REPO=gitsang
 ROCKETMQ_VERSION=4.9.0
 DOCKER_IMG=$(DOCKER_REPO)/$(SERVICE_NAME):$(ROCKETMQ_VERSION)
 ROCKETMQ_TARGET_DIR=distribution/target/rocketmq-$(ROCKETMQ_VERSION)/rocketmq-$(ROCKETMQ_VERSION)
@@ -46,7 +46,7 @@ download:
 	fi
 
 	rm -fr pkg/$(ROCKETMQ_BIN_RELEASE)
-	unzip pkg/$(ROCKETMQ_BIN_RELEASE).zip -d pkg/$(ROCKETMQ_BIN_RELEASE)
+	unzip pkg/$(ROCKETMQ_BIN_RELEASE).zip -d pkg/
 
 docker:
 
