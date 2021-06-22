@@ -35,6 +35,7 @@ frps() {
         cp ${FRP}/frps /usr/bin/
     fi
     mkdir -p /etc/frp
+    touch /var/log/frps.log
     cp frps.ini /etc/frp/frps.ini
     cp frps.service /usr/lib/systemd/system/frps.service
     systemctl enable frps
