@@ -9,8 +9,8 @@ ROCKETMQ_HOME=/usr/local/rocketmq/rocketmq-${ROCKETMQ_VERSION}
 MEM_OPT="-Xms1g -Xmx2g -Xmn1g"
 
 # Global Config
-NAMESRV_ADDR=127.0.0.1:9876
-BROKER_IP=127.0.0.1
+NAMESRV_ADDR=cn.sang.ink:9876
+BROKER_IP=cn.sang.ink
     
 # Broker Config
 BROKER_CLUSTER=DefaultCluster
@@ -22,7 +22,7 @@ NAMESRV_ADDR=${NAMESRV_ADDR}
 BROKER_PORT=10911
 BROKER_IP1=${BROKER_IP}
 BROKER_IP2=${BROKER_IP}
-ACL_ENABLE=true
+ACL_ENABLE=false
 BROKER_DATA_PATH=`pwd`/data/${BROKER_NAME}
     
 # Namesrv Config
