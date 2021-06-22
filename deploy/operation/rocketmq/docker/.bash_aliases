@@ -6,10 +6,10 @@ LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:c
 export LS_COLORS
 
 # list
-alias l='ls'
-alias ll='ls -l'
-alias lh='ls -lh'
-alias la='ls -la'
+alias l='ls --color=auto'
+alias ll='ls -l --color=auto'
+alias lh='ls -lh --color=auto'
+alias la='ls -la --color=auto'
 
 # change dir
 alias ..='cd ../'
@@ -18,9 +18,20 @@ alias ..3='cd ../../../'
 alias ....='cd ../../../'
 alias ..4='cd ../../../../'
 alias .....='cd ../../../../'
-alias ..5='cd ../../../../'
-alias ......='cd ../../../../'
+alias ..5='cd ../../../../../'
+alias ......='cd ../../../../../'
 
 # net
-alias ports='ss -ntlp | sort'
+alias ports='netstat -ntlp'
 
+# vim
+alias vi='vim'
+
+# other
+alias tailf='tail -f'
+
+# jobs
+alias j='jobs'
+kj() {
+    kill -9 %$@
+}

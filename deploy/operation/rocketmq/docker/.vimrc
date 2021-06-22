@@ -38,7 +38,7 @@ map k gk
 "--------------------
 " Search and Highlight
 "--------------------
-exec nohlsearch
+"exec nohlsearch
 set hlsearch
 set incsearch
 set ignorecase

@@ -16,11 +16,13 @@ help:
 	# Options:
 	#   rocketmq  mvn install
 	#   download  download rocketmq bin release pkg
-	#   docker    make docker and push to repository (need `make download` or `make rocketmq` first)
+	#   build     make docker (need `make download` or `make rocketmq` first)
+	#   push      push docker to repository (need `make build` first)
 	#
 	# Download and push image:
-	# > make download
-	# > make docker
+	#   make download
+	#   make build
+	#   make push
 
 rocketmq:
 
@@ -40,20 +42,22 @@ rocketmq:
 download:
 
 	mkdir -p pkg
-
-	@if [ ! -f "pkg/$(ROCKETMQ_BIN_RELEASE).zip" ]; then \
-		wget $(DOWNLOAD_URL) -O pkg/$(ROCKETMQ_BIN_RELEASE).zip; \
-	fi
+	wget -c $(DOWNLOAD_URL) -O pkg/$(ROCKETMQ_BIN_RELEASE).zip
 
 	rm -fr pkg/$(ROCKETMQ_BIN_RELEASE)
 	unzip pkg/$(ROCKETMQ_BIN_RELEASE).zip -d pkg/
 
-docker:
+build:
 
 	docker build . \
 		--no-cache \
+		--build-arg "HTTP_PROXY=http://127.0.0.1:1081/" \
+    	--build-arg "HTTPS_PROXY=http://127.0.0.1:1081/" \
+    	--build-arg "NO_PROXY=localhost,127.0.0.1,.example.com" \
 		--build-arg ROCKETMQ_VERSION=$(ROCKETMQ_VERSION) \
 		-t $(DOCKER_IMG)
 
+push:
+	
 	docker push $(DOCKER_IMG)
 
