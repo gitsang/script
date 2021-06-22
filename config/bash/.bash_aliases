@@ -10,7 +10,10 @@ export GO111MODULE=on
 export GONOPROXY=*.sang.pp.ua
 export GONOSUMDB=*.sang.pp.ua
 export GOPRIVATE=gitcode.sang.pp.ua
-export PATH=$PATH:$GOROOT/bin:$GOBIN
+
+export LibreOffice_PATH=/opt/libreoffice7.1/program
+
+export PATH=$PATH:$GOROOT/bin:$GOBIN:$LibreOffice_PATH
 
 # =============== Color Option =============== #
 
@@ -55,10 +58,11 @@ alias ......='cd ../../../../'
 
 # other
 alias wip='curl ifconfig.me'
-alias ports='netstat -ntlp'
+alias ports='netstat -ntlp | sort'
 alias pss='ps auxf --sort=cmd | grep -v "\[*\]$" | grep -v -E "bash|ps -ef|grep"'
 alias eplib='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib && echo $LD_LIBRARY_PATH'
 alias drst='docker stop $(docker ps -aq) && docker rm $(docker ps -aq)'
+alias tailf='tail -f'
 
 # vim
 alias vi='vim'
@@ -239,10 +243,12 @@ proxy() {
             ;;
         "-s"|"--set")
             case "$2" in
-                "la")
+                "us")
                     export {http,https,ftp}_proxy="http://${PROXY_HOST}:1081";;
-                "co")
+                "cn")
                     export {http,https,ftp}_proxy="http://${PROXY_HOST}:1082";;
+                "co")
+                    export {http,https,ftp}_proxy="http://${PROXY_HOST}:1083";;
                 *)
                     ;;
             esac
@@ -254,7 +260,8 @@ proxy() {
             echo "    -l, --list           list current proxy"
             echo "    -c, --clean          clean proxy"
             echo "    -s, --set [location] set proxy"
-            echo "              la         Los Angeles"
+            echo "              us         Los Angeles"
+            echo "              cn         Shanghai"
             echo "              co         Co."
             list_proxy
             ;;

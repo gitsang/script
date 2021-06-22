@@ -1,5 +1,5 @@
 ossutil() {
-    wget http://gosspublic.alicdn.com/ossutil/1.6.19/ossutil64 -O /usr/local/bin/ossutil64
+    wget https://gosspublic.alicdn.com/ossutil/1.7.3/ossutil64 -O /usr/local/bin/ossutil64
     chmod +x /usr/local/bin/ossutil64
     echo "use \`ossutil64 config\` to init ossutil"
 }
@@ -11,5 +11,5 @@ cron() {
 }
 
 ossutil
-cron
+#cron
 
