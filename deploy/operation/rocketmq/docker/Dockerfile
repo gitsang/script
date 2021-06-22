@@ -1,4 +1,4 @@
-FROM hub.l7i.top:5000/java:8u241
+FROM openjdk:8u292
 
 ARG ROCKETMQ_VERSION
 ENV ROCKETMQ_PKG pkg/rocketmq-all-${ROCKETMQ_VERSION}-bin-release
