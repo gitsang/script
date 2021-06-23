@@ -3,6 +3,7 @@
 BIN_PATH=/usr/local/bin
 CONF_PATH=/usr/local/etc/xmrig
 SERVICE_PATH=/etc/systemd/system
+VERSION=v6.12.2-C3
 
 install_dependance() {
     apt install -y cmake automake clang git vim wget curl
@@ -14,7 +15,7 @@ download_xmrig() {
     rm -fr xmrig-C3-tgz
     mkdir -p xmrig-C3-tgz
     cd xmrig-C3-tgz
-    wget https://github.com/C3Pool/xmrig-C3/releases/download/v6.12.2-C3/xmrig-v6.12.2-C3-linux-Static.tar.gz
+    wget https://github.com/C3Pool/xmrig-C3/releases/download/${VERSION}/xmrig-${VERSION}-linux-Static.tar.gz
     tar zxvf *.tar.gz
     cp ./xmrig ${BIN_PATH}
     cd -
