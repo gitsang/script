@@ -9,6 +9,7 @@ SESSION_ID_ALL="
     yms1 yms2 yms3 
     21 22 23 
     31 32 33 
+    100 101 102
 "
 
 session_check() {
@@ -16,22 +17,22 @@ session_check() {
         "cn")
             GROUP=dev
             ROLE=root
-            IP=cn.ylmw.pp.ua
+            IP=cn.ymw.pp.ua
             ;;
         "us")
             GROUP=dev
             ROLE=root
-            IP=us.ylmw.pp.ua
+            IP=us.ymw.pp.ua
             ;;
         "eu")
             GROUP=dev
             ROLE=root
-            IP=eu.ylmw.pp.ua
+            IP=eu.ymw.pp.ua
             ;;
         "gg")
             GROUP=dev
             ROLE=root
-            IP=gg.ylmw.pp.ua
+            IP=gg.ymw.pp.ua
             ;;
         "etcd1")
             GROUP=sync
@@ -122,6 +123,21 @@ session_check() {
             GROUP=
             ROLE=root
             IP=10.200.112.119
+            ;;
+        "100")
+            GROUP=dis
+            ROLE=root
+            IP=10.70.3.100
+            ;;
+        "101")
+            GROUP=dis
+            ROLE=root
+            IP=10.70.3.101
+            ;;
+        "102")
+            GROUP=dis
+            ROLE=root
+            IP=10.70.3.102
             ;;
     esac
 }

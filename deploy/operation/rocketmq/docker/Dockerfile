@@ -1,4 +1,8 @@
-FROM hub.l7i.top:5000/java:8u241
+FROM openjdk:8-jdk
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    bash unzip telnet tcpdump wget vim net-tools && \
+    rm -rf /var/lib/apt/lists/*
 
 ARG ROCKETMQ_VERSION
 ENV ROCKETMQ_PKG pkg/rocketmq-all-${ROCKETMQ_VERSION}-bin-release
@@ -11,6 +15,6 @@ COPY scripts ${ROCKETMQ_HOME}/bin
 
 RUN echo '. ~/.bash_aliases' >> /root/.bashrc
 COPY .bash_aliases /root/
-COPY .virc /root/
+COPY .vimrc /root/
 
 WORKDIR ${ROCKETMQ_HOME}/bin

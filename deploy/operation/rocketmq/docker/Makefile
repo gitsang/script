@@ -1,12 +1,12 @@
-.PHONY: default rocketmq docker
+.PHONY: default help rocketmq docker
 
 SERVICE_NAME=rocketmq
-DOCKER_REPO=hub.l7i.top:5000
-ROCKETMQ_VERSION=4.7.1
+DOCKER_REPO=gitsang
+ROCKETMQ_VERSION=4.9.0
 DOCKER_IMG=$(DOCKER_REPO)/$(SERVICE_NAME):$(ROCKETMQ_VERSION)
 ROCKETMQ_TARGET_DIR=distribution/target/rocketmq-$(ROCKETMQ_VERSION)/rocketmq-$(ROCKETMQ_VERSION)
 ROCKETMQ_BIN_RELEASE=rocketmq-all-$(ROCKETMQ_VERSION)-bin-release
-DOWNLOAD_URL=http://file.ymw.pp.ua/package/rocketmq/rocketmq-all-$(ROCKETMQ_VERSION)-bin-release.zip
+DOWNLOAD_URL=https://mirrors.tuna.tsinghua.edu.cn/apache/$(SERVICE_NAME)/$(ROCKETMQ_VERSION)/$(ROCKETMQ_BIN_RELEASE).zip
 
 default: help
 
@@ -16,7 +16,13 @@ help:
 	# Options:
 	#   rocketmq  mvn install
 	#   download  download rocketmq bin release pkg
-	#   docker    make docker and push to repository (need `make download` or `make rocketmq` first)
+	#   build     make docker (need `make download` or `make rocketmq` first)
+	#   push      push docker to repository (need `make build` first)
+	#
+	# Download and push image:
+	#   make download
+	#   make build
+	#   make push
 
 rocketmq:
 
@@ -36,20 +42,22 @@ rocketmq:
 download:
 
 	mkdir -p pkg
-
-	@if [ ! -f "pkg/$(ROCKETMQ_BIN_RELEASE).zip" ]; then \
-		wget $(DOWNLOAD_URL) -O pkg/$(ROCKETMQ_BIN_RELEASE).zip; \
-	fi
+	wget -c $(DOWNLOAD_URL) -O pkg/$(ROCKETMQ_BIN_RELEASE).zip
 
 	rm -fr pkg/$(ROCKETMQ_BIN_RELEASE)
-	unzip pkg/$(ROCKETMQ_BIN_RELEASE).zip -d pkg/$(ROCKETMQ_BIN_RELEASE)
+	unzip pkg/$(ROCKETMQ_BIN_RELEASE).zip -d pkg/
 
-docker:
+build:
 
 	docker build . \
 		--no-cache \
+		--build-arg "HTTP_PROXY=http://127.0.0.1:1081/" \
+    	--build-arg "HTTPS_PROXY=http://127.0.0.1:1081/" \
+    	--build-arg "NO_PROXY=localhost,127.0.0.1,.example.com" \
 		--build-arg ROCKETMQ_VERSION=$(ROCKETMQ_VERSION) \
 		-t $(DOCKER_IMG)
 
+push:
+	
 	docker push $(DOCKER_IMG)
 

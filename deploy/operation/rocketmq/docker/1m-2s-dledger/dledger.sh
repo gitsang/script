@@ -2,11 +2,12 @@
 
 CLEAN=false
 INIT=false
-ROCKETMQ_VERSION=4.8.0
-MEM_OPT="-Xms1g -Xmx2g -Xmn1g"
+ROCKETMQ_VERSION=4.9.0
+DOCKER_IMAGE=gitsang/rocketmq:${ROCKETMQ_VERSION}
 ROCKETMQ_HOME=/usr/local/rocketmq/rocketmq-${ROCKETMQ_VERSION}
 NAMESRV_ADDR="10.120.24.130:9876;10.120.26.60:9876;10.120.25.163:9876"
 DLEDGER_PEERS="n0-10.120.24.130:40911;n1-10.120.26.60:40912;n2-10.120.25.163:40913"
+MEM_OPT="-Xms1g -Xmx2g -Xmn1g"
 
 configure_dledger() {
     DLEDGER_NAME=rocketmq-raft-node-0${1}
@@ -52,7 +53,7 @@ deploy_namesrv() {
         -p 9876:9876 \
         -v `pwd`/data/${NAMESRV_NAME}/logs:${ROCKETMQ_HOME}/logs/ \
         -e "JAVA_OPT_EXT=-server ${MEM_OPT}" \
-        hub.l7i.top:5000/rocketmq:${ROCKETMQ_VERSION} \
+        ${DOCKER_IMAGE} \
         sh mqnamesrv
 }
 
@@ -83,7 +84,7 @@ deploy_broker_dledger() {
         -v `pwd`/data/${DLEDGER_NAME}/logs:${ROCKEMQ_HOME}/logs/ \
         -v `pwd`/data/${DLEDGER_NAME}/broker.properties:${ROCKETMQ_HOME}/conf/broker.properties \
         -e "JAVA_OPT_EXT=-server ${MEM_OPT}" \
-        hub.l7i.top:5000/rocketmq:${ROCKETMQ_VERSION} \
+        ${DOCKER_IMAGE} \
         sh mqbroker -c ${ROCKETMQ_HOME}/conf/broker.properties
 }
 

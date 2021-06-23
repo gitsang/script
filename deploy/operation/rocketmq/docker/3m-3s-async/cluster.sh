@@ -2,9 +2,10 @@
 
 CLEAN=false
 INIT=false
-NAMESRV_ADDR="10.120.24.130:9876;10.120.26.60:9876;10.120.25.163:9876"
-ROCKETMQ_VERSION=4.7.1
+ROCKETMQ_VERSION=4.9.0
+DOCKER_IMAGE=gitsang/rocketmq:${ROCKETMQ_VERSION}
 ROCKETMQ_HOME=/usr/local/rocketmq/rocketmq-${ROCKETMQ_VERSION}
+NAMESRV_ADDR="10.120.24.130:9876;10.120.26.60:9876;10.120.25.163:9876"
 MEM_OPT="-Xms1g -Xmx2g -Xmn1g"
 
 init_broker() {
@@ -13,7 +14,7 @@ init_broker() {
     DATA_PATH=`pwd`/data/${BROKER_NAME}
     CONF_PATH=${DATA_PATH}/broker.properties
     echo "CONFIGURE BROKER ${BROKER_NAME}, IDX:${BROKER_INDEX}, ROLE:${BROKER_ROLE}, DP:${DATA_PATH}, CP:${CONF_PATH}"
-    
+
     CONF_BROKER_CLUSTER=DefaultCluster
     CONF_BROKER_FLUSH_TYPE=ASYNC_FLUSH
     CONF_BROKER_NAME=broker-${BROKER_INDEX}
@@ -81,7 +82,7 @@ deploy_namesrv() {
         -p 9876:9876 \
         -v `pwd`/data/${NAMESRV_NAME}/logs:${ROCKETMQ_HOME}/logs/ \
         -e "JAVA_OPT_EXT=-server ${MEM_OPT}" \
-        hub.l7i.top:5000/rocketmq:${ROCKETMQ_VERSION} \
+        ${DOCKER_IMAGE} \
         sh mqnamesrv
 }
 
@@ -108,7 +109,7 @@ deploy_broker_master() {
         -v `pwd`/data/${BROKER_NAME}/logs:${ROCKEMQ_HOME}/logs/ \
         -v `pwd`/data/${BROKER_NAME}/broker.properties:${ROCKETMQ_HOME}/conf/broker.properties \
         -e "JAVA_OPT_EXT=-server ${MEM_OPT}" \
-        hub.l7i.top:5000/rocketmq:${ROCKETMQ_VERSION} \
+        ${DOCKER_IMAGE} \
         sh mqbroker -c ${ROCKETMQ_HOME}/conf/broker.properties
 }
 
@@ -135,7 +136,7 @@ deploy_broker_slave() {
         -v `pwd`/data/${BROKER_NAME}/logs:${ROCKETMQ_HOME}/logs/ \
         -v `pwd`/data/${BROKER_NAME}/broker.properties:${ROCKETMQ_HOME}/conf/broker.properties \
         -e "JAVA_OPT_EXT=-server ${MEM_OPT}" \
-        hub.l7i.top:5000/rocketmq:${ROCKETMQ_VERSION} \
+        ${DOCKER_IMAGE} \
         sh mqbroker -c ${ROCKETMQ_HOME}/conf/broker.properties
 }
 
@@ -162,7 +163,7 @@ ARGS=`getopt \
     --long clean,init,namesrv:,master:,slave:,help \
     -n 'deploy_rocketmq.sh' \
     -- "$@"`
-if [ $? != 0 ]; then 
+if [ $? != 0 ]; then
     echo "Terminating..." >&2
     exit 1
 fi
@@ -171,7 +172,7 @@ eval set -- "$ARGS"
 while true
 do
     case "$1" in
-        -c|--clean) 
+        -c|--clean)
             CLEAN=true
             shift
             ;;
@@ -179,7 +180,7 @@ do
             INIT=true
             shift
             ;;
-        -n|--namesrv) 
+        -n|--namesrv)
             deploy_namesrv $2
             shift 2
             ;;
@@ -194,13 +195,13 @@ do
         -h|--help)
             help
             ;;
-        --) 
+        --)
             shift
             break
             ;;
-        *) 
+        *)
             help
             ;;
     esac
-done 
+done
 
