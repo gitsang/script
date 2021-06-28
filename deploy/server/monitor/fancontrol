@@ -1,0 +1,7 @@
+
+
+echo 1 | tee /sys/class/hwmon/hwmon2/pwm2_enable   
+echo 255 | tee /sys/class/hwmon/hwmon2/pwm2
+
+echo 1 | tee /sys/class/hwmon/hwmon2/pwm1_enable   
+echo 255 | tee /sys/class/hwmon/hwmon2/pwm1

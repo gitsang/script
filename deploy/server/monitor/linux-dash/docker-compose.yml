@@ -1,0 +1,13 @@
+version: "3.6"
+
+services:
+  linux-dash:
+    container_name: linux-dash
+    image: gitsang/linux-dash
+    privileged: true
+    ports:
+        - "8071:80"
+    volumes:
+        - /proc:/host/proc:ro
+        - /sys:/host/sys:ro
+        - /var/run/docker.sock:/var/run/docker.sock:ro
