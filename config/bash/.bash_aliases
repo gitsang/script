@@ -2,18 +2,32 @@
 
 # =============== Environment Variable =============== #
 
+# path
+export PATH=$PATH:.
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib:./libs:.
+
+# java
+#export JAVA_HOME=/usr/local/java/jdk1.8.0_281
+#export JRE_HOME=${JAVA_HOME}/jre
+#export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib
+#export PATH=$PATH:${JAVA_HOME}/bin
+
+# golang
 export GOROOT=/usr/local/go
-export GOPATH=/root/go
+export GOPATH=/go
 export GOBIN=$GOPATH/bin
 export GOPROXY=https://goproxy.cn
 export GO111MODULE=on
-export GONOPROXY=*.sang.pp.ua
-export GONOSUMDB=*.sang.pp.ua
-export GOPRIVATE=gitcode.sang.pp.ua
+export PATH=$PATH:$GOROOT/bin:$GOBIN
 
+# golang private
+export GONOPROXY=*.sang.ink
+export GONOSUMDB=*.sang.ink
+export GOPRIVATE=gitcode.sang.ink
+
+# libreoffice
 export LibreOffice_PATH=/opt/libreoffice7.1/program
-
-export PATH=$PATH:$GOROOT/bin:$GOBIN:$LibreOffice_PATH
+export PATH=$PATH:$LibreOffice_PATH
 
 # =============== Color Option =============== #
 
@@ -249,6 +263,8 @@ proxy() {
                     export {http,https,ftp}_proxy="http://${PROXY_HOST}:1082";;
                 "co")
                     export {http,https,ftp}_proxy="http://${PROXY_HOST}:1083";;
+                "hk")
+                    export {http,https,ftp}_proxy="socks5://${PROXY_HOST}:1084";;
                 *)
                     ;;
             esac
@@ -263,6 +279,7 @@ proxy() {
             echo "              us         Los Angeles"
             echo "              cn         Shanghai"
             echo "              co         Co."
+            echo "              hk         Hong Kong"
             list_proxy
             ;;
     esac
@@ -271,6 +288,6 @@ proxy() {
 dplhugo() {
     set -e
     npm run build
-    rm -fr /var/www/center
-    mv public /var/www/center
+    rm -fr /var/www/home
+    mv public /var/www/home
 }
