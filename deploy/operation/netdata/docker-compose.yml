@@ -6,7 +6,7 @@ services:
     hostname: example.com # set to fqdn of host
     ports:
       - 19999:19999
-    restart: unless-stopped
+    restart: always
     cap_add:
       - SYS_PTRACE
     security_opt:
@@ -15,6 +15,7 @@ services:
       - netdataconfig:/etc/netdata
       - netdatalib:/var/lib/netdata
       - netdatacache:/var/cache/netdata
+      - ./sensors.conf:/etc/netdata/charts.d/sensors.conf
       - /etc/passwd:/host/etc/passwd:ro
       - /etc/group:/host/etc/group:ro
       - /proc:/host/proc:ro
