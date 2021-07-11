@@ -78,6 +78,7 @@ alias ports='netstat -ntlp | sort'
 alias pss='ps auxf --sort=cmd | grep -v "\[*\]$" | grep -v -E "bash|ps -ef|grep"'
 alias eplib='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib && echo $LD_LIBRARY_PATH'
 alias tailf='tail -f'
+alias disk='df -h | grep -vE "overlay|tmpfs|shm|udev|efi"'
 fixmod() {
     chmod 0644 `find ./ -type f`
     chmod 0755 `find ./ -type d`
