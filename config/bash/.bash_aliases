@@ -67,16 +67,26 @@ alias ..3='cd ../../../'
 alias ....='cd ../../../'
 alias ..4='cd ../../../../'
 alias .....='cd ../../../../'
-alias ..5='cd ../../../../'
-alias ......='cd ../../../../'
+alias ..5='cd ../../../../../'
+alias ......='cd ../../../../../'
+alias ..6='cd ../../../../../../'
+alias ......='cd ../../../../../../'
 
 # other
-alias wip='curl ifconfig.me'
+alias wip='curl cip.cc'
 alias ports='netstat -ntlp | sort'
 alias pss='ps auxf --sort=cmd | grep -v "\[*\]$" | grep -v -E "bash|ps -ef|grep"'
 alias eplib='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib && echo $LD_LIBRARY_PATH'
-alias drst='docker stop $(docker ps -aq) && docker rm $(docker ps -aq)'
 alias tailf='tail -f'
+fixmod() {
+    chmod 0644 `find ./ -type f`
+    chmod 0755 `find ./ -type d`
+}
+
+# docker
+alias drst='docker stop $(docker ps -aq) && docker rm $(docker ps -aq)'
+alias dps='docker ps --format "{{.Names}}:\n\tid: {{.ID}}\n\timage: {{.Image}}\n\tcommand: {{.Command}}\n\tnetwork: {{.Networks}}\n\tmount: {{.Mounts}}\n\tports: {{.Ports}}\n\tstatus: {{.Status}}\n\tcreated: {{.RunningFor}}\n\tstatus: {{.State}}\n\tsize: {{.Size}}\n"'
+alias rekcod="docker run --rm -v /var/run/docker.sock:/var/run/docker.sock nexdrew/rekcod"
 
 # vim
 alias vi='vim'
@@ -102,15 +112,24 @@ kj() {
 gh() {
     echo "gh      help"
     echo "gs      git status"
+    echo "gb      git branch"
     echo "gd      git diff"
+    echo "gdt     git difftool"
     echo "gl      git log"
+    echo "gls     git log --stat"
+    echo "glp     git log -p"
     echo "ga      git add"
     echo "gaa     git add --all ."
     echo "gcm     git commit -m"
     echo "gps     git push"
     echo "gpl     git pull"
+    echo "gf      git fetch"
+    echo ""
     echo "gau     auto push"
-    echo "gsubmit auto submit"
+    echo "gsubm   auto submit"
+    echo "gpst    git push to new branch"
+    echo "grb     git rebase -i [HEAD~]"
+    echo "grst    git reset [-h cmtid] [-s cmtid]"
 }
 alias gs='git status'
 alias gb='git branch'
@@ -135,13 +154,35 @@ gau() {
     git status
 }
 gsubm() {
-    USER=`hostname`
+    USER=chensx
     DATE=`date '+%Y%m%d_%H%M'`
     SRC_BRANCH=`git branch | grep "*" | awk '{print $2}'`
     SUBMIT_BRANCH=${1:-${SRC_BRANCH}}
     DST_BRANCH=${SUBMIT_BRANCH}_submit_${DATE}_${USER}
     while true; do
         echo -e "submit to branch \e[31m${SUBMIT_BRANCH}\e[0m_submit_${DATE}_\e[31m${USER}\e[0m, \c"
+        read -r -p "continue? (Default:Y) [Y/n] " input
+        case $input in
+            [yY][eE][sS]|[yY]|"")
+                git push origin ${SRC_BRANCH}:${DST_BRANCH}
+                break
+                ;;
+            [nN][oO]|[nN])
+                break
+                ;;
+            *)
+                echo "Invalid input..." ;;
+        esac
+    done
+}
+gpst() {
+    TYPE=${1}
+    SUBJ=${2}
+    USER=chensx
+    SRC_BRANCH=`git branch | grep "*" | awk '{print $2}'`
+    DST_BRANCH=${TYPE}-${SUBJ}-${USER}
+    while true; do
+        echo -e "submit to branch \e[31m${DST_BRANCH}\e[0m, \c"
         read -r -p "continue? (Default:Y) [Y/n] " input
         case $input in
             [yY][eE][sS]|[yY]|"")
@@ -176,63 +217,60 @@ grst() {
 # trash
 alias del='trash'
 trash() {
-    T_DIR=~/.trash
     case "$1" in
         "help"|"-h")
             echo "usage: trash [ clean(-c) | recover(-r) | backup(-b) | help(-h) ]"
             ;;
         "recover"|"-r")
-            T_NAME=$2
-            if [ "${T_NAME}" == "" ]; then
-                T_NAME=`ls ${T_DIR} | grep -v total | tail -1`
-            fi
-            T_REAL=`echo ${T_NAME} | awk -F'-%TRASH%-' '{print $2}' | sed 's/##/\//g'`
-            T_REAL_DIR=`dirname ${T_REAL}`
-            if [ -f "${T_REAL}" ]; then
-                echo "file exist: ${T_REAL}"
-            elif [ -d "${T_REAL}" ]; then
-                echo "folder exist: ${T_REAL}"
+            TRASH_DIR=~/.trash
+            REAL_PATH=`echo $@ | awk -F'-%TRASH%-' '{print $2}' | sed 's/##/\//g'`
+
+            if [ -f "$REAL_PATH" ]; then
+                echo "file exist: $REAL_PATH"
+            elif [ -d "$REAL_PATH" ]; then
+                echo "folder exist: $REAL_PATH"
             else
-                mkdir -p ${T_REAL_DIR}
-                mv ${T_DIR}/${T_NAME} ${T_REAL}
-                echo "recover ${T_NAME} to ${T_REAL}"
+                mv $@ $REAL_PATH
+                echo "recover $@ to $REAL_PATH"
             fi
             ;;
         "clean"|"-c")
-            T_MAX=20000000
-            T_SIZE=`du --max-depth=0 ${T_DIR} | awk '{print $1}'`
-            while [ ${T_SIZE} -gt ${T_MAX} ]
+            TRASH_DIR=~/.trash
+            MAX_TRASH_SIZE=20000000
+            TRASH_SIZE=`du --max-depth=0 $TRASH_DIR | awk '{print $1}'`
+
+            while [ $TRASH_SIZE -gt $MAX_TRASH_SIZE ]
             do
-                echo "trash-size: ${T_SIZE} > ${T_MAX} clean up:" && ls ${T_DIR} | grep -v total | head -1
-                ls ${T_DIR} | grep -v total | head -1 | xargs -i -n1 rm -fr ${T_DIR}/{}
-                T_SIZE=`du --max-depth=0 ${T_DIR} | awk '{print $1}'`
+                echo "trash-size: $TRASH_SIZE > $MAX_TRASH_SIZE clean up:" && ls $TRASH_DIR | grep -v total | head -1
+                ls $TRASH_DIR | grep -v total | head -1 | xargs -i -n1 rm -fr $TRASH_DIR/{}
+                TRASH_SIZE=`du --max-depth=0 $TRASH_DIR | awk '{print $1}'`
             done
-            echo "trash-size: ${T_SIZE}"
+            echo "trash-size: $TRASH_SIZE"
             ;;
         "backup"|"-b")
-            T_ORIGIN=$2
-            T_FLAG=%BACKUP%
-            T_REAL=`realpath ${T_ORIGIN}`
-            T_NAME=`realpath ${T_ORIGIN} | sed 's/\//##/g'`
-            T_TIME=`date "+%Y%m%d-%H%M%S"`
-            T_PATH=${T_DIR}/${T_TIME}-${T_FLAG}-${T_NAME}
-            if [ "${T_REAL}" != "/" ]; then
-                mkdir -p ${T_DIR}
-                mv ${T_REAL} ${T_PATH}
-                echo "del ${T_REAL} to ${T_PATH}"
+            BACKUP_DIR=~/.trash
+            REAL_PATH=`realpath $2`
+            BACKUP_NAME=`realpath $2 | sed 's/\//##/g'`
+            TIME=`date "+%Y%m%d-%H%M%S"`
+            BACKUP_PATH=$BACKUP_DIR/$TIME-%BACKUP%-$BACKUP_NAME
+
+            if [ "$REAL_PATH" != "/" ]; then
+                mkdir -p $BACKUP_DIR
+                cp -r $REAL_PATH $BACKUP_PATH
+                echo "backup $REAL_PATH to $BACKUP_PATH"
             fi
             ;;
         *)
-            T_ORIGIN=$1
-            T_FLAG=%TRASH%
-            T_REAL=`realpath ${T_ORIGIN}`
-            T_NAME=`realpath ${T_ORIGIN} | sed 's/\//##/g'`
-            T_TIME=`date "+%Y%m%d-%H%M%S"`
-            T_PATH=${T_DIR}/${T_TIME}-${T_FLAG}-${T_NAME}
-            if [ "${T_REAL}" != "/" ]; then
-                mkdir -p ${T_DIR}
-                mv ${T_REAL} ${T_PATH}
-                echo "del ${T_REAL} to ${T_PATH}"
+            TRASH_DIR=~/.trash
+            REAL_PATH=`realpath $@`
+            TRASH_NAME=`realpath $@ | sed 's/\//##/g'`
+            TIME=`date "+%Y%m%d-%H%M%S"`
+            TRASH_PATH=$TRASH_DIR/$TIME-%TRASH%-$TRASH_NAME
+
+            if [ "$REAL_PATH" != "/" ]; then
+                mkdir -p $TRASH_DIR
+                mv $REAL_PATH $TRASH_PATH
+                echo "del $REAL_PATH to $TRASH_PATH"
             fi
             ;;
     esac
